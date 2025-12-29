@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from typing import Any, Optional
 
 from pretty_little_summary.adapters import dispatch_adapter
-from pretty_little_summary.core import Config, ConfigurationError, HistorySlicer
-from pretty_little_summary.synthesizer import OpenRouterClient, deterministic_summary
+from pretty_little_summary.core import HistorySlicer
+from pretty_little_summary.synthesizer import deterministic_summary
 
 
 @dataclass
@@ -14,8 +14,8 @@ class Description:
     Result object from pls.describe().
 
     Attributes:
-        content: Natural language explanation of what the object is
-        meta: Structured facts (Schema, Stats, Adapter Used)
+        content: Structured summary of what the object is
+        meta: Structured metadata (Schema, Stats, Adapter Used)
         history: Code history if available from IPython/Jupyter
     """
 
@@ -24,54 +24,33 @@ class Description:
     history: Optional[list[str]]
 
 
-def describe(obj: Any, explain: bool = True, name: Optional[str] = None) -> Description:
+def describe(obj: Any, name: Optional[str] = None) -> Description:
     """
-    Generate a summary of any Python object.
+    Generate a structured summary of any Python object.
 
     This is the main entry point for pretty_little_summary. It:
-    1. Extracts metadata using adapters
+    1. Extracts metadata using type-specific adapters
     2. Retrieves code history (if in IPython/Jupyter)
-    3. Synthesizes a summary (via LLM if explain=True, deterministic if explain=False)
+    3. Generates a deterministic summary
 
     Args:
         obj: Any Python object to analyze
-        explain: If True, use LLM to generate natural language summary.
-                 If False, generate deterministic summary (no API call).
         name: Optional variable name for history filtering.
               If None, attempts to auto-detect from calling context.
 
     Returns:
         Description object with content, meta, and history attributes
 
-    Raises:
-        ConfigurationError: If OpenRouter API key not configured (only when explain=True)
-        APIError: If LLM synthesis fails (only when explain=True)
-
     Examples:
         >>> import pretty_little_summary as pls
         >>> import pandas as pd
-        >>> pls.configure(openrouter_api_key="sk-or-...")
         >>> df = pd.read_csv("data.csv")
         >>> result = pls.describe(df)
         >>> print(result.content)
-        "This is a pandas DataFrame with 1000 rows and 5 columns..."
-
-        >>> # Deterministic mode (no LLM call)
-        >>> result = pls.describe(df, explain=False)
-        >>> print(result.content)
-        "pandas.DataFrame | Shape: (1000, 5) | Columns: a, b, c, d, e"
+        "pandas.DataFrame | Shape: (1000, 5) | Columns: product, price, quantity, date, customer_id"
+        >>> print(result.meta)
+        {'object_type': 'pandas.DataFrame', 'shape': (1000, 5), ...}
     """
-    # Get config
-    config = Config.get_instance()
-
-    # Validate configuration (only needed if explain=True)
-    if explain and not config.openrouter_api_key:
-        raise ConfigurationError(
-            "OpenRouter API key not configured. "
-            "Set OPENROUTER_API_KEY environment variable or call "
-            "pretty_little_summary.configure(openrouter_api_key='...')"
-        )
-
     # Auto-detect variable name if not provided
     if name is None:
         name = _try_get_variable_name(obj)
@@ -82,21 +61,10 @@ def describe(obj: Any, explain: bool = True, name: Optional[str] = None) -> Desc
     # Get history if available
     history: Optional[list[str]] = None
     if HistorySlicer.is_ipython_environment():
-        history = HistorySlicer.get_history(
-            var_name=name, max_lines=config.max_history_lines
-        )
+        history = HistorySlicer.get_history(var_name=name, max_lines=50)
 
-    # Generate summary
-    if explain:
-        # Use LLM synthesis
-        client = OpenRouterClient(
-            api_key=config.openrouter_api_key,  # type: ignore
-            model=config.openrouter_model,
-        )
-        content = client.synthesize(metadata, history)
-    else:
-        # Use deterministic summary
-        content = deterministic_summary(metadata, history)
+    # Generate deterministic summary
+    content = deterministic_summary(metadata, history)
 
     # Return Description object
     return Description(content=content, meta=metadata, history=history)

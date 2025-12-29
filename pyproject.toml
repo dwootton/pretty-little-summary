@@ -1,14 +1,14 @@
 [project]
 name = "pretty-little-summary"
 version = "0.1.0"
-description = "Natural language summaries of Python objects for LLM consumption"
+description = "Automatic structured summaries of Python objects - DataFrames, arrays, models, and more"
 readme = "README.md"
 authors = [
     { name = "Dylan", email = "wootton.dylan@gmail.com" }
 ]
 requires-python = ">=3.10"
-license = {text = "MIT"}
-keywords = ["llm", "introspection", "jupyter", "data-science"]
+license = {file = "LICENSE"}
+keywords = ["introspection", "jupyter", "data-science", "metadata", "summarization"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -16,34 +16,53 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering",
 ]
 
+[project.urls]
+Homepage = "https://github.com/your-org/pretty-little-summary"
+Repository = "https://github.com/your-org/pretty-little-summary"
+Issues = "https://github.com/your-org/pretty-little-summary/issues"
+Documentation = "https://your-org.github.io/pretty-little-summary"
+
 # Core dependencies (always installed)
-dependencies = [
-    "httpx>=0.27.0",          # HTTP client for OpenRouter
-    "python-dotenv>=1.0.0",   # .env file support
-]
+dependencies = []
 
 [project.optional-dependencies]
 # Development dependencies
 dev = [
+    "build>=1.2.0",
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
     "pytest-asyncio>=0.23.0",
     "mypy>=1.8.0",
     "ruff>=0.1.0",
+    "twine>=5.0.0",
 ]
 
 # Individual adapter dependencies
 pandas = ["pandas>=2.0.0"]
 polars = ["polars>=0.20.0"]
+numpy = ["numpy>=1.24.0"]
 matplotlib = ["matplotlib>=3.8.0"]
+seaborn = ["seaborn>=0.13.0"]
 altair = ["altair>=5.0.0"]
+plotly = ["plotly>=5.0.0"]
+bokeh = ["bokeh>=3.0.0"]
 sklearn = ["scikit-learn>=1.4.0"]
 pytorch = ["torch>=2.0.0"]
+tensorflow = ["tensorflow>=2.0.0"]
+jax = ["jax>=0.4.0"]
 xarray = ["xarray>=2024.0.0"]
 pydantic = ["pydantic>=2.0.0"]
 networkx = ["networkx>=3.0.0"]
+pyarrow = ["pyarrow>=12.0.0"]
+scipy = ["scipy>=1.10.0"]
+statsmodels = ["statsmodels>=0.14.0"]
+h5py = ["h5py>=3.9.0"]
+pillow = ["pillow>=10.0.0"]
+attrs = ["attrs>=23.0.0"]
 requests = ["requests>=2.31.0"]
 ipython = ["ipython>=8.0.0"]
 
@@ -51,14 +70,24 @@ ipython = ["ipython>=8.0.0"]
 data = [
     "pandas>=2.0.0",
     "polars>=0.20.0",
+    "numpy>=1.24.0",
+    "pyarrow>=12.0.0",
 ]
 viz = [
     "matplotlib>=3.8.0",
     "altair>=5.0.0",
+    "seaborn>=0.13.0",
+    "plotly>=5.0.0",
+    "bokeh>=3.0.0",
+    "pillow>=10.0.0",
 ]
 ml = [
     "scikit-learn>=1.4.0",
     "torch>=2.0.0",
+    "tensorflow>=2.0.0",
+    "jax>=0.4.0",
+    "scipy>=1.10.0",
+    "statsmodels>=0.14.0",
 ]
 web = [
     "requests>=2.31.0",
@@ -66,26 +95,40 @@ web = [
 science = [
     "xarray>=2024.0.0",
     "networkx>=3.0.0",
+    "scipy>=1.10.0",
+    "h5py>=3.9.0",
 ]
 
 # All adapters (for testing)
 all = [
     "pandas>=2.0.0",
     "polars>=0.20.0",
+    "numpy>=1.24.0",
     "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
     "altair>=5.0.0",
+    "plotly>=5.0.0",
+    "bokeh>=3.0.0",
     "scikit-learn>=1.4.0",
     "torch>=2.0.0",
+    "tensorflow>=2.0.0",
+    "jax>=0.4.0",
     "xarray>=2024.0.0",
     "pydantic>=2.0.0",
     "networkx>=3.0.0",
+    "pyarrow>=12.0.0",
+    "scipy>=1.10.0",
+    "statsmodels>=0.14.0",
+    "h5py>=3.9.0",
+    "pillow>=10.0.0",
+    "attrs>=23.0.0",
     "requests>=2.31.0",
     "ipython>=8.0.0",
 ]
 
 [build-system]
-requires = ["uv_build>=0.8.22,<0.9.0"]
-build-backend = "uv_build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -110,13 +153,25 @@ module = [
     "pandas.*",
     "polars.*",
     "matplotlib.*",
+    "seaborn.*",
     "altair.*",
+    "plotly.*",
+    "bokeh.*",
     "sklearn.*",
     "torch.*",
+    "tensorflow.*",
+    "jax.*",
     "xarray.*",
     "pydantic.*",
     "networkx.*",
+    "pyarrow.*",
+    "scipy.*",
+    "statsmodels.*",
+    "h5py.*",
+    "PIL.*",
+    "attrs.*",
     "requests.*",
+    "IPython.*",
 ]
 ignore_missing_imports = true
 

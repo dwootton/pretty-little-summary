@@ -1,133 +1,17 @@
-"""LLM synthesis and deterministic summary generation."""
+"""Deterministic summary generation."""
 
-import json
 from typing import Optional
 
-import httpx
-
-from pretty_little_summary.core import APIError, MetaDescription
-
-
-class OpenRouterClient:
-    """
-    Client for OpenRouter API.
-
-    Handles LLM synthesis of metadata and history into natural language summaries.
-    """
-
-    BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
-
-    def __init__(self, api_key: str, model: str):
-        """
-        Initialize OpenRouter client.
-
-        Args:
-            api_key: OpenRouter API key
-            model: Model to use (e.g., "anthropic/claude-3.5-sonnet")
-        """
-        self.api_key = api_key
-        self.model = model
-
-    def synthesize(
-        self, metadata: MetaDescription, history: Optional[list[str]] = None
-    ) -> str:
-        """
-        Generate natural language summary from metadata and history.
-
-        Args:
-            metadata: Extracted object metadata
-            history: IPython history lines (if available)
-
-        Returns:
-            Natural language summary string
-
-        Raises:
-            APIError: If the API call fails
-        """
-        try:
-            response = httpx.post(
-                self.BASE_URL,
-                headers={
-                    "Authorization": f"Bearer {self.api_key}",
-                    "HTTP-Referer": "https://github.com/yourusername/pretty_little_summary",
-                    "X-Title": "Vibe Check",
-                },
-                json=self._build_request(metadata, history),
-                timeout=30.0,
-            )
-            response.raise_for_status()
-
-            result = response.json()
-            return result["choices"][0]["message"]["content"]
-
-        except httpx.HTTPStatusError as e:
-            raise APIError(
-                f"OpenRouter API error: {e.response.status_code} - {e.response.text}"
-            )
-        except httpx.TimeoutException:
-            raise APIError("OpenRouter API timeout")
-        except Exception as e:
-            raise APIError(f"Unexpected error calling OpenRouter: {e}")
-
-    def _build_request(
-        self, metadata: MetaDescription, history: Optional[list[str]]
-    ) -> dict:
-        """Build OpenRouter API request payload."""
-        history_section = ""
-        if history:
-            history_lines = "\n".join(history)
-            history_section = f"""
-Code History (last {len(history)} relevant lines):
-```python
-{history_lines}
-```
-
-Note: For imperative visualizations (matplotlib), prioritize this history to understand user intent.
-"""
-
-        system_message = f"""You are an expert Python data analyst helping users understand their objects.
-
-Your task: Synthesize metadata and code history into a concise, natural language summary.
-
-Guidelines:
-- Focus on what the object IS and what it REPRESENTS
-- If history is available, infer the user's INTENT from their code
-- For visualizations, describe what's being shown
-- For models, explain the type and configuration
-- For data, summarize shape, content, and quality
-- Be conversational but precise
-- Limit response to 3-4 sentences
-
-Metadata:
-{self._format_metadata(metadata)}
-
-{history_section}
-
-Provide a brief, insightful summary suitable for an LLM that will use this object in further analysis."""
-
-        return {
-            "model": self.model,
-            "messages": [
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": "Please provide a summary of this object."},
-            ],
-            "max_tokens": 300,  # Keep summaries concise
-            "temperature": 0.7,
-        }
-
-    def _format_metadata(self, meta: MetaDescription) -> str:
-        """Convert MetaDescription to readable JSON."""
-        return json.dumps(meta, indent=2, default=str)
+from pretty_little_summary.core import MetaDescription
 
 
 def deterministic_summary(
     metadata: MetaDescription, history: Optional[list[str]] = None
 ) -> str:
     """
-    Generate a deterministic summary without LLM call.
+    Generate a deterministic summary.
 
-    This is used when explain=False. It formats the metadata into a readable
-    text representation without requiring an API call.
+    This formats metadata into a readable text representation without any API calls.
 
     Args:
         metadata: Extracted object metadata

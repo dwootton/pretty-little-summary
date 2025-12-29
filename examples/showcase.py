@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-Wut Is - Showcase of Improved Deterministic Output
+Pretty Little Summary - Showcase of Deterministic Output
 
-This script demonstrates the enhanced deterministic mode that now provides
-useful, structured information about Python objects without requiring API calls.
+This script demonstrates pretty_little_summary output for common Python objects.
 
 Run: python examples/showcase.py
 """
@@ -20,7 +19,7 @@ def section(title):
 
 def show(description, obj):
     """Show an object's pretty_little_summary output."""
-    result = pls.describe(obj, explain=False)
+    result = pls.describe(obj)
     print(f"\n{description}:")
     print(f"  {result.content}\n")
 
@@ -28,8 +27,8 @@ def show(description, obj):
 def main():
     """Run the showcase."""
     print("=" * 70)
-    print("  WUT IS - Deterministic Mode Showcase")
-    print("  Natural Language Summaries Without API Calls")
+    print("  Pretty Little Summary - Deterministic Showcase")
+    print("  Structured Summaries Without Extra Dependencies")
     print("=" * 70)
 
     # Built-in Types
@@ -201,13 +200,10 @@ def main():
     section("Summary")
     print("\n✅ All outputs show useful, structured information!")
     print("\nKey Features:")
-    print("  • No API key required (explain=False mode)")
+    print("  • No API key required")
     print("  • Instant results")
     print("  • Structured, readable output")
     print("  • Works with built-ins, NumPy, Pandas, and custom classes")
-    print("\nFor LLM-powered natural language explanations:")
-    print("  pls.configure(openrouter_api_key='sk-or-...')")
-    print("  result = pls.describe(obj, explain=True)")
     print()
 
 

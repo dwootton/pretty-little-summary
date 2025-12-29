@@ -1,4 +1,4 @@
-"""Adapter system for wut_is."""
+"""Adapter system for pretty_little_summary."""
 
 from pretty_little_summary.adapters._base import (
     Adapter,

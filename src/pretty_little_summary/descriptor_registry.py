@@ -13,8 +13,7 @@ class DescribeConfigRegistry:
     """
     Registry for DescribeConfig profiles.
 
-    Allows callers to register named profiles and switch defaults
-    without mutating the global Config in wut_is.core.
+    Allows callers to register named profiles and switch defaults.
     """
 
     _profiles: dict[str, DescribeConfig] = {"default": DescribeConfig()}

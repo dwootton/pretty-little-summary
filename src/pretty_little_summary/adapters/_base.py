@@ -139,8 +139,8 @@ def list_available_adapters() -> list[str]:
         List of adapter class names
 
     Example:
-        >>> import pretty_little_summary
-        >>> wut_is.list_available_adapters()
+        >>> import pretty_little_summary as pls
+        >>> pls.list_available_adapters()
         ['PandasAdapter', 'MatplotlibAdapter', 'NumpyAdapter', 'GenericAdapter']
     """
     return [adapter.__name__ for adapter in AdapterRegistry._adapters]

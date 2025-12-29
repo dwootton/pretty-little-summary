@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Verify pretty_little_summary installation
+Verify pretty_little_summary installation.
 
-Run this script to check if pretty_little_summary is installed correctly and what features are available.
+Run this script to check if pretty_little_summary is installed correctly and
+which optional adapters are available.
 
 Usage:
     python examples/verify_installation.py
@@ -15,6 +16,7 @@ def check_pretty_little_summary():
     """Check if pretty_little_summary is installed."""
     try:
         import pretty_little_summary as pls
+
         print("✅ pretty_little_summary is installed")
         print(f"   Version: {pls.__version__}")
         return True
@@ -28,46 +30,34 @@ def check_pretty_little_summary():
         return False
 
 
-def check_core_dependencies():
-    """Check if core dependencies are installed."""
-    print("\nCore Dependencies:")
-
-    deps = {
-        'httpx': 'Required for OpenRouter API calls',
-        'dotenv': 'Required for .env configuration'
-    }
-
-    all_ok = True
-    for module_name, description in deps.items():
-        try:
-            if module_name == 'dotenv':
-                __import__('dotenv')
-            else:
-                __import__(module_name)
-            print(f"  ✅ {module_name:15s} - {description}")
-        except ImportError:
-            print(f"  ❌ {module_name:15s} - {description} (MISSING)")
-            all_ok = False
-
-    return all_ok
-
-
 def check_optional_libraries():
     """Check which optional data libraries are available."""
     print("\nOptional Libraries (for adapters):")
 
     libs = {
-        'pandas': 'DataFrame, Series',
-        'numpy': 'ndarray (used by generic adapter)',
-        'polars': 'DataFrame, LazyFrame',
-        'matplotlib': 'Figure, Axes',
-        'altair': 'Chart',
-        'sklearn': 'ML models',
-        'torch': 'nn.Module',
-        'xarray': 'DataArray, Dataset',
-        'pydantic': 'BaseModel',
-        'networkx': 'Graph',
-        'requests': 'Response',
+        "pandas": "DataFrame, Series",
+        "numpy": "ndarray",
+        "polars": "DataFrame, LazyFrame",
+        "pyarrow": "Table",
+        "matplotlib": "Figure, Axes",
+        "seaborn": "Axes",
+        "altair": "Chart",
+        "plotly": "Figure",
+        "bokeh": "Figure",
+        "sklearn": "ML models",
+        "torch": "nn.Module",
+        "tensorflow": "Tensor, Model",
+        "jax": "Array",
+        "xarray": "DataArray, Dataset",
+        "pydantic": "BaseModel",
+        "networkx": "Graph",
+        "scipy": "Sparse matrices",
+        "statsmodels": "Statistical models",
+        "h5py": "File",
+        "PIL": "Images",
+        "attrs": "Attrs classes",
+        "requests": "Response",
+        "IPython": "Notebook history",
     }
 
     available = []
@@ -75,10 +65,7 @@ def check_optional_libraries():
 
     for lib_name, description in libs.items():
         try:
-            if lib_name == 'sklearn':
-                __import__('sklearn')
-            else:
-                __import__(lib_name)
+            __import__(lib_name)
             print(f"  ✅ {lib_name:15s} - {description}")
             available.append(lib_name)
         except ImportError:
@@ -88,34 +75,6 @@ def check_optional_libraries():
     return available, missing
 
 
-def check_api_configuration():
-    """Check if OpenRouter API is configured."""
-    print("\nAPI Configuration:")
-
-    import os
-    from dotenv import load_dotenv
-
-    # Try to load .env
-    load_dotenv()
-
-    api_key = os.getenv('OPENROUTER_API_KEY')
-
-    if api_key:
-        # Mask the key for security
-        masked_key = api_key[:10] + '...' + api_key[-10:]
-        print(f"  ✅ OPENROUTER_API_KEY found: {masked_key}")
-        print("     LLM mode (explain=True) will work!")
-        return True
-    else:
-        print("  ⚪ OPENROUTER_API_KEY not found")
-        print("     Only deterministic mode (explain=False) will work")
-        print("\n     To enable LLM mode:")
-        print("     1. Get an API key from https://openrouter.ai")
-        print("     2. Set it in .env file: OPENROUTER_API_KEY=sk-or-...")
-        print("     3. Or export it: export OPENROUTER_API_KEY='sk-or-...'")
-        return False
-
-
 def test_basic_functionality():
     """Test basic pretty_little_summary functionality."""
     print("\nBasic Functionality Test:")
@@ -123,72 +82,54 @@ def test_basic_functionality():
     try:
         import pretty_little_summary as pls
 
-        # Test deterministic mode with a simple dict
-        test_obj = {'name': 'test', 'value': 42}
-        result = pls.describe(test_obj, explain=False)
+        test_obj = {"name": "test", "value": 42}
+        result = pls.describe(test_obj)
 
         assert result.content is not None
         assert result.meta is not None
-        assert 'object_type' in result.meta
-        assert 'adapter_used' in result.meta
+        assert "object_type" in result.meta
+        assert "adapter_used" in result.meta
 
-        print("  ✅ Basic check() works")
+        print("  ✅ Basic describe() works")
         print(f"     Result: {result.content[:60]}...")
         return True
     except Exception as e:
-        print(f"  ❌ Basic check() failed: {e}")
+        print(f"  ❌ Basic describe() failed: {e}")
         return False
 
 
 def main():
     """Run all verification checks."""
     print("=" * 70)
-    print("  Wut Is Installation Verification")
+    print("  Pretty Little Summary Installation Verification")
     print("=" * 70)
 
-    # Check pretty_little_summary installation
     if not check_pretty_little_summary():
         sys.exit(1)
 
-    # Check dependencies
-    core_ok = check_core_dependencies()
-
-    # Check optional libraries
     available, missing = check_optional_libraries()
-
-    # Check API configuration
-    api_ok = check_api_configuration()
-
-    # Test basic functionality
     func_ok = test_basic_functionality()
 
-    # Summary
     print("\n" + "=" * 70)
     print("  Summary")
     print("=" * 70)
 
-    if core_ok and func_ok:
+    if func_ok:
         print("\n✅ pretty_little_summary is properly installed and functional!")
     else:
-        print("\n⚠️  pretty_little_summary has some issues")
+        print("\n⚠ pretty_little_summary has some issues")
 
-    print(f"\nAvailable adapters: {len(available)}/11")
+    print(f"\nAvailable adapters: {len(available)}/{len(available) + len(missing)}")
     if available:
         print(f"  Installed: {', '.join(available)}")
     if missing:
         print(f"  Missing (optional): {', '.join(missing)}")
-        print(f"\n  To install all: pip install -e '.[all]'")
-
-    if api_ok:
-        print("\n🤖 LLM mode: ENABLED (explain=True)")
-    else:
-        print("\n🔧 LLM mode: DISABLED (only explain=False available)")
+        print("\n  To install all: pip install -e '.[all]'")
 
     print("\n" + "=" * 70)
     print("\nNext Steps:")
-    print("  1. Try the quick start: jupyter notebook examples/quick_start.ipynb")
-    print("  2. Run a demo: python examples/complete_demo.py")
-    print("  3. Read the docs: cat README.md")
+    print("  1. Run a demo: python examples/complete_demo.py")
+    print("  2. Read the docs: cat README.md")
     print()
 
 

@@ -1,1 +1,1 @@
-"""Test suite for wut_is."""
+"""Test suite for pretty_little_summary."""

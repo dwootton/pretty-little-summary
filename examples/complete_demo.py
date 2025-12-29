@@ -1,21 +1,15 @@
 """
-Complete Wut Is Demo - Notebook-Ready Examples
+Pretty Little Summary - Complete Demo
 
-This script demonstrates all features of pretty_little_summary with various object types.
+This script demonstrates pretty_little_summary with various object types.
 Can be run directly or copied into a Jupyter notebook.
 
 Installation:
     pip install -e .
     pip install numpy pandas matplotlib
-
-Configuration:
-    export OPENROUTER_API_KEY="sk-or-v1-your-key"
-    # OR set it in .env file
 """
 
-import os
 import sys
-from dotenv import load_dotenv
 
 # Import pretty_little_summary
 try:
@@ -25,10 +19,6 @@ except ImportError:
     print("Install with: pip install -e .")
     sys.exit(1)
 
-# Load configuration
-load_dotenv()
-api_key = os.getenv('OPENROUTER_API_KEY')
-
 
 def print_section(title):
     """Print a formatted section header."""
@@ -37,14 +27,13 @@ def print_section(title):
     print("=" * 70)
 
 
-def print_result(result, mode="deterministic"):
-    """Print a pls check result nicely."""
-    print(f"\n{mode.upper()} MODE:")
-    print(f"Content: {result.content}")
+def print_result(result):
+    """Print a pls result nicely."""
+    print(f"\nContent: {result.content}")
 
     if result.meta:
-        print(f"\nKey Metadata:")
-        for key in ['object_type', 'adapter_used', 'shape', 'columns']:
+        print("\nKey Metadata:")
+        for key in ["object_type", "adapter_used", "shape", "columns"]:
             if key in result.meta:
                 print(f"  {key}: {result.meta[key]}")
 
@@ -54,24 +43,24 @@ def print_result(result, mode="deterministic"):
 
 def demo_1_builtin_types():
     """Demo with built-in Python types."""
-    print_section("1. Built-in Types (Deterministic Mode)")
+    print_section("1. Built-in Types")
 
     # Dictionary
     print("\n📦 Dictionary:")
     user_data = {
-        'name': 'Alice Johnson',
-        'age': 28,
-        'email': 'alice@example.com',
-        'roles': ['admin', 'developer'],
-        'active': True
+        "name": "Alice Johnson",
+        "age": 28,
+        "email": "alice@example.com",
+        "roles": ["admin", "developer"],
+        "active": True,
     }
-    result = pls.describe(user_data, explain=False)
+    result = pls.describe(user_data)
     print_result(result)
 
     # List
     print("\n📦 List:")
     numbers = list(range(1, 101))
-    result = pls.describe(numbers, explain=False)
+    result = pls.describe(numbers)
     print_result(result)
 
     # Custom class
@@ -83,7 +72,7 @@ def demo_1_builtin_types():
             self.executed = False
 
     pipeline = DataPipeline("ETL_Pipeline", ["extract", "transform", "load"])
-    result = pls.describe(pipeline, explain=False)
+    result = pls.describe(pipeline)
     print_result(result)
 
 
@@ -101,16 +90,8 @@ def demo_2_numpy():
     arr = np.random.randn(100, 5)
 
     print("\n🔢 NumPy Array (100x5 random values):")
-    result = pls.describe(arr, explain=False)
-    print_result(result, "deterministic")
-
-    # Try LLM mode if API key available
-    if api_key:
-        print("\nTrying LLM mode...")
-        result = pls.describe(arr, explain=True)
-        print_result(result, "llm")
-    else:
-        print("\n⚠ No API key - skipping LLM mode")
+    result = pls.describe(arr)
+    print_result(result)
 
 
 def demo_3_pandas():
@@ -125,36 +106,30 @@ def demo_3_pandas():
         return
 
     # Create sample sales data
-    df = pd.DataFrame({
-        'date': pd.date_range('2024-01-01', periods=100, freq='D'),
-        'product': np.random.choice(['Widget A', 'Widget B', 'Widget C'], 100),
-        'quantity': np.random.randint(1, 50, 100),
-        'price': np.random.uniform(10, 100, 100).round(2),
-        'region': np.random.choice(['North', 'South', 'East', 'West'], 100)
-    })
-    df['revenue'] = df['quantity'] * df['price']
+    df = pd.DataFrame(
+        {
+            "date": pd.date_range("2024-01-01", periods=100, freq="D"),
+            "product": np.random.choice(["Widget A", "Widget B", "Widget C"], 100),
+            "quantity": np.random.randint(1, 50, 100),
+            "price": np.random.uniform(10, 100, 100).round(2),
+            "region": np.random.choice(["North", "South", "East", "West"], 100),
+        }
+    )
+    df["revenue"] = df["quantity"] * df["price"]
 
     print("\n📊 Sales DataFrame (100 rows, 6 columns):")
     print(df.head(3))
 
-    # Deterministic mode
-    print("\n" + "-" * 70)
-    result = pls.describe(df, explain=False)
-    print_result(result, "deterministic")
-
-    # LLM mode
-    if api_key:
-        print("\n" + "-" * 70)
-        result = pls.describe(df, explain=True)
-        print_result(result, "llm")
+    result = pls.describe(df)
+    print_result(result)
 
     # Aggregated data
     print("\n\n📊 Aggregated Data:")
-    summary = df.groupby('product')['revenue'].agg(['sum', 'mean', 'count'])
+    summary = df.groupby("product")["revenue"].agg(["sum", "mean", "count"])
     print(summary)
 
-    result = pls.describe(summary, explain=False)
-    print_result(result, "deterministic")
+    result = pls.describe(summary)
+    print_result(result)
 
 
 def demo_4_matplotlib():
@@ -163,7 +138,8 @@ def demo_4_matplotlib():
 
     try:
         import matplotlib
-        matplotlib.use('Agg')  # Non-interactive backend
+
+        matplotlib.use("Agg")  # Non-interactive backend
         import matplotlib.pyplot as plt
         import numpy as np
     except ImportError:
@@ -175,11 +151,11 @@ def demo_4_matplotlib():
 
     # Plot 1: Line plot
     x = np.linspace(0, 10, 100)
-    axes[0].plot(x, np.sin(x), label='sin(x)')
-    axes[0].plot(x, np.cos(x), label='cos(x)')
-    axes[0].set_title('Trigonometric Functions')
-    axes[0].set_xlabel('X')
-    axes[0].set_ylabel('Y')
+    axes[0].plot(x, np.sin(x), label="sin(x)")
+    axes[0].plot(x, np.cos(x), label="cos(x)")
+    axes[0].set_title("Trigonometric Functions")
+    axes[0].set_xlabel("X")
+    axes[0].set_ylabel("Y")
     axes[0].legend()
     axes[0].grid(True)
 
@@ -187,94 +163,25 @@ def demo_4_matplotlib():
     x = np.random.randn(100)
     y = 2 * x + np.random.randn(100) * 0.5
     axes[1].scatter(x, y, alpha=0.5)
-    axes[1].set_title('Linear Relationship')
-    axes[1].set_xlabel('X')
-    axes[1].set_ylabel('Y')
+    axes[1].set_title("Linear Relationship")
+    axes[1].set_xlabel("X")
+    axes[1].set_ylabel("Y")
 
     plt.tight_layout()
 
     print("\n📈 Matplotlib Figure (2 subplots created):")
-
-    # Check the figure
-    result = pls.describe(fig, explain=False)
-    print_result(result, "deterministic")
-
-    if api_key:
-        result = pls.describe(fig, explain=True)
-        print_result(result, "llm")
-        print("\n💡 Notice: The LLM can describe the plots using code history!")
+    result = pls.describe(fig)
+    print_result(result)
 
     plt.close(fig)
-
-
-def demo_5_comparison():
-    """Compare deterministic vs LLM modes."""
-    print_section("5. Mode Comparison: Deterministic vs LLM")
-
-    try:
-        import pandas as pd
-        import numpy as np
-    except ImportError:
-        print("⚠ Pandas required for this demo")
-        return
-
-    # Create a complex aggregated DataFrame
-    df = pd.DataFrame({
-        'product': np.random.choice(['A', 'B', 'C'], 200),
-        'region': np.random.choice(['North', 'South', 'East', 'West'], 200),
-        'sales': np.random.randint(100, 1000, 200),
-        'returns': np.random.randint(0, 50, 200)
-    })
-
-    summary = df.groupby(['product', 'region']).agg({
-        'sales': ['sum', 'mean'],
-        'returns': ['sum', 'mean']
-    }).round(2)
-
-    print("\n📊 Complex Aggregated DataFrame:")
-    print(summary.head())
-
-    # Deterministic
-    print("\n\n🔧 DETERMINISTIC MODE (explain=False):")
-    print("-" * 70)
-    result_det = pls.describe(summary, explain=False)
-    print(result_det.content)
-    print("\nCharacteristics:")
-    print("  ✓ No API call required")
-    print("  ✓ Instant results")
-    print("  ✓ Structured, predictable output")
-    print("  ✓ Perfect for quick inspection")
-
-    # LLM
-    if api_key:
-        print("\n\n🤖 LLM MODE (explain=True):")
-        print("-" * 70)
-        result_llm = pls.describe(summary, explain=True)
-        print(result_llm.content)
-        print("\nCharacteristics:")
-        print("  ✓ Natural language explanation")
-        print("  ✓ Context from code history")
-        print("  ✓ Semantic understanding")
-        print("  ✓ Perfect for LLM consumption")
-    else:
-        print("\n\n⚠ LLM mode requires OPENROUTER_API_KEY")
 
 
 def main():
     """Run all demos."""
     print("=" * 70)
-    print("  VIBE CHECK - Complete Demo")
-    print("  Natural Language Summaries of Python Objects")
+    print("  Pretty Little Summary - Complete Demo")
+    print("  Structured Summaries of Python Objects")
     print("=" * 70)
-
-    # Configure
-    if api_key:
-        pls.configure(openrouter_api_key=api_key)
-        print("\n✓ OpenRouter configured - Both modes available")
-    else:
-        print("\n⚠ No OPENROUTER_API_KEY found")
-        print("  Only deterministic mode (explain=False) will work")
-        print("  Set API key in .env file or environment variable")
 
     # Run demos
     try:
@@ -282,13 +189,13 @@ def main():
         demo_2_numpy()
         demo_3_pandas()
         demo_4_matplotlib()
-        demo_5_comparison()
     except KeyboardInterrupt:
         print("\n\nDemo interrupted by user")
         return
     except Exception as e:
         print(f"\n\nError during demo: {e}")
         import traceback
+
         traceback.print_exc()
         return
 
@@ -297,19 +204,14 @@ def main():
     print("\n✅ Demo completed successfully!")
     print("\nKey Points:")
     print("  1. Install: pip install -e .")
-    print("  2. Configure: pls.configure(openrouter_api_key='...')")
-    print("  3. Use: pls.describe(obj, explain=True/False)")
-    print("\nTwo Modes:")
-    print("  • explain=False → Fast, deterministic (no API)")
-    print("  • explain=True  → Natural language with LLM")
+    print("  2. Use: pls.describe(obj)")
     print("\nSupported Types:")
     print("  • Built-ins: dict, list, custom classes")
     print("  • NumPy: arrays, matrices")
     print("  • Pandas: DataFrame, Series")
     print("  • Matplotlib: Figure, Axes")
-    print("  • And 10+ more libraries!")
+    print("  • And many more adapters")
     print("\nNext Steps:")
-    print("  • Try the Jupyter notebooks: examples/quick_start.ipynb")
     print("  • Read the docs: README.md")
     print("  • Explore adapters: src/pretty_little_summary/adapters/")
     print()

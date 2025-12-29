@@ -27,11 +27,11 @@ print("=" * 70)
 print("\nDataFrame:")
 print(df)
 
-# Check with deterministic mode (no LLM)
-result = pls.describe(df, explain=False)
+# Check with deterministic summary
+result = pls.describe(df)
 
 print("\n" + "=" * 70)
-print("Wut Is Result (explain=False)")
+print("PLS Result")
 print("=" * 70)
 
 print(f"\nContent:\n{result.content}")
@@ -52,7 +52,3 @@ if 'sample_data' in result.meta:
 print("\n" + "=" * 70)
 print("Success! PandasAdapter works correctly.")
 print("=" * 70)
-
-print("\nFor LLM-powered explanations, configure your OpenRouter API key:")
-print("  pls.configure(openrouter_api_key='sk-or-...')")
-print("  result = pls.describe(df, explain=True)")

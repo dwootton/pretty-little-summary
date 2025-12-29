@@ -180,7 +180,7 @@ def test_full_api_with_adapter_failure():
         obj = CustomTestObject("api_test")
 
         # Should not crash, should return a result
-        result = pls.describe(obj, explain=False)
+        result = pls.describe(obj)
 
         assert result is not None
         assert result.content is not None

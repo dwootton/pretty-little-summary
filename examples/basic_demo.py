@@ -9,8 +9,8 @@ print("=" * 60)
 print("Example 1: Dictionary (GenericAdapter)")
 print("=" * 60)
 
-# Deterministic mode (no LLM call needed)
-result = pls.describe(data, explain=False)
+# Deterministic summary
+result = pls.describe(data)
 
 print(f"\nContent: {result.content}")
 print(f"\nMetadata:")
@@ -25,7 +25,7 @@ print("\n" + "=" * 60)
 print("Example 2: List (GenericAdapter)")
 print("=" * 60)
 
-result = pls.describe(numbers, explain=False)
+result = pls.describe(numbers)
 
 print(f"\nContent: {result.content}")
 print(f"\nMetadata:")
@@ -48,7 +48,7 @@ print("\n" + "=" * 60)
 print("Example 3: Custom Class (GenericAdapter)")
 print("=" * 60)
 
-result = pls.describe(person, explain=False)
+result = pls.describe(person)
 
 print(f"\nContent: {result.content}")
 print(f"\nMetadata:")
@@ -58,7 +58,3 @@ print(f"  Attributes: {result.meta.get('metadata', {}).get('attributes', [])[:10
 print("\n" + "=" * 60)
 print("All examples completed successfully!")
 print("=" * 60)
-print("\nTo use LLM mode (explain=True), you need to:")
-print("1. Set OPENROUTER_API_KEY environment variable, or")
-print("2. Call pls.configure(openrouter_api_key='sk-or-...')")
-print("\nThen run: result = pls.describe(obj, explain=True)")

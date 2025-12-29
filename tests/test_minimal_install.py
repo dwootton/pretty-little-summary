@@ -12,7 +12,8 @@ def test_import_without_optionals():
     """Test that pretty_little_summary can be imported without optional dependencies."""
     assert pls is not None
     assert hasattr(pls, "describe")
-    assert hasattr(pls, "configure")
+    assert hasattr(pls, "Description")
+    assert hasattr(pls, "list_available_adapters")
 
 
 def test_basic_types_without_optionals():
@@ -31,7 +32,7 @@ def test_basic_types_without_optionals():
     ]
 
     for obj in test_cases:
-        result = pls.describe(obj, explain=False)
+        result = pls.describe(obj)
         assert result.content is not None
         assert isinstance(result.content, str)
         assert len(result.content) > 0
@@ -66,13 +67,13 @@ def test_complex_builtin_structures():
         "metadata": {"version": "1.0", "date": "2024-01-01"},
     }
 
-    result = pls.describe(nested_dict, explain=False)
+    result = pls.describe(nested_dict)
     assert result.content is not None
     assert "dict" in result.content.lower()
 
     # List of tuples
     data = [(1, "a"), (2, "b"), (3, "c")]
-    result = pls.describe(data, explain=False)
+    result = pls.describe(data)
     assert result.content is not None
 
 
@@ -85,7 +86,7 @@ def test_generic_adapter_fallback():
             self.name = "custom"
 
     obj = CustomClass(42)
-    result = pls.describe(obj, explain=False)
+    result = pls.describe(obj)
 
     assert result.content is not None
     assert result.meta is not None
@@ -103,7 +104,7 @@ def test_callable_objects():
     def my_function(x, y):
         return x + y
 
-    result = pls.describe(my_function, explain=False)
+    result = pls.describe(my_function)
     assert result.content is not None
     assert "my_function" in result.content or "function" in result.content.lower()
 
@@ -111,7 +112,7 @@ def test_callable_objects():
 def test_metadata_structure():
     """Test that metadata has expected structure."""
     obj = [1, 2, 3, 4, 5]
-    result = pls.describe(obj, explain=False)
+    result = pls.describe(obj)
 
     # Check metadata structure
     assert "object_type" in result.meta
@@ -124,11 +125,7 @@ def test_metadata_structure():
         assert meta["type"] == "list"
 
 
-def test_configure_without_api_key():
-    """Test that configure can be called (even if API key not set)."""
-    # This shouldn't raise an error
-    pls.configure(openrouter_api_key="test-key")
-
-    # Using explain=False should work without valid API key
-    result = pls.describe([1, 2, 3], explain=False)
+def test_describe_without_optionals():
+    """Test that describe works without optional dependencies."""
+    result = pls.describe([1, 2, 3])
     assert result.content is not None
