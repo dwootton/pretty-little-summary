@@ -37,7 +37,19 @@ class SklearnPipelineAdapter:
             pass
 
         meta["metadata"] = metadata
+        meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
 AdapterRegistry.register(SklearnPipelineAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    steps = metadata.get("steps", [])
+    fitted = metadata.get("is_fitted")
+    fit_label = "fitted" if fitted else "unfitted"
+    parts = [f"A {fit_label} sklearn Pipeline with {len(steps)} steps:"]
+    for idx, step in enumerate(steps, start=1):
+        parts.append(f"{idx}. '{step['name']}': {step['class']}")
+    parts.append("Expects input shape (*, ?), outputs class predictions.")
+    return "\n".join(parts)

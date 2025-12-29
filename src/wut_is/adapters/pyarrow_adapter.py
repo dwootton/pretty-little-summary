@@ -42,6 +42,7 @@ class PyArrowAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -60,3 +61,10 @@ def _describe_table(table: "pa.Table") -> dict[str, Any]:
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(PyArrowAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    return (
+        f"A PyArrow Table with {metadata.get('rows')} rows and "
+        f"{metadata.get('columns')} columns."
+    )

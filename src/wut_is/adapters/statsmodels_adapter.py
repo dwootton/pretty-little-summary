@@ -34,7 +34,12 @@ class StatsmodelsAdapter:
             pass
 
         meta["metadata"] = metadata
+        meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
 AdapterRegistry.register(StatsmodelsAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    return f"A statsmodels results object {metadata.get('model_type')}."

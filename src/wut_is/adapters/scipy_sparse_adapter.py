@@ -43,6 +43,7 @@ class ScipySparseAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -70,3 +71,10 @@ def _describe_sparse(matrix: "sp.spmatrix") -> dict[str, Any]:
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(ScipySparseAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    return (
+        f"A {metadata.get('format')} sparse matrix with shape "
+        f"({metadata.get('rows')}, {metadata.get('cols')})."
+    )

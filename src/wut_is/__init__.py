@@ -24,8 +24,9 @@ from wut_is.adapters._base import list_available_adapters
 from wut_is.api import WutIs, is_ as is_
 from wut_is.core import configure
 
-# Note: We use is_() since 'is' is a Python keyword and can't be used as a function name
-# Usage: wut.is_(obj) or wut.is_(obj, explain=False)
+# Provide module attribute "is" for ergonomic access (wut.is(...)).
+import sys as _sys
+setattr(_sys.modules[__name__], "is", is_)
 
 __version__ = "0.1.0"
-__all__ = ["is_", "configure", "WutIs", "list_available_adapters"]
+__all__ = ["is", "is_", "configure", "WutIs", "list_available_adapters"]

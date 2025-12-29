@@ -20,7 +20,7 @@ def test_datetime_adapter() -> None:
     assert meta["adapter_used"] == "DateTimeAdapter"
     summary = deterministic_summary(meta)
     print("datetime:", summary)
-    assert "datetime value" in summary
+    assert "A datetime:" in summary
 
 
 def test_date_adapter() -> None:
@@ -28,7 +28,7 @@ def test_date_adapter() -> None:
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "date"
     print("date:", deterministic_summary(meta))
-    assert "date value" in deterministic_summary(meta)
+    assert "A date:" in deterministic_summary(meta)
 
 
 def test_time_adapter() -> None:
@@ -36,7 +36,7 @@ def test_time_adapter() -> None:
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "time"
     print("time:", deterministic_summary(meta))
-    assert "time value" in deterministic_summary(meta)
+    assert "A time:" in deterministic_summary(meta)
 
 
 def test_timedelta_adapter() -> None:
@@ -44,7 +44,7 @@ def test_timedelta_adapter() -> None:
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "timedelta"
     print("timedelta:", deterministic_summary(meta))
-    assert "timedelta value" in deterministic_summary(meta)
+    assert "A duration" in deterministic_summary(meta)
 
 
 def test_pathlib_adapter() -> None:
@@ -53,7 +53,7 @@ def test_pathlib_adapter() -> None:
     assert meta["adapter_used"] == "PathlibAdapter"
     summary = deterministic_summary(meta)
     print("path:", summary)
-    assert "path 'README.md'" in summary
+    assert "A path 'README.md'" in summary
 
 
 def test_purepath_adapter() -> None:
@@ -61,7 +61,7 @@ def test_purepath_adapter() -> None:
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "path"
     print("purepath:", deterministic_summary(meta))
-    assert "path 'foo/bar.txt'" in deterministic_summary(meta)
+    assert "A pure path 'foo/bar.txt'" in deterministic_summary(meta)
 
 
 def test_uuid_adapter() -> None:
@@ -69,7 +69,7 @@ def test_uuid_adapter() -> None:
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "uuid"
     print("uuid:", deterministic_summary(meta))
-    assert "UUID" in deterministic_summary(meta)
+    assert "UUID (version" in deterministic_summary(meta)
 
 
 def test_regex_pattern_adapter() -> None:
@@ -77,7 +77,7 @@ def test_regex_pattern_adapter() -> None:
     meta = dispatch_adapter(pattern)
     assert meta["metadata"]["type"] == "regex_pattern"
     print("regex_pattern:", deterministic_summary(meta))
-    assert "regex" in deterministic_summary(meta)
+    assert "compiled regex pattern" in deterministic_summary(meta)
 
 
 def test_regex_match_adapter() -> None:
@@ -86,7 +86,7 @@ def test_regex_match_adapter() -> None:
     meta = dispatch_adapter(match)
     assert meta["metadata"]["type"] == "regex_match"
     print("regex_match:", deterministic_summary(meta))
-    assert "regex" in deterministic_summary(meta)
+    assert "regex match result" in deterministic_summary(meta)
 
 
 def test_traceback_adapter() -> None:
@@ -106,7 +106,7 @@ def test_io_bytesio_adapter() -> None:
     meta = dispatch_adapter(buf)
     assert meta["metadata"]["type"] == "bytesio"
     print("bytesio:", deterministic_summary(meta))
-    assert "IO object" in deterministic_summary(meta)
+    assert "in-memory bytes buffer" in deterministic_summary(meta)
 
 
 def test_io_stringio_adapter() -> None:
@@ -114,7 +114,7 @@ def test_io_stringio_adapter() -> None:
     meta = dispatch_adapter(buf)
     assert meta["metadata"]["type"] == "stringio"
     print("stringio:", deterministic_summary(meta))
-    assert "IO object" in deterministic_summary(meta)
+    assert "in-memory text buffer" in deterministic_summary(meta)
 
 
 @dataclass
@@ -128,7 +128,7 @@ def test_dataclass_adapter() -> None:
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "dataclass"
     print("dataclass:", deterministic_summary(meta))
-    assert "structured object" in deterministic_summary(meta)
+    assert "structured object of type dataclass" in deterministic_summary(meta)
 
 
 class Color(Enum):
@@ -140,7 +140,7 @@ def test_enum_adapter() -> None:
     meta = dispatch_adapter(Color.RED)
     assert meta["metadata"]["type"] == "enum"
     print("enum:", deterministic_summary(meta))
-    assert "structured object" in deterministic_summary(meta)
+    assert "structured object of type enum" in deterministic_summary(meta)
 
 
 def test_function_adapter() -> None:
@@ -150,4 +150,4 @@ def test_function_adapter() -> None:
     meta = dispatch_adapter(sample_fn)
     assert meta["metadata"]["type"] == "function"
     print("function:", deterministic_summary(meta))
-    assert "callable function" in deterministic_summary(meta)
+    assert "callable function named sample_fn" in deterministic_summary(meta)

@@ -42,8 +42,13 @@ class BokehAdapter:
         except Exception:
             pass
         meta["metadata"] = metadata
+        meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(BokehAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    return f"A Bokeh figure with {metadata.get('renderers')} renderers."

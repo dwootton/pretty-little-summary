@@ -41,6 +41,7 @@ class TextFormatAdapter:
             metadata.update(detected)
 
         meta["metadata"] = metadata
+        meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -114,8 +115,9 @@ def _detect_xml(value: str) -> dict[str, Any] | None:
 
 
 def _detect_html(value: str) -> dict[str, Any] | None:
-    if not re.search(r"<(html|div|span|body|head|p|a|img)\b", value, re.I):
-        return None
+    if not re.search(r"<!doctype\s+html|<html\b|<body\b|<head\b", value, re.I):
+        if not re.search(r"<(div|span|p|a|img|table|section)\b", value, re.I):
+            return None
     return {"format": "html"}
 
 
@@ -192,3 +194,41 @@ def _is_bool(value: str) -> bool:
 
 
 AdapterRegistry.register(TextFormatAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    fmt = metadata.get("format")
+    if fmt == "csv":
+        rows = metadata.get("rows")
+        cols = metadata.get("columns")
+        delimiter = metadata.get("delimiter")
+        header = metadata.get("header", [])
+        sample = metadata.get("sample_row", [])
+        col_types = metadata.get("column_types", [])
+        parts = [
+            f"A CSV string with {rows} rows and {cols} columns ({delimiter}-delimited)."
+        ]
+        if header:
+            parts.append(f"Header: {', '.join(header)}.")
+        if sample:
+            parts.append(f"Sample: {sample}.")
+        if col_types:
+            parts.append(f"Column types: {', '.join(col_types)}.")
+        parts.append("Best displayed as sortable table.")
+        return " ".join(parts)
+    if fmt == "json":
+        keys = metadata.get("keys")
+        if keys:
+            return f"A valid JSON string containing an object with keys: {', '.join(keys)}."
+        return "A valid JSON string."
+    if fmt == "yaml":
+        keys = metadata.get("keys")
+        if keys:
+            return f"A valid YAML string containing keys: {', '.join(keys)}."
+        return "A valid YAML string."
+    if fmt == "xml":
+        root = metadata.get("root_tag")
+        return f"A valid XML document with root <{root}>."
+    if fmt == "html":
+        return "An HTML document or fragment."
+    return "A structured text string."

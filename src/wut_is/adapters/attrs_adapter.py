@@ -41,6 +41,7 @@ class AttrsAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -57,3 +58,9 @@ def _describe_attrs(obj: Any) -> dict[str, Any]:
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(AttrsAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    class_name = metadata.get("class_name")
+    fields = metadata.get("fields") or []
+    return f"An attrs class {class_name} with {len(fields)} attributes."

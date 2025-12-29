@@ -3,6 +3,7 @@
 from typing import Any
 
 try:
+    import torch
     import torch.nn as nn
     LIBRARY_AVAILABLE = True
 except ImportError:
@@ -13,20 +14,36 @@ from wut_is.core import MetaDescription
 
 
 class PytorchAdapter:
-    """Adapter for PyTorch nn.Module."""
+    """Adapter for PyTorch nn.Module and Tensor objects."""
 
     @staticmethod
     def can_handle(obj: Any) -> bool:
         if not LIBRARY_AVAILABLE:
             return False
         try:
-            return isinstance(obj, nn.Module)
+            return isinstance(obj, (nn.Module, torch.Tensor))
         except Exception:
             return False
 
     @staticmethod
     def extract_metadata(obj: Any) -> MetaDescription:
         try:
+            if isinstance(obj, torch.Tensor):
+                meta: MetaDescription = {
+                    "object_type": f"{type(obj).__module__}.{type(obj).__name__}",
+                    "adapter_used": "PytorchAdapter",
+                }
+                metadata: dict[str, Any] = {
+                    "type": "torch_tensor",
+                    "shape": tuple(obj.shape),
+                    "dtype": str(obj.dtype),
+                    "device": str(obj.device),
+                    "requires_grad": obj.requires_grad,
+                }
+                meta["metadata"] = metadata
+                meta["nl_summary"] = f"A PyTorch tensor with shape {metadata.get('shape')}."
+                return meta
+
             meta: MetaDescription = {
                 "object_type": f"torch.nn.{obj.__class__.__name__}",
                 "adapter_used": "PytorchAdapter",
@@ -61,6 +78,7 @@ class PytorchAdapter:
             except Exception:
                 pass
 
+            meta["nl_summary"] = f"A PyTorch model {meta['object_type']}."
             return meta
 
         except Exception as e:

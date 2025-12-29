@@ -48,6 +48,7 @@ class NumpyAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata, meta.get("shape"))
         return meta
 
 
@@ -103,3 +104,16 @@ def _is_numeric_dtype(dtype: "np.dtype") -> bool:
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(NumpyAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any], shape: Any) -> str:
+    if metadata.get("type") == "ndarray":
+        return (
+            f"A numpy array with shape {metadata.get('shape', shape)} and dtype "
+            f"{metadata.get('dtype')}."
+        )
+    if metadata.get("type") == "numpy_scalar":
+        return (
+            f"A numpy {metadata.get('dtype')} scalar with value {metadata.get('value')}."
+        )
+    return "A numpy object."

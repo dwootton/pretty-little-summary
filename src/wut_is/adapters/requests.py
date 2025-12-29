@@ -67,6 +67,8 @@ class RequestsAdapter:
             except Exception as e:
                 meta.setdefault("warnings", []).append(f"Could not process content: {e}")
 
+            if "status_code" in meta:
+                meta["nl_summary"] = f"An HTTP response with status {meta['status_code']}."
             return meta
 
         except Exception as e:

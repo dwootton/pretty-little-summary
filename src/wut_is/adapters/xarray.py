@@ -73,6 +73,14 @@ class XarrayAdapter:
                 except Exception as e:
                     meta.setdefault("warnings", []).append(f"Could not get data_vars: {e}")
 
+            try:
+                meta["shape"] = obj.shape
+            except Exception:
+                pass
+
+            meta["nl_summary"] = (
+                f"An xarray object {meta['object_type']} with shape {meta.get('shape')}."
+            )
             return meta
 
         except Exception as e:

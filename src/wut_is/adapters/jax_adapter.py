@@ -39,6 +39,7 @@ class JaxAdapter:
             "dtype": str(obj.dtype),
         }
         meta["metadata"] = metadata
+        meta["nl_summary"] = f"A JAX array with shape {metadata.get('shape')}."
         return meta
 
 

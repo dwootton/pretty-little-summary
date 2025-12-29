@@ -31,6 +31,7 @@ class RegexAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -65,3 +66,24 @@ def _format_flags(flags: int) -> list[str]:
 
 
 AdapterRegistry.register(RegexAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    rtype = metadata.get("type")
+    if rtype == "regex_pattern":
+        pattern = metadata.get("pattern")
+        flags = metadata.get("flags") or []
+        parts = [f"A compiled regex pattern /{pattern}/."]
+        if flags:
+            parts.append(f"Flags: {', '.join(flags)}.")
+        groups = metadata.get("groups")
+        if groups:
+            parts.append(f"{groups} capturing groups.")
+        return " ".join(parts)
+    if rtype == "regex_match":
+        match = metadata.get("match")
+        span = metadata.get("span")
+        if span:
+            return f"A regex match result: matched '{match}' at position {span[0]}:{span[1]}."
+        return f"A regex match result: matched '{match}'."
+    return "A regex object."

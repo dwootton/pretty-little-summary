@@ -59,6 +59,7 @@ class AltairAdapter:
             except Exception as e:
                 meta.setdefault("warnings", []).append(f"Could not extract spec: {e}")
 
+            meta["nl_summary"] = _build_nl_summary(meta)
             return meta
 
         except Exception as e:
@@ -85,3 +86,8 @@ class AltairAdapter:
 # Auto-register if library is available
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(AltairAdapter)
+
+
+def _build_nl_summary(meta: MetaDescription) -> str:
+    mark = meta.get("chart_type") or "unknown"
+    return f"An Altair chart with mark '{mark}'."

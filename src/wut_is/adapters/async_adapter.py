@@ -40,6 +40,7 @@ class AsyncAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -94,3 +95,7 @@ def _future_state(future: asyncio.Future) -> str:
 
 
 AdapterRegistry.register(AsyncAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    return f"An async {metadata.get('type')} in state {metadata.get('state')}."

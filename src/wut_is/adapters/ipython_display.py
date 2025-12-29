@@ -37,6 +37,7 @@ class IPythonDisplayAdapter:
         metadata: dict[str, Any] = {"type": "ipython_display"}
         metadata["reprs"] = _available_repr_methods(obj)
         meta["metadata"] = metadata
+        meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -69,3 +70,10 @@ def _available_repr_methods(obj: Any) -> list[str]:
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(IPythonDisplayAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    reprs = metadata.get("reprs") or []
+    if reprs:
+        return f"An IPython display object with representations: {', '.join(reprs)}."
+    return "An IPython display object."

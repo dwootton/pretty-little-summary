@@ -42,6 +42,7 @@ class StructuredAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = f"A structured object of type {metadata.get('type')}."
         return meta
 
 

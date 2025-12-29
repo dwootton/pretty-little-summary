@@ -65,6 +65,7 @@ class SklearnAdapter:
                     except Exception:
                         pass
 
+            meta["nl_summary"] = f"A sklearn model {meta['object_type']}."
             return meta
 
         except Exception as e:

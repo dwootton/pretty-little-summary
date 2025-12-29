@@ -42,6 +42,7 @@ class H5pyAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(meta, metadata)
         return meta
 
 
@@ -68,3 +69,27 @@ def _describe_dataset(dataset: "h5py.Dataset") -> dict[str, Any]:
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(H5pyAdapter)
+
+
+def _build_nl_summary(meta: MetaDescription, metadata: dict[str, Any]) -> str:
+    shape = meta.get("shape")
+    dtype = metadata.get("dtype")
+    name = metadata.get("name")
+    chunks = metadata.get("chunks")
+    compression = metadata.get("compression")
+    compression_opts = metadata.get("compression_opts")
+    attrs = metadata.get("attrs")
+    parts = [f"An HDF5 Dataset '{name}' with shape {shape} and dtype {dtype}."]
+    if chunks:
+        chunk_desc = f"Chunked: {chunks}."
+        if compression:
+            level = f" (level {compression_opts})" if compression_opts else ""
+            chunk_desc += f" Compression: {compression}{level}."
+        parts.append(chunk_desc)
+    if attrs:
+        parts.append(f"Attributes: {attrs}.")
+    if shape and len(shape) >= 3:
+        parts.append(
+            f"{shape[0]:,} items, {shape[-2]}x{shape[-1]} elements each."
+        )
+    return " ".join(parts)

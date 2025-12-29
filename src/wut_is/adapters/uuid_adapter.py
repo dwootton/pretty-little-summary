@@ -30,6 +30,7 @@ class UUIDAdapter:
             "hex": obj.hex,
         }
         meta["metadata"] = metadata
+        meta["nl_summary"] = f"A UUID (version {obj.version}): {metadata['value']}."
         return meta
 
 

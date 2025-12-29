@@ -46,6 +46,7 @@ class TensorflowAdapter:
             pass
 
         meta["metadata"] = metadata
+        meta["nl_summary"] = f"A TensorFlow tensor with shape {metadata.get('shape')}."
         return meta
 
 

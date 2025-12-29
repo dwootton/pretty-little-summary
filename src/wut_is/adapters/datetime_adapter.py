@@ -36,6 +36,7 @@ class DateTimeAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
 
         return meta
 
@@ -90,3 +91,60 @@ def _describe_timedelta(value: timedelta) -> dict[str, Any]:
 
 
 AdapterRegistry.register(DateTimeAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    dtype = metadata.get("type")
+    if dtype == "datetime":
+        iso = metadata.get("iso")
+        tz = metadata.get("timezone")
+        weekday = metadata.get("weekday")
+        relative = _format_relative(metadata.get("relative_days"))
+        parts = [f"A datetime: {iso}."]
+        if tz:
+            parts.append(f"Timezone: {tz}.")
+        else:
+            parts.append("Timezone: naive.")
+        if weekday:
+            parts.append(f"{weekday}.")
+        if relative:
+            parts.append(relative)
+        return " ".join(parts)
+    if dtype == "date":
+        iso = metadata.get("iso")
+        weekday = metadata.get("weekday")
+        relative = _format_relative(metadata.get("relative_days"))
+        parts = [f"A date: {iso}."]
+        if weekday:
+            parts.append(f"{weekday}.")
+        if relative:
+            parts.append(relative)
+        return " ".join(parts)
+    if dtype == "time":
+        iso = metadata.get("iso")
+        tz = metadata.get("timezone")
+        parts = [f"A time: {iso}."]
+        if tz:
+            parts.append(f"Timezone: {tz}.")
+        else:
+            parts.append("Timezone: naive.")
+        return " ".join(parts)
+    if dtype == "timedelta":
+        total_seconds = metadata.get("total_seconds")
+        days = metadata.get("days")
+        if total_seconds is not None:
+            if days:
+                return f"A duration of {days} days ({total_seconds} seconds)."
+            return f"A duration of {total_seconds} seconds."
+        return "A duration."
+    return "A datetime-related value."
+
+
+def _format_relative(relative_days: int | None) -> str | None:
+    if relative_days is None:
+        return None
+    if relative_days == 0:
+        return "Today."
+    if relative_days > 0:
+        return f"In {relative_days} days."
+    return f"{abs(relative_days)} days ago."

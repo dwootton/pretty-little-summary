@@ -44,6 +44,7 @@ class CallableAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -111,3 +112,7 @@ def _first_line(doc: str | None) -> str | None:
 
 
 AdapterRegistry.register(CallableAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    return f"A callable {metadata.get('type')} named {metadata.get('name')}."

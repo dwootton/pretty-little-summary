@@ -68,6 +68,7 @@ class PrimitiveAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
 
         return meta
 
@@ -171,6 +172,47 @@ def _describe_fraction(value: Fraction) -> dict[str, Any]:
         "float_value": float(value),
         "is_integer": value.denominator == 1,
     }
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    ptype = metadata.get("type")
+    if ptype == "int":
+        value = metadata.get("value")
+        special = metadata.get("special_form")
+        if special:
+            return f"The integer {value}, likely a {special.get('type')}."
+        return f"An integer with value {value}."
+    if ptype == "float":
+        value = metadata.get("value")
+        pattern = metadata.get("pattern")
+        if pattern:
+            return f"A float {value}, likely representing a {pattern}."
+        return f"A floating-point number with value {value}."
+    if ptype == "bool":
+        return f"A boolean value: {metadata.get('value')}."
+    if ptype == "none":
+        return "A None value (null or missing)."
+    if ptype == "string":
+        if metadata.get("document_type"):
+            return f"A {metadata.get('document_type')} document string ({metadata.get('length')} chars)."
+        pattern = metadata.get("pattern")
+        if pattern:
+            return f"A string containing a {pattern}: '{metadata.get('value')}'."
+        return f"A string '{metadata.get('value')}' ({metadata.get('length')} characters)."
+    if ptype == "bytes":
+        fmt = metadata.get("format")
+        if fmt:
+            return f"A bytes object containing {fmt} data ({metadata.get('length')} bytes)."
+        return f"A bytes object of {metadata.get('length')} bytes."
+    if ptype == "complex":
+        return f"A complex number {metadata.get('real')} + {metadata.get('imag')}i."
+    if ptype == "decimal":
+        return (
+            f"A Decimal value {metadata.get('value')} with {metadata.get('precision')} digits of precision."
+        )
+    if ptype == "fraction":
+        return f"A Fraction {metadata.get('numerator')}/{metadata.get('denominator')}."
+    return f"A {ptype} value."
 
 
 def _float_precision(value: float) -> int | None:

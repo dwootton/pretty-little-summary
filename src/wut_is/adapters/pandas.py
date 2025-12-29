@@ -97,6 +97,7 @@ class PandasAdapter:
 
             if metadata:
                 meta["metadata"] = metadata
+                meta["nl_summary"] = _build_nl_summary(meta, metadata)
 
             return meta
 
@@ -309,3 +310,21 @@ def _describe_categorical(cat: "pd.Categorical") -> dict[str, Any]:
         "ordered": bool(cat.ordered),
         "counts": counts,
     }
+
+
+def _build_nl_summary(meta: MetaDescription, metadata: dict[str, Any]) -> str:
+    obj_type = meta.get("object_type", "pandas")
+    if metadata.get("type") == "dataframe":
+        return f"A pandas DataFrame with {metadata.get('rows')} rows and {metadata.get('columns')} columns."
+    if metadata.get("type") == "series":
+        name = metadata.get("name") or "unnamed"
+        return f"A pandas Series '{name}' with {metadata.get('length')} values."
+    if metadata.get("type") == "index":
+        return f"A pandas Index with {metadata.get('length')} entries."
+    if metadata.get("type") == "multiindex":
+        return f"A pandas MultiIndex with {metadata.get('levels')} levels and {metadata.get('length')} entries."
+    if metadata.get("type") == "timestamp":
+        return f"A pandas Timestamp: {metadata.get('iso')}."
+    if metadata.get("type") == "categorical":
+        return f"A pandas Categorical with {len(metadata.get('categories', []))} categories."
+    return f"A pandas object {obj_type}."

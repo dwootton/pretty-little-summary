@@ -50,6 +50,7 @@ class PILAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -84,3 +85,14 @@ def _describe_image_list(images: list["Image.Image"]) -> dict[str, Any]:
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(PILAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    if metadata.get("type") == "pil_image":
+        return (
+            f"A PIL image {metadata.get('width')}x{metadata.get('height')} "
+            f"in {metadata.get('mode')} mode."
+        )
+    if metadata.get("type") == "pil_image_list":
+        return f"A list of {metadata.get('count')} PIL images."
+    return "A PIL image object."

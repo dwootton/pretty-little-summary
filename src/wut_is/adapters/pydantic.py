@@ -52,6 +52,7 @@ class PydanticAdapter:
             except Exception as e:
                 meta.setdefault("warnings", []).append(f"Could not dump values: {e}")
 
+            meta["nl_summary"] = f"A Pydantic model {meta['object_type']}."
             return meta
 
         except Exception as e:

@@ -49,7 +49,27 @@ class PathlibAdapter:
             metadata["pure"] = True
 
         meta["metadata"] = metadata
+        meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
 AdapterRegistry.register(PathlibAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    path = metadata.get("path")
+    pure = metadata.get("pure")
+    if pure:
+        return f"A pure path '{path}'."
+    if metadata.get("exists") is True:
+        if metadata.get("is_dir"):
+            return f"A path '{path}' pointing to an existing directory."
+        if metadata.get("is_file"):
+            size = metadata.get("size")
+            if size:
+                return f"A path '{path}' pointing to an existing file ({size})."
+            return f"A path '{path}' pointing to an existing file."
+        return f"A path '{path}' pointing to an existing location."
+    if metadata.get("exists") is False:
+        return f"A path '{path}' pointing to a non-existent location."
+    return f"A path '{path}'."

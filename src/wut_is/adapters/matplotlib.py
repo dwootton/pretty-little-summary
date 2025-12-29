@@ -147,6 +147,14 @@ class MatplotlibAdapter:
             if visual_elements:
                 meta["visual_elements"] = visual_elements
 
+            if is_figure:
+                subplots = meta.get("metadata", {}).get("num_subplots")
+                meta["nl_summary"] = (
+                    f"A matplotlib figure with {subplots or 'unknown'} subplots."
+                )
+            else:
+                meta["nl_summary"] = "A matplotlib axes with plotted elements."
+
             return meta
 
         except Exception as e:

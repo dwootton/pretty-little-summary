@@ -30,6 +30,7 @@ class ErrorAdapter:
             metadata.update(_describe_traceback(obj))
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -63,3 +64,21 @@ def _describe_traceback(traceback_obj: types.TracebackType) -> dict[str, Any]:
 
 
 AdapterRegistry.register(ErrorAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    if metadata.get("type") == "exception":
+        return f"An {metadata.get('name')} exception: '{metadata.get('message')}'."
+    if metadata.get("type") == "traceback":
+        depth = metadata.get("depth")
+        frames = metadata.get("frames", [])
+        parts = [f"A traceback with {depth} frames (most recent last):"]
+        for frame in frames:
+            parts.append(
+                f"→ {frame.get('filename')}:{frame.get('line')} in {frame.get('name')}()"
+            )
+        last = metadata.get("last_frame")
+        if last and last.get("code"):
+            parts.append(f"Last frame context: '{last.get('code')}'.")
+        return "\n".join(parts)
+    return "An error object."

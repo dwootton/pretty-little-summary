@@ -44,8 +44,13 @@ class PlotlyAdapter:
         except Exception:
             pass
         meta["metadata"] = metadata
+        meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(PlotlyAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    return f"A Plotly figure with {metadata.get('traces')} traces."

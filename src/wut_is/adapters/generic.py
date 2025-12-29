@@ -81,6 +81,7 @@ class GenericAdapter:
         if metadata:
             meta["metadata"] = metadata
 
+        meta["nl_summary"] = f"An object of type {meta['object_type']}."
         return meta
 
 

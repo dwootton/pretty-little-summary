@@ -68,6 +68,7 @@ class PolarsAdapter:
                             f"Could not get sample data: {e}"
                         )
 
+            meta["nl_summary"] = f"A Polars DataFrame with shape {meta.get('shape')}."
             return meta
 
         except Exception as e:

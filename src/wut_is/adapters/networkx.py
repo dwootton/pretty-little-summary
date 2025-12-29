@@ -62,6 +62,10 @@ class NetworkXAdapter:
             except Exception as e:
                 meta.setdefault("warnings", []).append(f"Could not get sample node: {e}")
 
+            if meta.get("node_count") is not None and meta.get("edge_count") is not None:
+                meta["nl_summary"] = (
+                    f"A networkx graph with {meta['node_count']} nodes and {meta['edge_count']} edges."
+                )
             return meta
 
         except Exception as e:

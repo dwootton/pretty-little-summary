@@ -43,8 +43,14 @@ class SeabornAdapter:
         except Exception:
             pass
         meta["metadata"] = metadata
+        meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(SeabornAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    grid = metadata.get("grid_type") or "grid"
+    return f"A seaborn {grid} with {metadata.get('axes_count')} axes."

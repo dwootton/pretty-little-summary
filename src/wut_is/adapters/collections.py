@@ -71,6 +71,7 @@ class CollectionsAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
 
         return meta
 
@@ -331,3 +332,44 @@ def _is_iterator(obj: Any) -> bool:
 
 
 AdapterRegistry.register(CollectionsAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    ctype = metadata.get("type")
+    if ctype == "list":
+        length = metadata.get("length")
+        list_type = metadata.get("list_type")
+        if list_type == "list_of_dicts":
+            return (
+                f"A list of {length} records with {metadata.get('consistent_key_count')} "
+                "consistent fields."
+            )
+        if list_type == "ints":
+            return f"A list of {length} integers."
+        if list_type == "list_of_lists":
+            return f"A 2D list with {metadata.get('rows')} rows."
+        return f"A list of {length} items."
+    if ctype == "tuple":
+        return f"A tuple of {metadata.get('length')} elements."
+    if ctype in {"set", "frozenset"}:
+        return f"A {ctype} of {metadata.get('length')} unique items."
+    if ctype in {"dict", "ordered_dict", "defaultdict"}:
+        return f"A {ctype} with {metadata.get('length')} keys."
+    if ctype == "counter":
+        return (
+            f"A Counter with {metadata.get('length')} unique elements totaling "
+            f"{metadata.get('total_count')} observations."
+        )
+    if ctype == "deque":
+        return f"A deque of {metadata.get('length')} items."
+    if ctype == "range":
+        return (
+            f"A range from {metadata.get('start')} to {metadata.get('stop')} "
+            f"with step {metadata.get('step')}."
+        )
+    if ctype == "iterator":
+        return f"An iterator ({metadata.get('name')})."
+    if ctype == "generator":
+        status = "exhausted" if metadata.get("exhausted") else "active"
+        return f"A generator '{metadata.get('name')}' ({status})."
+    return f"A collection of type {ctype}."

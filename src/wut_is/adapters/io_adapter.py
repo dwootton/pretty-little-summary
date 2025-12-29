@@ -38,6 +38,7 @@ class IOAdapter:
 
         if metadata:
             meta["metadata"] = metadata
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
 
 
@@ -100,3 +101,22 @@ def _describe_file(obj: Any) -> dict[str, Any]:
 
 
 AdapterRegistry.register(IOAdapter)
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    itype = metadata.get("type")
+    if itype == "bytesio":
+        length = metadata.get("length")
+        return f"An in-memory bytes buffer of {length} bytes."
+    if itype == "stringio":
+        length = metadata.get("length")
+        return f"An in-memory text buffer of {length} characters."
+    if itype == "file":
+        name = metadata.get("name") or "unknown"
+        mode = metadata.get("mode") or ""
+        closed = metadata.get("closed")
+        is_binary = "b" in mode
+        status = "closed" if closed else "open"
+        ftype = "binary" if is_binary else "text"
+        return f"An {status} {ftype} file handle for '{name}'."
+    return "An IO object."
