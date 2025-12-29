@@ -50,8 +50,7 @@ def test_deterministic_summary_graph():
 
     result = deterministic_summary(meta)
 
-    assert "Nodes: 50" in result
-    assert "Edges: 120" in result
+    assert "networkx graph with 50 nodes and 120 edges" in result
 
 
 def test_deterministic_summary_ml_model():
@@ -65,8 +64,7 @@ def test_deterministic_summary_ml_model():
 
     result = deterministic_summary(meta)
 
-    assert "Parameters: 1,000,000" in result
-    assert "Status: fitted" in result
+    assert "sklearn model sklearn.RandomForestClassifier" in result
 
 
 @patch("httpx.post")

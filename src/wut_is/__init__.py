@@ -20,6 +20,7 @@ Usage:
     result = wut.is_(my_dataframe, explain=False)
 """
 
+from wut_is.adapters._base import list_available_adapters
 from wut_is.api import WutIs, is_ as is_
 from wut_is.core import configure
 
@@ -27,4 +28,4 @@ from wut_is.core import configure
 # Usage: wut.is_(obj) or wut.is_(obj, explain=False)
 
 __version__ = "0.1.0"
-__all__ = ["is_", "configure", "WutIs"]
+__all__ = ["is_", "configure", "WutIs", "list_available_adapters"]

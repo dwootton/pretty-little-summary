@@ -1,6 +1,11 @@
 """Adapter system for wut_is."""
 
-from wut_is.adapters._base import Adapter, AdapterRegistry, dispatch_adapter
+from wut_is.adapters._base import (
+    Adapter,
+    AdapterRegistry,
+    dispatch_adapter,
+    list_available_adapters,
+)
 
 # Import specialized adapters FIRST (before GenericAdapter)
 # They will be registered in import order and checked in that order
@@ -192,4 +197,10 @@ except ImportError:
 # Import GenericAdapter LAST (fallback adapter, lowest priority)
 from wut_is.adapters.generic import GenericAdapter
 
-__all__ = ["Adapter", "AdapterRegistry", "dispatch_adapter", "GenericAdapter"]
+__all__ = [
+    "Adapter",
+    "AdapterRegistry",
+    "dispatch_adapter",
+    "list_available_adapters",
+    "GenericAdapter",
+]

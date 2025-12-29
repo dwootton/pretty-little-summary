@@ -60,3 +60,21 @@ def dispatch_adapter(obj: Any) -> MetaDescription:
     """
     adapter = AdapterRegistry.get_adapter(obj)
     return adapter.extract_metadata(obj)
+
+
+def list_available_adapters() -> list[str]:
+    """
+    List all currently registered adapters.
+
+    Returns a list of adapter names that are available based on installed libraries.
+    This is useful for debugging and understanding which adapters are active.
+
+    Returns:
+        List of adapter class names
+
+    Example:
+        >>> import wut_is
+        >>> wut_is.list_available_adapters()
+        ['PandasAdapter', 'MatplotlibAdapter', 'NumpyAdapter', 'GenericAdapter']
+    """
+    return [adapter.__name__ for adapter in AdapterRegistry._adapters]
