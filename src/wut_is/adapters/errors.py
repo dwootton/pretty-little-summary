@@ -51,12 +51,14 @@ def _describe_traceback(traceback_obj: types.TracebackType) -> dict[str, Any]:
                 "filename": frame.filename,
                 "line": frame.lineno,
                 "name": frame.name,
+                "code": frame.line,
             }
         )
     return {
         "type": "traceback",
         "depth": len(frames),
         "frames": frames[:5],
+        "last_frame": frames[-1] if frames else None,
     }
 
 

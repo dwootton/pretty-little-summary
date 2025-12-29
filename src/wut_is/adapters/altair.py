@@ -20,7 +20,16 @@ class AltairAdapter:
         if not LIBRARY_AVAILABLE:
             return False
         try:
-            return isinstance(obj, altair.Chart)
+            return isinstance(
+                obj,
+                (
+                    altair.Chart,
+                    altair.LayerChart,
+                    altair.FacetChart,
+                    altair.HConcatChart,
+                    altair.VConcatChart,
+                ),
+            )
         except Exception:
             return False
 
@@ -28,7 +37,7 @@ class AltairAdapter:
     def extract_metadata(obj: Any) -> MetaDescription:
         try:
             meta: MetaDescription = {
-                "object_type": "altair.Chart",
+                "object_type": f"{type(obj).__module__}.{type(obj).__name__}",
                 "adapter_used": "AltairAdapter",
             }
 
@@ -40,11 +49,13 @@ class AltairAdapter:
 
                 # Extract key fields
                 meta["chart_type"] = spec_stripped.get("mark")
+                meta["metadata"] = meta.get("metadata", {})
                 if "encoding" in spec_stripped:
-                    meta["metadata"] = {"encoding": spec_stripped["encoding"]}
+                    meta["metadata"]["encoding"] = spec_stripped["encoding"]
                 if "transform" in spec_stripped:
-                    meta["metadata"] = meta.get("metadata", {})
                     meta["metadata"]["transform"] = spec_stripped["transform"]
+                if "layer" in spec_stripped:
+                    meta["metadata"]["layer_count"] = len(spec_stripped["layer"])
             except Exception as e:
                 meta.setdefault("warnings", []).append(f"Could not extract spec: {e}")
 

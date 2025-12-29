@@ -38,7 +38,32 @@ except ImportError:
     pass
 
 try:
+    from wut_is.adapters.seaborn_adapter import SeabornAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.plotly_adapter import PlotlyAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.bokeh_adapter import BokehAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.sklearn_pipeline import SklearnPipelineAdapter
+except ImportError:
+    pass
+
+try:
     from wut_is.adapters.sklearn import SklearnAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.statsmodels_adapter import StatsmodelsAdapter
 except ImportError:
     pass
 
@@ -69,6 +94,16 @@ except ImportError:
 
 try:
     from wut_is.adapters.pytorch import PytorchAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.tensorflow_adapter import TensorflowAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.jax_adapter import JaxAdapter
 except ImportError:
     pass
 

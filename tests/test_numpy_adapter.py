@@ -15,16 +15,23 @@ def test_numpy_1d_array() -> None:
     assert meta["adapter_used"] == "NumpyAdapter"
     assert meta["metadata"]["type"] == "ndarray"
     summary = deterministic_summary(meta)
-    assert "Shape:" in summary
+    print("numpy_1d:", summary)
+    assert "A numpy array with shape (10,)" in summary
 
 
 def test_numpy_2d_array() -> None:
     arr = np.arange(12, dtype=np.float64).reshape(3, 4)
     meta = dispatch_adapter(arr)
     assert meta["metadata"]["ndim"] == 2
+    summary = deterministic_summary(meta)
+    print("numpy_2d:", summary)
+    assert "shape (3, 4)" in summary
 
 
 def test_numpy_scalar() -> None:
     scalar = np.float64(3.14)
     meta = dispatch_adapter(scalar)
     assert meta["metadata"]["type"] == "numpy_scalar"
+    summary = deterministic_summary(meta)
+    print("numpy_scalar:", summary)
+    assert "numpy float64 scalar" in summary

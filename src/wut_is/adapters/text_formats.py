@@ -58,13 +58,13 @@ def _detect_format(value: str) -> dict[str, Any] | None:
         if yaml_meta:
             return yaml_meta
 
-    xml_meta = _detect_xml(stripped)
-    if xml_meta:
-        return xml_meta
-
     html_meta = _detect_html(stripped)
     if html_meta:
         return html_meta
+
+    xml_meta = _detect_xml(stripped)
+    if xml_meta:
+        return xml_meta
 
     csv_meta = _detect_csv(value)
     if csv_meta:
@@ -114,7 +114,7 @@ def _detect_xml(value: str) -> dict[str, Any] | None:
 
 
 def _detect_html(value: str) -> dict[str, Any] | None:
-    if not re.search(r"<(html|div|span|body|head|p|a|img)\\b", value, re.I):
+    if not re.search(r"<(html|div|span|body|head|p|a|img)\b", value, re.I):
         return None
     return {"format": "html"}
 
@@ -133,12 +133,62 @@ def _detect_csv(value: str) -> dict[str, Any] | None:
     if len(rows) < 2:
         return None
     header = rows[0]
+    sample_rows = rows[:3]
+    col_types = _infer_column_types(sample_rows[1:]) if len(sample_rows) > 1 else []
     return {
         "format": "csv",
         "delimiter": dialect.delimiter,
+        "rows": len(lines),
         "columns": len(header),
         "header": [safe_repr(h, 50) for h in header],
+        "sample_row": [safe_repr(cell, 50) for cell in (sample_rows[1] if len(sample_rows) > 1 else [])],
+        "column_types": col_types,
     }
+
+
+def _infer_column_types(rows: list[list[str]]) -> list[str]:
+    if not rows:
+        return []
+    n_cols = max(len(row) for row in rows)
+    types = []
+    for col in range(n_cols):
+        values = [row[col] for row in rows if len(row) > col]
+        types.append(_infer_type(values))
+    return types
+
+
+def _infer_type(values: list[str]) -> str:
+    if all(_is_int(v) for v in values):
+        return "int"
+    if all(_is_float(v) for v in values):
+        return "float"
+    if all(_is_date(v) for v in values):
+        return "date"
+    if all(_is_email(v) for v in values):
+        return "email"
+    if all(_is_bool(v) for v in values):
+        return "bool"
+    return "str"
+
+
+def _is_int(value: str) -> bool:
+    return re.fullmatch(r"-?\d+", value or "") is not None
+
+
+def _is_float(value: str) -> bool:
+    return re.fullmatch(r"-?\d+\.\d+", value or "") is not None
+
+
+def _is_date(value: str) -> bool:
+    return re.fullmatch(r"\d{4}-\d{2}-\d{2}", value or "") is not None
+
+
+def _is_email(value: str) -> bool:
+    return re.fullmatch(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", value or "") is not None
+
+
+def _is_bool(value: str) -> bool:
+    return value.lower() in {"true", "false"}
 
 
 AdapterRegistry.register(TextFormatAdapter)

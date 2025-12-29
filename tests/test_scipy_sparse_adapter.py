@@ -3,6 +3,7 @@
 import pytest
 
 from wut_is.adapters import dispatch_adapter
+from wut_is.synthesizer import deterministic_summary
 
 
 sp = pytest.importorskip("scipy.sparse")
@@ -14,3 +15,5 @@ def test_scipy_sparse_csr() -> None:
     assert meta["adapter_used"] == "ScipySparseAdapter"
     assert meta["metadata"]["type"] == "sparse_matrix"
     assert meta["metadata"]["nnz"] == 2
+    print("scipy_sparse:", deterministic_summary(meta))
+    assert "sparse matrix" in deterministic_summary(meta)

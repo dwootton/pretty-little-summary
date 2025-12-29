@@ -18,7 +18,8 @@ def test_pandas_series_metadata() -> None:
     assert meta["metadata"]["name"] == "price"
     assert "null_count" in meta["metadata"]
     summary = deterministic_summary(meta)
-    assert "Nulls:" in summary
+    print("pandas_series:", summary)
+    assert "pandas Series 'price'" in summary
 
 
 def test_pandas_dataframe_metadata() -> None:
@@ -30,7 +31,8 @@ def test_pandas_dataframe_metadata() -> None:
     assert meta["metadata"]["columns"] == 2
     assert "column_analysis" in meta["metadata"]
     summary = deterministic_summary(meta)
-    assert "Memory:" in summary
+    print("pandas_df:", summary)
+    assert "pandas DataFrame with 3 rows and 2 columns" in summary
 
 
 def test_pandas_series_sampling_limit_10k() -> None:
@@ -50,3 +52,21 @@ def test_pandas_dataframe_column_sampling_limit() -> None:
     meta = dispatch_adapter(df)
     col_meta = meta["metadata"]["column_analysis"][0]
     assert col_meta["stats_sample_size"] == 10_000
+
+
+def test_pandas_index_types() -> None:
+    idx = pd.Index([1, 2, 3], name="ids")
+    meta = dispatch_adapter(idx)
+    assert meta["metadata"]["type"] == "index"
+    summary = deterministic_summary(meta)
+    print("pandas_index:", summary)
+    assert "pandas Index with 3 entries" in summary
+
+
+def test_pandas_categorical() -> None:
+    cat = pd.Categorical(["a", "b", "a"])
+    meta = dispatch_adapter(cat)
+    assert meta["metadata"]["type"] == "categorical"
+    summary = deterministic_summary(meta)
+    print("pandas_cat:", summary)
+    assert "pandas Categorical" in summary

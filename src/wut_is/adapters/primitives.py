@@ -23,6 +23,8 @@ class PrimitiveAdapter:
 
     @staticmethod
     def can_handle(obj: Any) -> bool:
+        if type(obj).__module__.startswith("numpy"):
+            return False
         return isinstance(
             obj,
             (bool, int, float, complex, Decimal, Fraction, str, bytes, bytearray, type(None)),

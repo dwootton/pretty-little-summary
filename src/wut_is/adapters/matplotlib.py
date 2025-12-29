@@ -84,6 +84,66 @@ class MatplotlibAdapter:
                 except Exception:
                     pass
 
+                try:
+                    visual_elements["num_lines"] = len(axes.get_lines())
+                except Exception:
+                    pass
+
+                try:
+                    visual_elements["num_collections"] = len(axes.collections)
+                except Exception:
+                    pass
+
+                try:
+                    visual_elements["num_patches"] = len(axes.patches)
+                except Exception:
+                    pass
+
+                try:
+                    visual_elements["num_images"] = len(axes.get_images())
+                except Exception:
+                    pass
+
+                # Plot-type inference
+                plot_types = []
+                try:
+                    if axes.get_lines():
+                        plot_types.append("line")
+                except Exception:
+                    pass
+                try:
+                    if axes.collections:
+                        plot_types.append("scatter")
+                except Exception:
+                    pass
+                try:
+                    if axes.patches:
+                        plot_types.append("bar")
+                except Exception:
+                    pass
+                try:
+                    if axes.get_images():
+                        plot_types.append("image")
+                except Exception:
+                    pass
+                if plot_types:
+                    visual_elements["plot_types"] = list(dict.fromkeys(plot_types))
+
+                try:
+                    visual_elements["xlim"] = axes.get_xlim()
+                    visual_elements["ylim"] = axes.get_ylim()
+                except Exception:
+                    pass
+
+            if is_figure:
+                try:
+                    size = obj.get_size_inches()
+                    meta["metadata"] = meta.get("metadata", {})
+                    meta["metadata"]["figure_size"] = (float(size[0]), float(size[1]))
+                    meta["metadata"]["dpi"] = float(obj.dpi)
+                except Exception:
+                    pass
+
             if visual_elements:
                 meta["visual_elements"] = visual_elements
 

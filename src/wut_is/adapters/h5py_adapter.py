@@ -60,6 +60,7 @@ def _describe_dataset(dataset: "h5py.Dataset") -> dict[str, Any]:
         "dtype": str(dataset.dtype),
         "chunks": dataset.chunks,
         "compression": dataset.compression,
+        "compression_opts": dataset.compression_opts,
         "attrs": attrs,
         "sample": sample,
     }

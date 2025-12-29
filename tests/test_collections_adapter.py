@@ -11,8 +11,8 @@ def test_list_of_ints_summary() -> None:
     assert meta["adapter_used"] == "CollectionsAdapter"
     assert meta["metadata"]["list_type"] == "ints"
     summary = deterministic_summary(meta)
-    assert "Length: 5" in summary
-    assert "Stats:" in summary
+    print("list_ints:", summary)
+    assert summary == "A list of 5 integers."
 
 
 def test_list_of_dicts_schema() -> None:
@@ -20,13 +20,17 @@ def test_list_of_dicts_schema() -> None:
     meta = dispatch_adapter(data)
     assert meta["metadata"]["list_type"] == "list_of_dicts"
     assert "schema" in meta["metadata"]
+    summary = deterministic_summary(meta)
+    print("list_dicts:", summary)
+    assert summary == "A list of 2 records with 2 consistent fields."
 
 
 def test_tuple_metadata() -> None:
     meta = dispatch_adapter((1, "x", 3.0))
     assert meta["metadata"]["type"] == "tuple"
     summary = deterministic_summary(meta)
-    assert "Element types" in summary
+    print("tuple:", summary)
+    assert summary == "A tuple of 3 elements."
 
 
 def test_ordered_dict_metadata() -> None:
@@ -34,7 +38,8 @@ def test_ordered_dict_metadata() -> None:
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "ordered_dict"
     summary = deterministic_summary(meta)
-    assert "Keys:" in summary
+    print("ordered_dict:", summary)
+    assert summary == "A ordered_dict with 2 keys."
 
 
 def test_defaultdict_metadata() -> None:
@@ -42,6 +47,9 @@ def test_defaultdict_metadata() -> None:
     obj["a"].append(1)
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "defaultdict"
+    summary = deterministic_summary(meta)
+    print("defaultdict:", summary)
+    assert summary == "A defaultdict with 1 keys."
 
 
 def test_counter_metadata() -> None:
@@ -49,13 +57,17 @@ def test_counter_metadata() -> None:
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "counter"
     summary = deterministic_summary(meta)
-    assert "Stats:" in summary
+    print("counter:", summary)
+    assert "Counter with 2 unique elements" in summary
 
 
 def test_deque_metadata() -> None:
     obj = deque([1, 2, 3, 4])
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "deque"
+    summary = deterministic_summary(meta)
+    print("deque:", summary)
+    assert summary == "A deque of 4 items."
 
 
 def test_range_metadata() -> None:
@@ -63,4 +75,5 @@ def test_range_metadata() -> None:
     meta = dispatch_adapter(obj)
     assert meta["metadata"]["type"] == "range"
     summary = deterministic_summary(meta)
-    assert "Length: 5" in summary
+    print("range:", summary)
+    assert summary == "A range from 0 to 10 with step 2."
