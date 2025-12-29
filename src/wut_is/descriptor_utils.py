@@ -52,6 +52,7 @@ class DescribeConfig:
     max_depth: int = 3
     max_string_preview: int = 100
     max_sample_repr: int = 50
+    allow_iterator_consumption: bool = False
     include_affordances: bool = True
     include_suggested_views: bool = True
     redact: RedactionConfig = field(default_factory=RedactionConfig)

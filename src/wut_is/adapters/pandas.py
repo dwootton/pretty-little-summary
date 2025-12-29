@@ -22,7 +22,17 @@ class PandasAdapter:
         if not LIBRARY_AVAILABLE:
             return False
         try:
-            return isinstance(obj, (pd.DataFrame, pd.Series))
+            return isinstance(
+                obj,
+                (
+                    pd.DataFrame,
+                    pd.Series,
+                    pd.Index,
+                    pd.MultiIndex,
+                    pd.Timestamp,
+                    pd.Categorical,
+                ),
+            )
         except Exception:
             return False
 
@@ -69,13 +79,21 @@ class PandasAdapter:
                             f"Could not get sample data: {e}"
                         )
                 metadata.update(_describe_dataframe(obj, config))
-            else:
+            elif isinstance(obj, pd.Series):
                 # Series
                 try:
                     meta["dtypes"] = {"dtype": str(obj.dtype)}
                 except Exception as e:
                     meta.setdefault("warnings", []).append(f"Could not get dtype: {e}")
                 metadata.update(_describe_series(obj, config))
+            elif isinstance(obj, pd.MultiIndex):
+                metadata.update(_describe_multiindex(obj, config))
+            elif isinstance(obj, pd.Index):
+                metadata.update(_describe_index(obj, config))
+            elif isinstance(obj, pd.Timestamp):
+                metadata.update(_describe_timestamp(obj))
+            elif isinstance(obj, pd.Categorical):
+                metadata.update(_describe_categorical(obj))
 
             if metadata:
                 meta["metadata"] = metadata
@@ -241,3 +259,53 @@ def _sample_series_values(series: "pd.Series", limit: int) -> list[Any]:
             return cleaned.head(limit).tolist()
         except Exception:
             return []
+
+
+def _describe_index(index: "pd.Index", config) -> dict[str, Any]:
+    metadata: dict[str, Any] = {
+        "type": "index",
+        "length": int(len(index)),
+        "dtype": str(index.dtype),
+        "name": index.name,
+        "is_unique": bool(index.is_unique),
+    }
+    try:
+        metadata["sample_values"] = [safe_repr(v, 50) for v in index[: config.sample_size]]
+    except Exception:
+        pass
+    return metadata
+
+
+def _describe_multiindex(index: "pd.MultiIndex", config) -> dict[str, Any]:
+    metadata: dict[str, Any] = {
+        "type": "multiindex",
+        "length": int(len(index)),
+        "levels": int(index.nlevels),
+        "names": list(index.names),
+    }
+    try:
+        metadata["sample_values"] = [safe_repr(v, 50) for v in index[: config.sample_size]]
+    except Exception:
+        pass
+    return metadata
+
+
+def _describe_timestamp(value: "pd.Timestamp") -> dict[str, Any]:
+    return {
+        "type": "timestamp",
+        "iso": value.isoformat(),
+        "timezone": str(value.tzinfo) if value.tzinfo else None,
+        "nanosecond": value.nanosecond,
+    }
+
+
+def _describe_categorical(cat: "pd.Categorical") -> dict[str, Any]:
+    categories = list(cat.categories)
+    counts = cat.value_counts().head(5).to_dict() if hasattr(cat, "value_counts") else None
+    return {
+        "type": "categorical",
+        "length": len(cat),
+        "categories": [safe_repr(v, 50) for v in categories[:10]],
+        "ordered": bool(cat.ordered),
+        "counts": counts,
+    }

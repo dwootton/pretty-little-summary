@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from collections import Counter
 from datetime import datetime
+from decimal import Decimal
+from fractions import Fraction
+import cmath
 import json
 import math
 import re
@@ -22,7 +25,7 @@ class PrimitiveAdapter:
     def can_handle(obj: Any) -> bool:
         return isinstance(
             obj,
-            (bool, int, float, str, bytes, bytearray, type(None)),
+            (bool, int, float, complex, Decimal, Fraction, str, bytes, bytearray, type(None)),
         )
 
     @staticmethod
@@ -45,6 +48,12 @@ class PrimitiveAdapter:
             metadata.update(_describe_int(obj))
         elif isinstance(obj, float):
             metadata.update(_describe_float(obj))
+        elif isinstance(obj, complex):
+            metadata.update(_describe_complex(obj))
+        elif isinstance(obj, Decimal):
+            metadata.update(_describe_decimal(obj))
+        elif isinstance(obj, Fraction):
+            metadata.update(_describe_fraction(obj))
         elif isinstance(obj, str):
             if len(obj) < 100:
                 metadata.update(_describe_short_string(obj, config.max_string_preview))
@@ -119,6 +128,47 @@ def _describe_float(value: float) -> dict[str, Any]:
     if pattern:
         metadata["pattern"] = pattern
     return metadata
+
+
+def _describe_complex(value: complex) -> dict[str, Any]:
+    magnitude = abs(value)
+    phase = math.degrees(cmath.phase(value))
+    return {
+        "type": "complex",
+        "real": value.real,
+        "imag": value.imag,
+        "magnitude": magnitude,
+        "phase_degrees": round(phase, 2),
+    }
+
+
+def _describe_decimal(value: Decimal) -> dict[str, Any]:
+    if value.is_nan():
+        special = "nan"
+    elif value.is_infinite():
+        special = "infinite"
+    else:
+        special = None
+    sign, digits, exponent = value.as_tuple()
+    precision = len(digits)
+    return {
+        "type": "decimal",
+        "value": str(value),
+        "sign": "-" if sign else "+",
+        "precision": precision,
+        "exponent": exponent,
+        "special": special,
+    }
+
+
+def _describe_fraction(value: Fraction) -> dict[str, Any]:
+    return {
+        "type": "fraction",
+        "numerator": value.numerator,
+        "denominator": value.denominator,
+        "float_value": float(value),
+        "is_integer": value.denominator == 1,
+    }
 
 
 def _float_precision(value: float) -> int | None:

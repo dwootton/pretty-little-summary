@@ -1,0 +1,144 @@
+"""Adapter for serialized text formats (JSON/YAML/XML/HTML/CSV)."""
+
+from __future__ import annotations
+
+import csv
+import json
+import re
+import xml.etree.ElementTree as ET
+from typing import Any
+
+try:
+    import yaml
+    YAML_AVAILABLE = True
+except ImportError:
+    YAML_AVAILABLE = False
+
+from wut_is.adapters._base import AdapterRegistry
+from wut_is.core import MetaDescription
+from wut_is.descriptor_utils import safe_repr
+
+
+class TextFormatAdapter:
+    """Adapter for strings that represent structured data formats."""
+
+    @staticmethod
+    def can_handle(obj: Any) -> bool:
+        if not isinstance(obj, str):
+            return False
+        return _detect_format(obj) is not None
+
+    @staticmethod
+    def extract_metadata(obj: Any) -> MetaDescription:
+        meta: MetaDescription = {
+            "object_type": "builtins.str",
+            "adapter_used": "TextFormatAdapter",
+        }
+        metadata: dict[str, Any] = {"type": "string", "length": len(obj)}
+
+        detected = _detect_format(obj)
+        if detected:
+            metadata.update(detected)
+
+        meta["metadata"] = metadata
+        return meta
+
+
+def _detect_format(value: str) -> dict[str, Any] | None:
+    stripped = value.strip()
+    if not stripped:
+        return None
+
+    json_meta = _detect_json(stripped)
+    if json_meta:
+        return json_meta
+
+    if YAML_AVAILABLE:
+        yaml_meta = _detect_yaml(stripped)
+        if yaml_meta:
+            return yaml_meta
+
+    xml_meta = _detect_xml(stripped)
+    if xml_meta:
+        return xml_meta
+
+    html_meta = _detect_html(stripped)
+    if html_meta:
+        return html_meta
+
+    csv_meta = _detect_csv(value)
+    if csv_meta:
+        return csv_meta
+
+    return None
+
+
+def _detect_json(value: str) -> dict[str, Any] | None:
+    if not value.startswith(("{", "[")):
+        return None
+    try:
+        parsed = json.loads(value)
+    except (ValueError, json.JSONDecodeError):
+        return None
+    meta: dict[str, Any] = {"format": "json", "parsed_type": type(parsed).__name__}
+    if isinstance(parsed, dict):
+        meta["keys"] = list(parsed.keys())[:10]
+    elif isinstance(parsed, list):
+        meta["length"] = len(parsed)
+    return meta
+
+
+def _detect_yaml(value: str) -> dict[str, Any] | None:
+    if not YAML_AVAILABLE:
+        return None
+    if not (value.startswith("---") or re.search(r"^\w+:\s", value, re.M)):
+        return None
+    try:
+        parsed = yaml.safe_load(value)
+    except Exception:
+        return None
+    meta: dict[str, Any] = {"format": "yaml", "parsed_type": type(parsed).__name__}
+    if isinstance(parsed, dict):
+        meta["keys"] = list(parsed.keys())[:10]
+    return meta
+
+
+def _detect_xml(value: str) -> dict[str, Any] | None:
+    if not value.startswith("<"):
+        return None
+    try:
+        root = ET.fromstring(value)
+    except Exception:
+        return None
+    return {"format": "xml", "root_tag": root.tag}
+
+
+def _detect_html(value: str) -> dict[str, Any] | None:
+    if not re.search(r"<(html|div|span|body|head|p|a|img)\\b", value, re.I):
+        return None
+    return {"format": "html"}
+
+
+def _detect_csv(value: str) -> dict[str, Any] | None:
+    lines = [line for line in value.splitlines() if line.strip()]
+    if len(lines) < 2:
+        return None
+    sample = "\n".join(lines[:5])
+    try:
+        dialect = csv.Sniffer().sniff(sample)
+    except Exception:
+        return None
+    reader = csv.reader(lines[:5], dialect)
+    rows = list(reader)
+    if len(rows) < 2:
+        return None
+    header = rows[0]
+    return {
+        "format": "csv",
+        "delimiter": dialect.delimiter,
+        "columns": len(header),
+        "header": [safe_repr(h, 50) for h in header],
+    }
+
+
+AdapterRegistry.register(TextFormatAdapter)

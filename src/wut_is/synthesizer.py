@@ -243,6 +243,35 @@ def deterministic_summary(
                 attr_preview += "..."
             lines.append(f"Attributes: {attr_preview}")
 
+        # Common descriptor fields for stdlib adapters
+        if "type" in gen_meta:
+            lines.append(f"Type: {gen_meta['type']}")
+        if "name" in gen_meta:
+            lines.append(f"Name: {gen_meta['name']}")
+        if "path" in gen_meta:
+            lines.append(f"Path: {gen_meta['path']}")
+        if "iso" in gen_meta:
+            lines.append(f"ISO: {gen_meta['iso']}")
+        if "timezone" in gen_meta and gen_meta["timezone"]:
+            lines.append(f"Timezone: {gen_meta['timezone']}")
+        if "pattern" in gen_meta:
+            lines.append(f"Pattern: {gen_meta['pattern']}")
+        if "document_type" in gen_meta:
+            lines.append(f"Doc type: {gen_meta['document_type']}")
+        if "format" in gen_meta:
+            lines.append(f"Format: {gen_meta['format']}")
+        if "stats" in gen_meta:
+            lines.append(f"Stats: {gen_meta['stats']}")
+        if "cardinality" in gen_meta:
+            lines.append(f"Cardinality: {gen_meta['cardinality']}")
+        if "null_count" in gen_meta:
+            lines.append(f"Nulls: {gen_meta['null_count']}")
+        if "memory_bytes" in gen_meta:
+            lines.append(f"Memory: {gen_meta['memory_bytes']} bytes")
+        if "dtype" in gen_meta:
+            lines.append(f"Dtype: {gen_meta['dtype']}")
+        if "shape" in gen_meta:
+            lines.append(f"Shape: {gen_meta['shape']}")
         # Pattern or document type hints
         if "pattern" in gen_meta:
             lines.append(f"Pattern: {gen_meta['pattern']}")

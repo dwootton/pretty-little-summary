@@ -8,6 +8,11 @@ from wut_is.adapters._base import Adapter, AdapterRegistry, dispatch_adapter
 
 # Optional adapters - import attempts, silently skips if library unavailable
 try:
+    from wut_is.adapters.text_formats import TextFormatAdapter
+except ImportError:
+    pass
+
+try:
     from wut_is.adapters.primitives import PrimitiveAdapter
 except ImportError:
     pass
@@ -38,6 +43,31 @@ except ImportError:
     pass
 
 try:
+    from wut_is.adapters.numpy_adapter import NumpyAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.scipy_sparse_adapter import ScipySparseAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.pyarrow_adapter import PyArrowAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.h5py_adapter import H5pyAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.pil_adapter import PILAdapter
+except ImportError:
+    pass
+
+try:
     from wut_is.adapters.pytorch import PytorchAdapter
 except ImportError:
     pass
@@ -59,6 +89,68 @@ except ImportError:
 
 try:
     from wut_is.adapters.requests import RequestsAdapter
+except ImportError:
+    pass
+
+# Stdlib adapters
+try:
+    from wut_is.adapters.datetime_adapter import DateTimeAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.pathlib_adapter import PathlibAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.regex_adapter import RegexAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.uuid_adapter import UUIDAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.io_adapter import IOAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.attrs_adapter import AttrsAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.ipython_display import IPythonDisplayAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.structured import StructuredAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.callables import CallableAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.async_adapter import AsyncAdapter
+except ImportError:
+    pass
+
+try:
+    from wut_is.adapters.errors import ErrorAdapter
+except ImportError:
+    pass
+
+# Core collections (after specialized adapters to avoid shadowing)
+try:
+    from wut_is.adapters.collections import CollectionsAdapter
 except ImportError:
     pass
 
