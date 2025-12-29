@@ -2,8 +2,8 @@
 
 import pytest
 
-from wut_is.adapters import dispatch_adapter
-from wut_is.synthesizer import deterministic_summary
+from pretty_little_summary.adapters import dispatch_adapter
+from pretty_little_summary.synthesizer import deterministic_summary
 
 
 plotly = pytest.importorskip("plotly.graph_objs")

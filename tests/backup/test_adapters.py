@@ -2,7 +2,7 @@
 
 import pytest
 
-from wut_is.adapters import (
+from pretty_little_summary.adapters import (
     AdapterRegistry,
     GenericAdapter,
     PandasAdapter,

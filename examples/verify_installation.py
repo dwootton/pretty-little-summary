@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Verify wut_is installation
+Verify pretty_little_summary installation
 
-Run this script to check if wut_is is installed correctly and what features are available.
+Run this script to check if pretty_little_summary is installed correctly and what features are available.
 
 Usage:
     python examples/verify_installation.py
@@ -11,18 +11,18 @@ Usage:
 import sys
 
 
-def check_wut_is():
-    """Check if wut_is is installed."""
+def check_pretty_little_summary():
+    """Check if pretty_little_summary is installed."""
     try:
-        import wut_is as wut
-        print("✅ wut_is is installed")
-        print(f"   Version: {wut.__version__}")
+        import pretty_little_summary as pls
+        print("✅ pretty_little_summary is installed")
+        print(f"   Version: {pls.__version__}")
         return True
     except ImportError as e:
-        print("❌ wut_is is NOT installed")
+        print("❌ pretty_little_summary is NOT installed")
         print(f"   Error: {e}")
         print("\n   To install:")
-        print("   1. cd /path/to/wut_is")
+        print("   1. cd /path/to/pretty_little_summary")
         print("   2. pip install -e .")
         print("   3. Restart your Python kernel/interpreter")
         return False
@@ -117,15 +117,15 @@ def check_api_configuration():
 
 
 def test_basic_functionality():
-    """Test basic wut_is functionality."""
+    """Test basic pretty_little_summary functionality."""
     print("\nBasic Functionality Test:")
 
     try:
-        import wut_is as wut
+        import pretty_little_summary as pls
 
         # Test deterministic mode with a simple dict
         test_obj = {'name': 'test', 'value': 42}
-        result = wut.is_(test_obj, explain=False)
+        result = pls.describe(test_obj, explain=False)
 
         assert result.content is not None
         assert result.meta is not None
@@ -146,8 +146,8 @@ def main():
     print("  Wut Is Installation Verification")
     print("=" * 70)
 
-    # Check wut_is installation
-    if not check_wut_is():
+    # Check pretty_little_summary installation
+    if not check_pretty_little_summary():
         sys.exit(1)
 
     # Check dependencies
@@ -168,9 +168,9 @@ def main():
     print("=" * 70)
 
     if core_ok and func_ok:
-        print("\n✅ wut_is is properly installed and functional!")
+        print("\n✅ pretty_little_summary is properly installed and functional!")
     else:
-        print("\n⚠️  wut_is has some issues")
+        print("\n⚠️  pretty_little_summary has some issues")
 
     print(f"\nAvailable adapters: {len(available)}/11")
     if available:

@@ -3,10 +3,10 @@
 from typing import Any
 from unittest.mock import patch
 
-import wut_is as wut
-from wut_is.adapters._base import AdapterRegistry, dispatch_adapter
-from wut_is.adapters.generic import GenericAdapter
-from wut_is.core import MetaDescription
+import pretty_little_summary as pls
+from pretty_little_summary.adapters._base import AdapterRegistry, dispatch_adapter
+from pretty_little_summary.adapters.generic import GenericAdapter
+from pretty_little_summary.core import MetaDescription
 
 
 class CustomTestObject:
@@ -180,7 +180,7 @@ def test_full_api_with_adapter_failure():
         obj = CustomTestObject("api_test")
 
         # Should not crash, should return a result
-        result = wut.is_(obj, explain=False)
+        result = pls.describe(obj, explain=False)
 
         assert result is not None
         assert result.content is not None

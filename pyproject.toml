@@ -1,5 +1,5 @@
 [project]
-name = "wut-is"
+name = "pretty-little-summary"
 version = "0.1.0"
 description = "Natural language summaries of Python objects for LLM consumption"
 readme = "README.md"
@@ -94,7 +94,7 @@ python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=wut_is",
+    "--cov=pretty_little_summary",
     "--cov-report=term-missing",
 ]
 
@@ -138,4 +138,4 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["wut_is"]
+known-first-party = ["pretty_little_summary"]

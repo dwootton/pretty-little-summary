@@ -8,7 +8,7 @@ useful, structured information about Python objects without requiring API calls.
 Run: python examples/showcase.py
 """
 
-import wut_is as wut
+import pretty_little_summary as pls
 
 
 def section(title):
@@ -19,8 +19,8 @@ def section(title):
 
 
 def show(description, obj):
-    """Show an object's wut_is output."""
-    result = wut.is_(obj, explain=False)
+    """Show an object's pretty_little_summary output."""
+    result = pls.describe(obj, explain=False)
     print(f"\n{description}:")
     print(f"  {result.content}\n")
 
@@ -58,7 +58,7 @@ def main():
 
     show(
         "Long string",
-        "This is a sample string that demonstrates how wut_is handles text content. "
+        "This is a sample string that demonstrates how pretty_little_summary handles text content. "
         "It will show the length and a preview of the content."
     )
 
@@ -206,8 +206,8 @@ def main():
     print("  • Structured, readable output")
     print("  • Works with built-ins, NumPy, Pandas, and custom classes")
     print("\nFor LLM-powered natural language explanations:")
-    print("  wut.configure(openrouter_api_key='sk-or-...')")
-    print("  result = wut.is_(obj, explain=True)")
+    print("  pls.configure(openrouter_api_key='sk-or-...')")
+    print("  result = pls.describe(obj, explain=True)")
     print()
 
 

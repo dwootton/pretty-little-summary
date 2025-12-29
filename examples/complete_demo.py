@@ -1,7 +1,7 @@
 """
 Complete Wut Is Demo - Notebook-Ready Examples
 
-This script demonstrates all features of wut_is with various object types.
+This script demonstrates all features of pretty_little_summary with various object types.
 Can be run directly or copied into a Jupyter notebook.
 
 Installation:
@@ -17,11 +17,11 @@ import os
 import sys
 from dotenv import load_dotenv
 
-# Import wut_is
+# Import pretty_little_summary
 try:
-    import wut_is as wut
+    import pretty_little_summary as pls
 except ImportError:
-    print("ERROR: wut_is not installed.")
+    print("ERROR: pretty_little_summary not installed.")
     print("Install with: pip install -e .")
     sys.exit(1)
 
@@ -38,7 +38,7 @@ def print_section(title):
 
 
 def print_result(result, mode="deterministic"):
-    """Print a wut check result nicely."""
+    """Print a pls check result nicely."""
     print(f"\n{mode.upper()} MODE:")
     print(f"Content: {result.content}")
 
@@ -65,13 +65,13 @@ def demo_1_builtin_types():
         'roles': ['admin', 'developer'],
         'active': True
     }
-    result = wut.is_(user_data, explain=False)
+    result = pls.describe(user_data, explain=False)
     print_result(result)
 
     # List
     print("\n📦 List:")
     numbers = list(range(1, 101))
-    result = wut.is_(numbers, explain=False)
+    result = pls.describe(numbers, explain=False)
     print_result(result)
 
     # Custom class
@@ -83,7 +83,7 @@ def demo_1_builtin_types():
             self.executed = False
 
     pipeline = DataPipeline("ETL_Pipeline", ["extract", "transform", "load"])
-    result = wut.is_(pipeline, explain=False)
+    result = pls.describe(pipeline, explain=False)
     print_result(result)
 
 
@@ -101,13 +101,13 @@ def demo_2_numpy():
     arr = np.random.randn(100, 5)
 
     print("\n🔢 NumPy Array (100x5 random values):")
-    result = wut.is_(arr, explain=False)
+    result = pls.describe(arr, explain=False)
     print_result(result, "deterministic")
 
     # Try LLM mode if API key available
     if api_key:
         print("\nTrying LLM mode...")
-        result = wut.is_(arr, explain=True)
+        result = pls.describe(arr, explain=True)
         print_result(result, "llm")
     else:
         print("\n⚠ No API key - skipping LLM mode")
@@ -139,13 +139,13 @@ def demo_3_pandas():
 
     # Deterministic mode
     print("\n" + "-" * 70)
-    result = wut.is_(df, explain=False)
+    result = pls.describe(df, explain=False)
     print_result(result, "deterministic")
 
     # LLM mode
     if api_key:
         print("\n" + "-" * 70)
-        result = wut.is_(df, explain=True)
+        result = pls.describe(df, explain=True)
         print_result(result, "llm")
 
     # Aggregated data
@@ -153,7 +153,7 @@ def demo_3_pandas():
     summary = df.groupby('product')['revenue'].agg(['sum', 'mean', 'count'])
     print(summary)
 
-    result = wut.is_(summary, explain=False)
+    result = pls.describe(summary, explain=False)
     print_result(result, "deterministic")
 
 
@@ -196,11 +196,11 @@ def demo_4_matplotlib():
     print("\n📈 Matplotlib Figure (2 subplots created):")
 
     # Check the figure
-    result = wut.is_(fig, explain=False)
+    result = pls.describe(fig, explain=False)
     print_result(result, "deterministic")
 
     if api_key:
-        result = wut.is_(fig, explain=True)
+        result = pls.describe(fig, explain=True)
         print_result(result, "llm")
         print("\n💡 Notice: The LLM can describe the plots using code history!")
 
@@ -237,7 +237,7 @@ def demo_5_comparison():
     # Deterministic
     print("\n\n🔧 DETERMINISTIC MODE (explain=False):")
     print("-" * 70)
-    result_det = wut.is_(summary, explain=False)
+    result_det = pls.describe(summary, explain=False)
     print(result_det.content)
     print("\nCharacteristics:")
     print("  ✓ No API call required")
@@ -249,7 +249,7 @@ def demo_5_comparison():
     if api_key:
         print("\n\n🤖 LLM MODE (explain=True):")
         print("-" * 70)
-        result_llm = wut.is_(summary, explain=True)
+        result_llm = pls.describe(summary, explain=True)
         print(result_llm.content)
         print("\nCharacteristics:")
         print("  ✓ Natural language explanation")
@@ -269,7 +269,7 @@ def main():
 
     # Configure
     if api_key:
-        wut.configure(openrouter_api_key=api_key)
+        pls.configure(openrouter_api_key=api_key)
         print("\n✓ OpenRouter configured - Both modes available")
     else:
         print("\n⚠ No OPENROUTER_API_KEY found")
@@ -297,8 +297,8 @@ def main():
     print("\n✅ Demo completed successfully!")
     print("\nKey Points:")
     print("  1. Install: pip install -e .")
-    print("  2. Configure: wut.configure(openrouter_api_key='...')")
-    print("  3. Use: wut.is_(obj, explain=True/False)")
+    print("  2. Configure: pls.configure(openrouter_api_key='...')")
+    print("  3. Use: pls.describe(obj, explain=True/False)")
     print("\nTwo Modes:")
     print("  • explain=False → Fast, deterministic (no API)")
     print("  • explain=True  → Natural language with LLM")
@@ -311,7 +311,7 @@ def main():
     print("\nNext Steps:")
     print("  • Try the Jupyter notebooks: examples/quick_start.ipynb")
     print("  • Read the docs: README.md")
-    print("  • Explore adapters: src/wut_is/adapters/")
+    print("  • Explore adapters: src/pretty_little_summary/adapters/")
     print()
 
 

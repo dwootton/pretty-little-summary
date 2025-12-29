@@ -1,12 +1,12 @@
-# Wut Is Examples
+# Pretty Little Summary Examples
 
-This directory contains comprehensive examples demonstrating how to use wut_is.
+This directory contains comprehensive examples demonstrating how to use pretty_little_summary.
 
 ## Quick Start
 
-1. **Install wut_is** (from the repo root):
+1. **Install pretty_little_summary** (from the repo root):
    ```bash
-   cd /path/to/wut_is
+   cd /path/to/pretty_little_summary
    pip install -e .
    ```
 
@@ -85,9 +85,9 @@ jupyter lab examples/
 
 ## Important: Kernel Restart
 
-**⚠️ After installing wut_is, you MUST restart your Jupyter kernel!**
+**⚠️ After installing pretty_little_summary, you MUST restart your Jupyter kernel!**
 
-Otherwise, you'll get `ModuleNotFoundError: No module named 'wut_is'`
+Otherwise, you'll get `ModuleNotFoundError: No module named 'pretty_little_summary'`
 
 ### How to restart:
 - **Jupyter Notebook**: Kernel → Restart
@@ -98,7 +98,7 @@ Otherwise, you'll get `ModuleNotFoundError: No module named 'wut_is'`
 
 ### Deterministic Mode (`explain=False`)
 ```python
-result = wut.is_(df, explain=False)
+result = pls.describe(df, explain=False)
 ```
 - ✅ No API key required
 - ✅ Instant results
@@ -112,7 +112,7 @@ pandas.DataFrame | Shape: (100, 5) | Columns: date, product, quantity, price, re
 
 ### LLM Mode (`explain=True`)
 ```python
-result = wut.is_(df, explain=True)
+result = pls.describe(df, explain=True)
 ```
 - ✅ Requires OpenRouter API key
 - ✅ Natural language explanation
@@ -141,13 +141,13 @@ each transaction.
 
 ## Troubleshooting
 
-### `ModuleNotFoundError: No module named 'wut_is'`
+### `ModuleNotFoundError: No module named 'pretty_little_summary'`
 
 **Solution**: Restart your Jupyter kernel after installation!
 
 1. Make sure you installed: `pip install -e .` (from repo root)
 2. **Restart the kernel**: Kernel → Restart
-3. Try importing again: `import wut_is as wut`
+3. Try importing again: `import pretty_little_summary as pls`
 
 ### `ConfigurationError: OpenRouter API key not configured`
 
@@ -189,7 +189,7 @@ pip install -e ".[all]"
 1. ✅ Start with `quick_start.ipynb` to learn the basics
 2. ✅ Explore `notebook_demo.ipynb` for comprehensive examples
 3. ✅ Read the main [README.md](../README.md) for full documentation
-4. ✅ Check [src/wut_is/adapters/](../src/wut_is/adapters/) to see all supported libraries
+4. ✅ Check [src/pretty_little_summary/adapters/](../src/pretty_little_summary/adapters/) to see all supported libraries
 
 ## Getting Help
 

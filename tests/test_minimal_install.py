@@ -1,18 +1,18 @@
 """
-Test that wut-is works with minimal dependencies.
+Test that pretty-little-summary works with minimal dependencies.
 
 This test ensures the library functions correctly when optional
 dependencies (pandas, matplotlib, etc.) are not available.
 """
 
-import wut_is as wut
+import pretty_little_summary as pls
 
 
 def test_import_without_optionals():
-    """Test that wut_is can be imported without optional dependencies."""
-    assert wut is not None
-    assert hasattr(wut, "is_")
-    assert hasattr(wut, "configure")
+    """Test that pretty_little_summary can be imported without optional dependencies."""
+    assert pls is not None
+    assert hasattr(pls, "describe")
+    assert hasattr(pls, "configure")
 
 
 def test_basic_types_without_optionals():
@@ -31,7 +31,7 @@ def test_basic_types_without_optionals():
     ]
 
     for obj in test_cases:
-        result = wut.is_(obj, explain=False)
+        result = pls.describe(obj, explain=False)
         assert result.content is not None
         assert isinstance(result.content, str)
         assert len(result.content) > 0
@@ -42,7 +42,7 @@ def test_basic_types_without_optionals():
 
 def test_list_available_adapters_minimal():
     """Test list_available_adapters works with minimal install."""
-    adapters = wut.list_available_adapters()
+    adapters = pls.list_available_adapters()
 
     # These should always be available (stdlib/built-in types)
     required_adapters = [
@@ -66,13 +66,13 @@ def test_complex_builtin_structures():
         "metadata": {"version": "1.0", "date": "2024-01-01"},
     }
 
-    result = wut.is_(nested_dict, explain=False)
+    result = pls.describe(nested_dict, explain=False)
     assert result.content is not None
     assert "dict" in result.content.lower()
 
     # List of tuples
     data = [(1, "a"), (2, "b"), (3, "c")]
-    result = wut.is_(data, explain=False)
+    result = pls.describe(data, explain=False)
     assert result.content is not None
 
 
@@ -85,7 +85,7 @@ def test_generic_adapter_fallback():
             self.name = "custom"
 
     obj = CustomClass(42)
-    result = wut.is_(obj, explain=False)
+    result = pls.describe(obj, explain=False)
 
     assert result.content is not None
     assert result.meta is not None
@@ -103,7 +103,7 @@ def test_callable_objects():
     def my_function(x, y):
         return x + y
 
-    result = wut.is_(my_function, explain=False)
+    result = pls.describe(my_function, explain=False)
     assert result.content is not None
     assert "my_function" in result.content or "function" in result.content.lower()
 
@@ -111,7 +111,7 @@ def test_callable_objects():
 def test_metadata_structure():
     """Test that metadata has expected structure."""
     obj = [1, 2, 3, 4, 5]
-    result = wut.is_(obj, explain=False)
+    result = pls.describe(obj, explain=False)
 
     # Check metadata structure
     assert "object_type" in result.meta
@@ -127,8 +127,8 @@ def test_metadata_structure():
 def test_configure_without_api_key():
     """Test that configure can be called (even if API key not set)."""
     # This shouldn't raise an error
-    wut.configure(openrouter_api_key="test-key")
+    pls.configure(openrouter_api_key="test-key")
 
     # Using explain=False should work without valid API key
-    result = wut.is_([1, 2, 3], explain=False)
+    result = pls.describe([1, 2, 3], explain=False)
     assert result.content is not None

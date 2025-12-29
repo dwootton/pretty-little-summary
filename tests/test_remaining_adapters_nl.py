@@ -5,8 +5,8 @@ import types
 
 import pytest
 
-from wut_is.adapters import dispatch_adapter
-from wut_is.synthesizer import deterministic_summary
+from pretty_little_summary.adapters import dispatch_adapter
+from pretty_little_summary.synthesizer import deterministic_summary
 
 
 def test_generic_adapter_nl() -> None:
@@ -104,7 +104,20 @@ def test_polars_adapter_nl() -> None:
     df = pl.DataFrame({"a": [1, 2], "b": ["x", "y"]})
     meta = dispatch_adapter(df)
     summary = deterministic_summary(meta)
-    assert summary == f"A Polars DataFrame with shape {meta.get('shape')}."
+    parts = [f"A Polars DataFrame with shape {meta.get('shape')}."]
+    schema = meta.get("schema") or {}
+    if schema:
+        cols = []
+        for name, dtype in list(schema.items())[:3]:
+            cols.append(f"{name} ({dtype})")
+        if cols:
+            parts.append(f"Schema: {', '.join(cols)}.")
+    sample_rows = meta.get("metadata", {}).get("sample_rows")
+    if sample_rows:
+        parts.append(f"Sample row: {sample_rows[0]}.")
+    elif meta.get("metadata", {}).get("sample_rows_omitted"):
+        parts.append("Sample rows omitted for size/perf.")
+    assert summary == " ".join(parts)
 
 
 pydantic = pytest.importorskip("pydantic")
@@ -144,4 +157,7 @@ def test_xarray_adapter_nl() -> None:
     arr = xr.DataArray([[1, 2], [3, 4]], dims=["x", "y"])
     meta = dispatch_adapter(arr)
     summary = deterministic_summary(meta)
-    assert summary == f"An xarray object {meta['object_type']} with shape {meta.get('shape')}."
+    assert summary == (
+        f"An xarray object {meta['object_type']} with shape {meta.get('shape')}. "
+        "Sample: [1, 2, 3, 4]."
+    )

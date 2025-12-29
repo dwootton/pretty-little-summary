@@ -2,12 +2,12 @@
 
 ## Overview
 
-`wut-is` is designed to be **lightweight by default** while supporting a **wide range of data science libraries**. You only install what you need!
+`pretty-little-summary` is designed to be **lightweight by default** while supporting a **wide range of data science libraries**. You only install what you need!
 
 ## How It Works
 
 ### Core Dependencies (Always Installed)
-When you install `wut-is`, only these minimal dependencies are required:
+When you install `pretty-little-summary`, only these minimal dependencies are required:
 - `httpx` - For OpenRouter API calls
 - `python-dotenv` - For environment variable support
 
@@ -15,27 +15,27 @@ When you install `wut-is`, only these minimal dependencies are required:
 Adapters for specialized libraries are **automatically activated** when those libraries are detected in your environment.
 
 ```python
-import wut_is as wut
+import pretty_little_summary as pls
 
 # Works immediately with built-in types
-wut.is_([1, 2, 3])  # ✓ Works (no extra deps needed)
+pls.describe([1, 2, 3])  # ✓ Works (no extra deps needed)
 
 # If you already have pandas installed:
 import pandas as pd
 df = pd.DataFrame(...)
-wut.is_(df)  # ✓ Works (PandasAdapter auto-activates)
+pls.describe(df)  # ✓ Works (PandasAdapter auto-activates)
 
 # If pandas is NOT installed:
-wut.is_(some_pandas_df)  # ✓ Still works (falls back to GenericAdapter)
+pls.describe(some_pandas_df)  # ✓ Still works (falls back to GenericAdapter)
 ```
 
 ## Installation Options
 
 ### Option 1: Minimal Install (Recommended for End Users)
-If you already have your data science stack installed, just add `wut-is`:
+If you already have your data science stack installed, just add `pretty-little-summary`:
 
 ```bash
-pip install wut-is
+pip install pretty-little-summary
 ```
 
 The library will automatically detect and use whatever you have installed (pandas, numpy, matplotlib, etc.)
@@ -44,33 +44,33 @@ The library will automatically detect and use whatever you have installed (panda
 
 ```bash
 # Data science
-pip install wut-is[pandas]       # Pandas support
-pip install wut-is[polars]       # Polars support
-pip install wut-is[data]         # Both pandas and polars
+pip install pretty-little-summary[pandas]       # Pandas support
+pip install pretty-little-summary[polars]       # Polars support
+pip install pretty-little-summary[data]         # Both pandas and polars
 
 # Visualization
-pip install wut-is[matplotlib]   # Matplotlib support
-pip install wut-is[altair]       # Altair support
-pip install wut-is[viz]          # Both matplotlib and altair
+pip install pretty-little-summary[matplotlib]   # Matplotlib support
+pip install pretty-little-summary[altair]       # Altair support
+pip install pretty-little-summary[viz]          # Both matplotlib and altair
 
 # Machine Learning
-pip install wut-is[sklearn]      # scikit-learn support
-pip install wut-is[pytorch]      # PyTorch support
-pip install wut-is[ml]           # Both sklearn and pytorch
+pip install pretty-little-summary[sklearn]      # scikit-learn support
+pip install pretty-little-summary[pytorch]      # PyTorch support
+pip install pretty-little-summary[ml]           # Both sklearn and pytorch
 
 # Scientific Computing
-pip install wut-is[xarray]       # xarray support
-pip install wut-is[networkx]     # NetworkX support
-pip install wut-is[science]      # Both xarray and networkx
+pip install pretty-little-summary[xarray]       # xarray support
+pip install pretty-little-summary[networkx]     # NetworkX support
+pip install pretty-little-summary[science]      # Both xarray and networkx
 
 # Multiple groups
-pip install wut-is[data,viz,ml]  # Common data science stack
+pip install pretty-little-summary[data,viz,ml]  # Common data science stack
 ```
 
 ### Option 3: Install Everything (For Development/Testing)
 
 ```bash
-pip install wut-is[all]
+pip install pretty-little-summary[all]
 ```
 
 This installs all optional dependencies. Only recommended for development or if you need comprehensive support.
@@ -80,10 +80,10 @@ This installs all optional dependencies. Only recommended for development or if 
 You can check which adapters are currently available based on your installed libraries:
 
 ```python
-import wut_is as wut
+import pretty_little_summary as pls
 
 # List all available adapters
-adapters = wut.list_available_adapters()
+adapters = pls.list_available_adapters()
 print(adapters)
 # ['PandasAdapter', 'MatplotlibAdapter', 'NumpyAdapter', ...]
 ```
@@ -128,7 +128,7 @@ If you're building a library and want to use this pattern:
 3. **Lazy imports**: Use try/except at module level
 4. **Runtime checks**: Check if library is available before using it
 
-Example pattern used in `wut-is`:
+Example pattern used in `pretty-little-summary`:
 
 ```python
 # At top of adapter module
@@ -160,8 +160,8 @@ class PandasAdapter:
 
 1. Check if the adapter is registered:
    ```python
-   import wut_is as wut
-   print(wut.list_available_adapters())
+   import pretty_little_summary as pls
+   print(pls.list_available_adapters())
    ```
 
 2. Verify the library is importable:
@@ -175,8 +175,8 @@ class PandasAdapter:
 
 No problem! Just install the library directly:
 ```bash
-pip install wut-is
+pip install pretty-little-summary
 pip install pandas  # Install pandas separately
 ```
 
-`wut-is` will detect it automatically.
+`pretty-little-summary` will detect it automatically.

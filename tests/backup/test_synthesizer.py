@@ -4,8 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from wut_is.core import APIError
-from wut_is.synthesizer import OpenRouterClient, deterministic_summary
+from pretty_little_summary.core import APIError
+from pretty_little_summary.synthesizer import OpenRouterClient, deterministic_summary
 
 
 def test_deterministic_summary_basic():

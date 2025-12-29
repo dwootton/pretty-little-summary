@@ -1,6 +1,6 @@
-"""Basic demonstration of wut_is functionality."""
+"""Basic demonstration of pretty_little_summary functionality."""
 
-import wut_is as wut
+import pretty_little_summary as pls
 
 # Example 1: Simple dictionary (GenericAdapter)
 data = {"name": "Alice", "age": 30, "city": "San Francisco"}
@@ -10,7 +10,7 @@ print("Example 1: Dictionary (GenericAdapter)")
 print("=" * 60)
 
 # Deterministic mode (no LLM call needed)
-result = wut.is_(data, explain=False)
+result = pls.describe(data, explain=False)
 
 print(f"\nContent: {result.content}")
 print(f"\nMetadata:")
@@ -25,7 +25,7 @@ print("\n" + "=" * 60)
 print("Example 2: List (GenericAdapter)")
 print("=" * 60)
 
-result = wut.is_(numbers, explain=False)
+result = pls.describe(numbers, explain=False)
 
 print(f"\nContent: {result.content}")
 print(f"\nMetadata:")
@@ -48,7 +48,7 @@ print("\n" + "=" * 60)
 print("Example 3: Custom Class (GenericAdapter)")
 print("=" * 60)
 
-result = wut.is_(person, explain=False)
+result = pls.describe(person, explain=False)
 
 print(f"\nContent: {result.content}")
 print(f"\nMetadata:")
@@ -60,5 +60,5 @@ print("All examples completed successfully!")
 print("=" * 60)
 print("\nTo use LLM mode (explain=True), you need to:")
 print("1. Set OPENROUTER_API_KEY environment variable, or")
-print("2. Call wut.configure(openrouter_api_key='sk-or-...')")
-print("\nThen run: result = wut.is_(obj, explain=True)")
+print("2. Call pls.configure(openrouter_api_key='sk-or-...')")
+print("\nThen run: result = pls.describe(obj, explain=True)")

@@ -1,4 +1,4 @@
-"""Pandas demonstration of wut_is functionality.
+"""Pandas demonstration of pretty_little_summary functionality.
 
 Run with: uv pip install pandas && python examples/pandas_demo.py
 """
@@ -10,7 +10,7 @@ except ImportError:
     print("Install with: uv pip install pandas")
     exit(1)
 
-import wut_is as wut
+import pretty_little_summary as pls
 
 # Create sample DataFrame
 df = pd.DataFrame({
@@ -28,7 +28,7 @@ print("\nDataFrame:")
 print(df)
 
 # Check with deterministic mode (no LLM)
-result = wut.is_(df, explain=False)
+result = pls.describe(df, explain=False)
 
 print("\n" + "=" * 70)
 print("Wut Is Result (explain=False)")
@@ -54,5 +54,5 @@ print("Success! PandasAdapter works correctly.")
 print("=" * 70)
 
 print("\nFor LLM-powered explanations, configure your OpenRouter API key:")
-print("  wut.configure(openrouter_api_key='sk-or-...')")
-print("  result = wut.is_(df, explain=True)")
+print("  pls.configure(openrouter_api_key='sk-or-...')")
+print("  result = pls.describe(df, explain=True)")

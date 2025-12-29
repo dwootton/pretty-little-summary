@@ -2,8 +2,8 @@
 
 from collections import Counter, OrderedDict, defaultdict, deque
 
-from wut_is.adapters import dispatch_adapter
-from wut_is.synthesizer import deterministic_summary
+from pretty_little_summary.adapters import dispatch_adapter
+from pretty_little_summary.synthesizer import deterministic_summary
 
 
 def test_list_of_ints_summary() -> None:

@@ -1,7 +1,7 @@
 """Tests for primitive adapters."""
 
-from wut_is.adapters import dispatch_adapter
-from wut_is.synthesizer import deterministic_summary
+from pretty_little_summary.adapters import dispatch_adapter
+from pretty_little_summary.synthesizer import deterministic_summary
 from decimal import Decimal
 from fractions import Fraction
 

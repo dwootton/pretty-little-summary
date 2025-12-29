@@ -10,8 +10,8 @@ from datetime import date, datetime, time, timedelta
 from enum import Enum
 from pathlib import Path, PurePath
 
-from wut_is.adapters import dispatch_adapter
-from wut_is.synthesizer import deterministic_summary
+from pretty_little_summary.adapters import dispatch_adapter
+from pretty_little_summary.synthesizer import deterministic_summary
 
 
 def test_datetime_adapter() -> None:

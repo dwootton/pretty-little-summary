@@ -1,41 +1,41 @@
 """Tests for list_available_adapters utility."""
 
-import wut_is
+import pretty_little_summary as pls
 
 
 def test_list_available_adapters_returns_list():
     """Test that list_available_adapters returns a list."""
-    adapters = wut_is.list_available_adapters()
+    adapters = pls.list_available_adapters()
     assert isinstance(adapters, list)
 
 
 def test_list_available_adapters_contains_strings():
     """Test that all adapter names are strings."""
-    adapters = wut_is.list_available_adapters()
+    adapters = pls.list_available_adapters()
     assert all(isinstance(name, str) for name in adapters)
 
 
 def test_list_available_adapters_has_generic():
     """Test that GenericAdapter is always present (it's always imported)."""
-    adapters = wut_is.list_available_adapters()
+    adapters = pls.list_available_adapters()
     assert "GenericAdapter" in adapters
 
 
 def test_list_available_adapters_non_empty():
     """Test that we always have at least one adapter (GenericAdapter)."""
-    adapters = wut_is.list_available_adapters()
+    adapters = pls.list_available_adapters()
     assert len(adapters) > 0
 
 
 def test_list_available_adapters_unique():
     """Test that adapter names are unique (no duplicates)."""
-    adapters = wut_is.list_available_adapters()
+    adapters = pls.list_available_adapters()
     assert len(adapters) == len(set(adapters))
 
 
 def test_adapters_available_based_on_imports():
     """Test that adapters are available based on what's installed."""
-    adapters = wut_is.list_available_adapters()
+    adapters = pls.list_available_adapters()
 
     # These should always be available since they're stdlib or primitives
     expected_always_present = [
@@ -64,6 +64,6 @@ def test_adapters_available_based_on_imports():
 
 
 def test_can_call_from_top_level():
-    """Test that list_available_adapters is accessible from wut_is module."""
-    assert hasattr(wut_is, "list_available_adapters")
-    assert callable(wut_is.list_available_adapters)
+    """Test that list_available_adapters is accessible from pretty_little_summary module."""
+    assert hasattr(pls, "list_available_adapters")
+    assert callable(pls.list_available_adapters)

@@ -2,8 +2,9 @@
 
 import pytest
 
-from wut_is.adapters import dispatch_adapter
-from wut_is.synthesizer import deterministic_summary
+from pretty_little_summary.adapters import dispatch_adapter
+from pretty_little_summary.descriptor_utils import format_bytes
+from pretty_little_summary.synthesizer import deterministic_summary
 
 
 pd = pytest.importorskip("pandas")
@@ -19,7 +20,20 @@ def test_pandas_series_metadata() -> None:
     assert "null_count" in meta["metadata"]
     summary = deterministic_summary(meta)
     print("pandas_series:", summary)
-    assert summary == "A pandas Series 'price' with 4 values."
+    parts = [f"A pandas Series 'price' with {meta['metadata']['length']} values."]
+    null_count = meta["metadata"].get("null_count")
+    if null_count is not None:
+        parts.append(f"Nulls: {null_count}.")
+    dtype = meta["metadata"].get("dtype")
+    if dtype:
+        parts.append(f"Dtype: {dtype}.")
+    stats = meta["metadata"].get("stats")
+    if stats:
+        parts.append(f"Stats: {stats}.")
+    sample_values = meta["metadata"].get("sample_values")
+    if sample_values:
+        parts.append(f"Sample: [{', '.join(sample_values)}].")
+    assert summary == " ".join(parts)
 
 
 def test_pandas_dataframe_metadata() -> None:
@@ -32,7 +46,42 @@ def test_pandas_dataframe_metadata() -> None:
     assert "column_analysis" in meta["metadata"]
     summary = deterministic_summary(meta)
     print("pandas_df:", summary)
-    assert summary == "A pandas DataFrame with 3 rows and 2 columns."
+    parts = [
+        f"A pandas DataFrame with {meta['metadata']['rows']} rows and {meta['metadata']['columns']} columns."
+    ]
+    null_count = meta["metadata"].get("null_count")
+    if null_count is not None:
+        parts.append(f"Nulls: {null_count}.")
+    memory_bytes = meta["metadata"].get("memory_bytes")
+    if memory_bytes is not None:
+        parts.append(f"Memory: {format_bytes(memory_bytes)}.")
+    col_analysis = meta["metadata"].get("column_analysis") or []
+    if col_analysis:
+        cols = []
+        for col in col_analysis[:3]:
+            name = col.get("name")
+            dtype = col.get("dtype")
+            col_nulls = col.get("null_count")
+            stats = col.get("stats")
+            cardinality = col.get("cardinality")
+            details = []
+            if dtype:
+                details.append(dtype)
+            if col_nulls:
+                details.append(f"{col_nulls} nulls")
+            if stats:
+                details.append(f"stats: {stats}")
+            elif cardinality:
+                details.append(f"cardinality: {cardinality}")
+            cols.append(f"{name} ({', '.join(details)})" if details else f"{name}")
+        if cols:
+            parts.append(f"Columns: {', '.join(cols)}.")
+    sample_rows = meta["metadata"].get("sample_rows")
+    if sample_rows:
+        parts.append(f"Sample row: {sample_rows[0]}.")
+    elif meta["metadata"].get("sample_rows_omitted"):
+        parts.append("Sample rows omitted for size/perf.")
+    assert summary == " ".join(parts)
 
 
 def test_pandas_series_sampling_limit_10k() -> None:

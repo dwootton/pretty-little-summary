@@ -4,11 +4,11 @@
 
 ### Breaking Changes
 
-**Package Rename**: `vibe_check` → `wut_is`
-- Package name: `pip install wut-is` (was `vibe-check`)
-- Import: `import wut_is as wut` (was `import vibe_check as vibe`)
-- Main function: `wut.is_(obj)` (was `vibe.check(obj)`)
-- Result class: `WutIs` (was `VibeCheck`)
+**Package Rename**: `vibe_check` → `pretty_little_summary`
+- Package name: `pip install pretty-little-summary` (was `vibe-check`)
+- Import: `import pretty_little_summary as pls` (was `import vibe_check as vibe`)
+- Main function: `pls.describe(obj)` (was `vibe.check(obj)`)
+- Result class: `Description` (was `VibeCheck`)
 
 ### Major Improvements
 
@@ -54,9 +54,9 @@ vibe.configure(...)
 result = vibe.check(df)
 
 # New
-import wut_is as wut
-wut.configure(...)
-result = wut.is_(df)
+import pretty_little_summary as pls
+pls.configure(...)
+result = pls.describe(df)
 ```
 
 #### Update Configuration
@@ -76,7 +76,7 @@ WUTIS_MAX_HISTORY=...
 from vibe_check import VibeCheck, check, configure
 
 # New
-from wut_is import WutIs, is_, configure
+from pretty_little_summary import Description, is_, configure
 ```
 
 ### Installation
@@ -102,21 +102,21 @@ All examples have been updated:
 ### Output Examples
 
 ```python
-import wut_is as wut
+import pretty_little_summary as pls
 
 # Dictionary - now shows structure!
 data = {'name': 'Alice', 'age': 30}
-wut.is_(data, explain=False)
+pls.describe(data, explain=False)
 # Output: builtins.dict | Length: 2 | Keys: name, age | Sample: {name: str, age: int} | [via GenericAdapter]
 
 # List - shows elements!
 numbers = [1, 2, 3, 4, 5]
-wut.is_(numbers, explain=False)
+pls.describe(numbers, explain=False)
 # Output: builtins.list | Length: 5 | Element types: int | [via GenericAdapter]
 
 # DataFrame - clean and structured!
 df = pd.DataFrame({'a': [1, 2], 'b': [3, 4]})
-wut.is_(df, explain=False)
+pls.describe(df, explain=False)
 # Output: pandas.DataFrame | Shape: (2, 2) | Columns: a, b | Types: a:int64, b:int64 | [via PandasAdapter]
 ```
 

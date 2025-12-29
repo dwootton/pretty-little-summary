@@ -2,17 +2,17 @@
 
 ## What Was Done
 
-Your `wut-is` library is **already correctly set up** for optional dependencies! Here's what was reviewed and enhanced:
+Your `pretty-little-summary` library is **already correctly set up** for optional dependencies! Here's what was reviewed and enhanced:
 
 ### 1. **Existing Implementation** ✓
 
 Your library already had the correct pattern:
 
-- **Minimal core dependencies** (src/wut_is/adapters/_base.py:24):
+- **Minimal core dependencies** (src/pretty_little_summary/adapters/_base.py:24):
   - Only `httpx` and `python-dotenv` are required
   - All data science libraries are optional
 
-- **Lazy imports in adapters** (e.g., src/wut_is/adapters/pandas.py:6-9):
+- **Lazy imports in adapters** (e.g., src/pretty_little_summary/adapters/pandas.py:6-9):
   ```python
   try:
       import pandas as pd
@@ -21,17 +21,17 @@ Your library already had the correct pattern:
       LIBRARY_AVAILABLE = False
   ```
 
-- **Runtime availability checks** (src/wut_is/adapters/pandas.py:22-23):
+- **Runtime availability checks** (src/pretty_little_summary/adapters/pandas.py:22-23):
   ```python
   def can_handle(obj):
       if not LIBRARY_AVAILABLE:
           return False
   ```
 
-- **Safe adapter loading** (src/wut_is/adapters/__init__.py:10-38):
+- **Safe adapter loading** (src/pretty_little_summary/adapters/__init__.py:10-38):
   ```python
   try:
-      from wut_is.adapters.pandas import PandasAdapter
+      from pretty_little_summary.adapters.pandas import PandasAdapter
   except ImportError:
       pass  # Silently skip if pandas not installed
   ```
@@ -39,12 +39,12 @@ Your library already had the correct pattern:
 ### 2. **New Features Added**
 
 #### A. `list_available_adapters()` Function
-- **Location**: src/wut_is/adapters/_base.py:65-80
+- **Location**: src/pretty_little_summary/adapters/_base.py:65-80
 - **Purpose**: Lets users see which adapters are active based on installed libraries
 - **Usage**:
   ```python
-  import wut_is as wut
-  print(wut.list_available_adapters())
+  import pretty_little_summary as pls
+  print(pls.list_available_adapters())
   # ['PandasAdapter', 'MatplotlibAdapter', 'NumpyAdapter', ...]
   ```
 
@@ -65,22 +65,22 @@ Your library already had the correct pattern:
 # User already has their stack
 pip install pandas numpy matplotlib
 
-# Just add wut-is
-pip install wut-is
+# Just add pretty-little-summary
+pip install pretty-little-summary
 
 # Works automatically!
-import wut_is as wut
-wut.is_(my_dataframe)  # PandasAdapter auto-activates
+import pretty_little_summary as pls
+pls.describe(my_dataframe)  # PandasAdapter auto-activates
 ```
 
 **Pattern 2: With Extras**
 ```bash
-pip install wut-is[pandas,viz]  # Install specific extras
+pip install pretty-little-summary[pandas,viz]  # Install specific extras
 ```
 
 **Pattern 3: Everything**
 ```bash
-pip install wut-is[all]  # For development
+pip install pretty-little-summary[all]  # For development
 ```
 
 ### Runtime Behavior
@@ -91,7 +91,7 @@ pip install wut-is[all]  # For development
    - Only registers if library is available
 
 2. **Usage Time**:
-   - `wut.is_(obj)` calls each adapter's `can_handle(obj)`
+   - `pls.describe(obj)` calls each adapter's `can_handle(obj)`
    - Adapters with unavailable libraries return `False` immediately
    - Falls back to `GenericAdapter` if no adapter matches
 
@@ -120,10 +120,10 @@ pyproject.toml
 ## Adapter Registration Flow
 
 ```
-User runs: import wut_is
+User runs: import pretty_little_summary
 
-1. wut_is/__init__.py loads
-2. wut_is/adapters/__init__.py loads
+1. pretty_little_summary/__init__.py loads
+2. pretty_little_summary/adapters/__init__.py loads
 3. For each adapter:
    a. Try to import adapter module
    b. Adapter module tries to import its library
@@ -135,7 +135,7 @@ User runs: import wut_is
       - Skip registration (or return False from can_handle)
 4. GenericAdapter always loads (fallback)
 
-User calls: wut.is_(obj)
+User calls: pls.describe(obj)
 
 1. dispatch_adapter(obj) is called
 2. AdapterRegistry checks each registered adapter
@@ -185,10 +185,10 @@ When you publish to PyPI:
 python -m build
 
 # Users install minimal version
-pip install wut-is
+pip install pretty-little-summary
 
 # Or with extras
-pip install wut-is[data,viz]
+pip install pretty-little-summary[data,viz]
 ```
 
 The `pyproject.toml` already has everything configured correctly!
@@ -198,34 +198,34 @@ The `pyproject.toml` already has everything configured correctly!
 ### Scenario 1: Data Scientist with Existing Stack
 ```bash
 # Already has pandas, numpy, matplotlib
-pip install wut-is
+pip install pretty-little-summary
 # Works immediately with all their types!
 ```
 
 ### Scenario 2: New User, Specific Need
 ```bash
-pip install wut-is[pandas]
-# Gets pandas + wut-is, nothing extra
+pip install pretty-little-summary[pandas]
+# Gets pandas + pretty-little-summary, nothing extra
 ```
 
 ### Scenario 3: Library Developer
 ```bash
-pip install wut-is
+pip install pretty-little-summary
 # Minimal dependencies, no bloat in their project
 ```
 
 ### Scenario 4: Comprehensive Testing
 ```bash
-pip install wut-is[all]
+pip install pretty-little-summary[all]
 # Everything for testing/development
 ```
 
 ## Files Modified/Created
 
 ### Modified
-- `src/wut_is/adapters/_base.py` - Added `list_available_adapters()`
-- `src/wut_is/adapters/__init__.py` - Export new function
-- `src/wut_is/__init__.py` - Export new function at top level
+- `src/pretty_little_summary/adapters/_base.py` - Added `list_available_adapters()`
+- `src/pretty_little_summary/adapters/__init__.py` - Export new function
+- `src/pretty_little_summary/__init__.py` - Export new function at top level
 
 ### Created
 - `tests/test_list_adapters.py` - Tests for the utility function

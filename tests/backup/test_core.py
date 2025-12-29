@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from wut_is.core import Config, HistorySlicer, configure
+from pretty_little_summary.core import Config, HistorySlicer, configure
 
 
 def test_config_singleton():
