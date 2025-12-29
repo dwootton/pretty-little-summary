@@ -1,4 +1,4 @@
-"""Pytest fixtures for vibe_check tests."""
+"""Pytest fixtures for wut_is tests."""
 
 from unittest.mock import Mock
 
@@ -10,7 +10,7 @@ def mock_config():
     """Mock configuration with API key set."""
     from unittest.mock import patch
 
-    with patch("vibe_check.core.Config.get_instance") as mock:
+    with patch("wut_is.core.Config.get_instance") as mock:
         config = Mock()
         config.openrouter_api_key = "test-key-123"
         config.openrouter_model = "anthropic/claude-3.5-sonnet"

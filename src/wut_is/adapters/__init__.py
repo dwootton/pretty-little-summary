@@ -8,6 +8,11 @@ from wut_is.adapters._base import Adapter, AdapterRegistry, dispatch_adapter
 
 # Optional adapters - import attempts, silently skips if library unavailable
 try:
+    from wut_is.adapters.primitives import PrimitiveAdapter
+except ImportError:
+    pass
+
+try:
     from wut_is.adapters.pandas import PandasAdapter
 except ImportError:
     pass

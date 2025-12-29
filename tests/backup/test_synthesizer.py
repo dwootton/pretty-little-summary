@@ -4,8 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from vibe_check.core import APIError
-from vibe_check.synthesizer import OpenRouterClient, deterministic_summary
+from wut_is.core import APIError
+from wut_is.synthesizer import OpenRouterClient, deterministic_summary
 
 
 def test_deterministic_summary_basic():

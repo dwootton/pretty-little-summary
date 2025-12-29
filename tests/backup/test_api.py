@@ -4,13 +4,13 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from vibe_check.api import VibeCheck, check
-from vibe_check.core import ConfigurationError
+from wut_is.api import WutIs, is_
+from wut_is.core import ConfigurationError
 
 
-def test_vibecheck_dataclass():
-    """VibeCheck dataclass works correctly."""
-    result = VibeCheck(
+def test_wutis_dataclass():
+    """WutIs dataclass works correctly."""
+    result = WutIs(
         content="Test summary", meta={"object_type": "test"}, history=["line 1"]
     )
 
@@ -19,10 +19,10 @@ def test_vibecheck_dataclass():
     assert result.history == ["line 1"]
 
 
-@patch("vibe_check.api.dispatch_adapter")
-@patch("vibe_check.api.HistorySlicer")
+@patch("wut_is.api.dispatch_adapter")
+@patch("wut_is.api.HistorySlicer")
 def test_check_explain_false(mock_history, mock_dispatch):
-    """check() with explain=False uses deterministic summary."""
+    """is_() with explain=False uses deterministic summary."""
     # Mock adapter
     mock_dispatch.return_value = {
         "object_type": "pandas.DataFrame",
@@ -35,20 +35,20 @@ def test_check_explain_false(mock_history, mock_dispatch):
 
     # Call check with explain=False (no API key needed)
     obj = {"test": "data"}
-    result = check(obj, explain=False)
+    result = is_(obj, explain=False)
 
-    assert isinstance(result, VibeCheck)
+    assert isinstance(result, WutIs)
     assert "pandas.DataFrame" in result.content
     assert "Shape: (10, 3)" in result.content
     assert result.meta["object_type"] == "pandas.DataFrame"
 
 
-@patch("vibe_check.api.OpenRouterClient")
-@patch("vibe_check.api.dispatch_adapter")
-@patch("vibe_check.api.HistorySlicer")
-@patch("vibe_check.api.Config")
-def test_check_explain_true(mock_config_class, mock_history, mock_dispatch, mock_client_class):
-    """check() with explain=True calls LLM."""
+@patch("wut_is.api.OpenRouterClient")
+@patch("wut_is.api.dispatch_adapter")
+@patch("wut_is.api.HistorySlicer")
+@patch("wut_is.api.Config")
+def test_is_explain_true(mock_config_class, mock_history, mock_dispatch, mock_client_class):
+    """is_() with explain=True calls LLM."""
     # Mock config
     mock_config = Mock()
     mock_config.openrouter_api_key = "test-key"
@@ -72,16 +72,16 @@ def test_check_explain_true(mock_config_class, mock_history, mock_dispatch, mock
 
     # Call check with explain=True
     obj = {"test": "data"}
-    result = check(obj, explain=True)
+    result = is_(obj, explain=True)
 
-    assert isinstance(result, VibeCheck)
+    assert isinstance(result, WutIs)
     assert result.content == "LLM generated summary"
     mock_client.synthesize.assert_called_once()
 
 
-@patch("vibe_check.api.Config")
-def test_check_no_api_key_raises_error(mock_config_class):
-    """check() with explain=True and no API key raises ConfigurationError."""
+@patch("wut_is.api.Config")
+def test_is_no_api_key_raises_error(mock_config_class):
+    """is_() with explain=True and no API key raises ConfigurationError."""
     # Mock config without API key
     mock_config = Mock()
     mock_config.openrouter_api_key = None
@@ -90,13 +90,13 @@ def test_check_no_api_key_raises_error(mock_config_class):
     obj = {"test": "data"}
 
     with pytest.raises(ConfigurationError):
-        check(obj, explain=True)
+        is_(obj, explain=True)
 
 
-@patch("vibe_check.api.dispatch_adapter")
-@patch("vibe_check.api.HistorySlicer")
-def test_check_includes_history(mock_history, mock_dispatch):
-    """check() includes history when available."""
+@patch("wut_is.api.dispatch_adapter")
+@patch("wut_is.api.HistorySlicer")
+def test_is_includes_history(mock_history, mock_dispatch):
+    """is_() includes history when available."""
     # Mock adapter
     mock_dispatch.return_value = {
         "object_type": "test",
@@ -108,7 +108,7 @@ def test_check_includes_history(mock_history, mock_dispatch):
     mock_history.get_history.return_value = ["line 1", "line 2"]
 
     obj = {"test": "data"}
-    result = check(obj, explain=False)
+    result = is_(obj, explain=False)
 
     assert result.history == ["line 1", "line 2"]
     mock_history.get_history.assert_called_once()

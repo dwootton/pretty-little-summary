@@ -2,7 +2,7 @@
 
 import pytest
 
-from vibe_check.adapters import (
+from wut_is.adapters import (
     AdapterRegistry,
     GenericAdapter,
     PandasAdapter,
@@ -30,7 +30,10 @@ def test_generic_adapter_extracts_metadata():
 
 def test_dispatch_adapter_uses_generic_fallback():
     """dispatch_adapter uses GenericAdapter for unknown types."""
-    obj = "test string"
+    class CustomType:
+        pass
+
+    obj = CustomType()
     meta = dispatch_adapter(obj)
 
     assert meta["adapter_used"] == "GenericAdapter"

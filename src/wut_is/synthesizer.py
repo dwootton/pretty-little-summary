@@ -223,9 +223,10 @@ def deterministic_summary(
         # Value (for simple types)
         if "value" in gen_meta:
             val = gen_meta["value"]
-            if len(val) > 50:
-                val = val[:50] + "..."
-            lines.append(f"Value: {val}")
+            val_str = str(val)
+            if len(val_str) > 50:
+                val_str = val_str[:50] + "..."
+            lines.append(f"Value: {val_str}")
 
         # Preview (for strings)
         if "preview" in gen_meta:
@@ -241,6 +242,22 @@ def deterministic_summary(
             if len(attrs) > 5:
                 attr_preview += "..."
             lines.append(f"Attributes: {attr_preview}")
+
+        # Pattern or document type hints
+        if "pattern" in gen_meta:
+            lines.append(f"Pattern: {gen_meta['pattern']}")
+        if "document_type" in gen_meta:
+            lines.append(f"Doc type: {gen_meta['document_type']}")
+        if "format" in gen_meta:
+            lines.append(f"Format: {gen_meta['format']}")
+        if "stats" in gen_meta:
+            lines.append(f"Stats: {gen_meta['stats']}")
+        if "cardinality" in gen_meta:
+            lines.append(f"Cardinality: {gen_meta['cardinality']}")
+        if "null_count" in gen_meta:
+            lines.append(f"Nulls: {gen_meta['null_count']}")
+        if "memory_bytes" in gen_meta:
+            lines.append(f"Memory: {gen_meta['memory_bytes']} bytes")
 
     # Warnings
     if "warnings" in metadata and metadata["warnings"]:

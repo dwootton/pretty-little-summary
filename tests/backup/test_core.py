@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from vibe_check.core import Config, HistorySlicer, configure
+from wut_is.core import Config, HistorySlicer, configure
 
 
 def test_config_singleton():

@@ -1,1 +1,1 @@
-"""Test suite for vibe_check."""
+"""Test suite for wut_is."""

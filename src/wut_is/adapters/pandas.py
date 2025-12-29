@@ -10,6 +10,8 @@ except ImportError:
 
 from wut_is.adapters._base import AdapterRegistry
 from wut_is.core import MetaDescription
+from wut_is.descriptor_registry import DescribeConfigRegistry
+from wut_is.descriptor_utils import compute_cardinality, compute_numeric_stats, safe_repr
 
 
 class PandasAdapter:
@@ -29,10 +31,12 @@ class PandasAdapter:
         try:
             import pandas as pd
 
+            config = DescribeConfigRegistry.get()
             meta: MetaDescription = {
                 "object_type": f"pandas.{type(obj).__name__}",
                 "adapter_used": "PandasAdapter",
             }
+            metadata: dict[str, Any] = {}
 
             # Shape
             try:
@@ -64,12 +68,17 @@ class PandasAdapter:
                         meta.setdefault("warnings", []).append(
                             f"Could not get sample data: {e}"
                         )
+                metadata.update(_describe_dataframe(obj, config))
             else:
                 # Series
                 try:
                     meta["dtypes"] = {"dtype": str(obj.dtype)}
                 except Exception as e:
                     meta.setdefault("warnings", []).append(f"Could not get dtype: {e}")
+                metadata.update(_describe_series(obj, config))
+
+            if metadata:
+                meta["metadata"] = metadata
 
             return meta
 
@@ -87,3 +96,148 @@ class PandasAdapter:
 # Auto-register if library is available
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(PandasAdapter)
+
+
+def _describe_series(series: "pd.Series", config) -> dict[str, Any]:
+    metadata: dict[str, Any] = {
+        "type": "series",
+        "length": int(series.shape[0]),
+        "name": series.name if series.name is not None else None,
+        "dtype": str(series.dtype),
+    }
+
+    try:
+        metadata["index_type"] = type(series.index).__name__
+        metadata["index_sample"] = [safe_repr(v, 50) for v in series.index[: config.sample_size]]
+    except Exception:
+        pass
+
+    try:
+        nulls = int(series.isna().sum())
+        metadata["null_count"] = nulls
+    except Exception:
+        pass
+
+    try:
+        sample = series.head(config.sample_size).tolist()
+        metadata["sample_values"] = [safe_repr(v, config.max_sample_repr) for v in sample]
+    except Exception:
+        pass
+
+    if _is_numeric(series):
+        try:
+            samples = _sample_series_values(series, 10000)
+            stats = compute_numeric_stats(samples)
+            if stats:
+                metadata["stats"] = stats.to_prose()
+                metadata["stats_sample_size"] = len(samples)
+        except Exception:
+            pass
+    else:
+        try:
+            samples = _sample_series_values(series, 10000)
+            cardinality = compute_cardinality(samples)
+            metadata["cardinality"] = cardinality.to_prose()
+            metadata["cardinality_sample_size"] = len(samples)
+        except Exception:
+            pass
+
+    return metadata
+
+
+def _describe_dataframe(df: "pd.DataFrame", config) -> dict[str, Any]:
+    metadata: dict[str, Any] = {
+        "type": "dataframe",
+        "rows": int(df.shape[0]),
+        "columns": int(df.shape[1]),
+    }
+
+    try:
+        metadata["index_type"] = type(df.index).__name__
+        metadata["index_sample"] = [safe_repr(v, 50) for v in df.index[: config.sample_size]]
+    except Exception:
+        pass
+
+    try:
+        nulls = int(df.isna().sum().sum())
+        metadata["null_count"] = nulls
+    except Exception:
+        pass
+
+    try:
+        memory = int(df.memory_usage(deep=True).sum())
+        metadata["memory_bytes"] = memory
+    except Exception:
+        pass
+
+    try:
+        metadata["column_analysis"] = _analyze_columns(df, config)
+    except Exception:
+        pass
+
+    return metadata
+
+
+def _analyze_columns(df: "pd.DataFrame", config) -> list[dict[str, Any]]:
+    analysis: list[dict[str, Any]] = []
+    for col in list(df.columns)[: min(len(df.columns), 25)]:
+        series = df[col]
+        col_meta: dict[str, Any] = {
+            "name": str(col),
+            "dtype": str(series.dtype),
+        }
+        try:
+            col_meta["null_count"] = int(series.isna().sum())
+        except Exception:
+            pass
+
+        try:
+            sample = series.head(config.sample_size).tolist()
+            col_meta["sample_values"] = [safe_repr(v, config.max_sample_repr) for v in sample]
+        except Exception:
+            pass
+
+        if _is_numeric(series):
+            try:
+                samples = _sample_series_values(series, 10000)
+                stats = compute_numeric_stats(samples)
+                if stats:
+                    col_meta["stats"] = stats.to_prose()
+                    col_meta["stats_sample_size"] = len(samples)
+            except Exception:
+                pass
+        else:
+            try:
+                samples = _sample_series_values(series, 10000)
+                cardinality = compute_cardinality(samples)
+                col_meta["cardinality"] = cardinality.to_prose()
+                col_meta["cardinality_sample_size"] = len(samples)
+            except Exception:
+                pass
+
+        analysis.append(col_meta)
+    return analysis
+
+
+def _is_numeric(series: "pd.Series") -> bool:
+    try:
+        return series.dtype.kind in {"i", "u", "f"}
+    except Exception:
+        return False
+
+
+def _sample_series_values(series: "pd.Series", limit: int) -> list[Any]:
+    try:
+        cleaned = series.dropna()
+    except Exception:
+        cleaned = series
+    try:
+        length = len(cleaned)
+        if length > limit:
+            return cleaned.sample(n=limit, random_state=0).tolist()
+        return cleaned.tolist()
+    except Exception:
+        try:
+            return cleaned.head(limit).tolist()
+        except Exception:
+            return []
