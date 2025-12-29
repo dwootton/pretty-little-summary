@@ -21,10 +21,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/pretty-little-summary"
-Repository = "https://github.com/your-org/pretty-little-summary"
-Issues = "https://github.com/your-org/pretty-little-summary/issues"
-Documentation = "https://your-org.github.io/pretty-little-summary"
+Homepage = "https://github.com/dwootton/pretty-little-summary"
+Repository = "https://github.com/dwootton/pretty-little-summary"
+Issues = "https://github.com/dwootton/pretty-little-summary/issues"
+Documentation = "https://dwootton.github.io/pretty-little-summary"
 
 # Core dependencies (always installed)
 dependencies = []
