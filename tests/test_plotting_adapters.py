@@ -17,7 +17,8 @@ def test_plotly_adapter() -> None:
     assert meta["metadata"]["type"] == "plotly_figure"
     summary = deterministic_summary(meta)
     print("plotly:", summary)
-    assert "Plotly figure with" in summary
+    expected = f"A Plotly figure with {meta['metadata'].get('traces')} traces."
+    assert summary == expected
 
 
 bokeh_plotting = pytest.importorskip("bokeh.plotting")
@@ -32,7 +33,8 @@ def test_bokeh_adapter() -> None:
     assert meta["metadata"]["type"] == "bokeh_figure"
     summary = deterministic_summary(meta)
     print("bokeh:", summary)
-    assert "Bokeh figure" in summary
+    expected = f"A Bokeh figure with {meta['metadata'].get('renderers')} renderers."
+    assert summary == expected
 
 
 seaborn = pytest.importorskip("seaborn")
@@ -47,7 +49,8 @@ def test_seaborn_adapter() -> None:
     assert meta["metadata"]["type"] == "seaborn_grid"
     summary = deterministic_summary(meta)
     print("seaborn:", summary)
-    assert "seaborn" in summary
+    expected = f"A seaborn {meta['metadata'].get('grid_type')} with {meta['metadata'].get('axes_count')} axes."
+    assert summary == expected
 
 
 altair = pytest.importorskip("altair")
@@ -62,7 +65,7 @@ def test_altair_adapter() -> None:
     assert meta["chart_type"] == "line"
     summary = deterministic_summary(meta)
     print("altair:", summary)
-    assert "Altair chart" in summary
+    assert summary == "An Altair chart with mark 'line'."
 
 
 matplotlib = pytest.importorskip("matplotlib")
@@ -76,7 +79,8 @@ def test_matplotlib_adapter() -> None:
     assert meta["adapter_used"] == "MatplotlibAdapter"
     summary = deterministic_summary(meta)
     print("mpl_fig:", summary)
-    assert "matplotlib figure" in summary
+    expected = f"A matplotlib figure with {meta.get('metadata', {}).get('num_subplots') or 'unknown'} subplots."
+    assert summary == expected
 
 
 def test_matplotlib_axes_inference() -> None:
@@ -87,7 +91,7 @@ def test_matplotlib_axes_inference() -> None:
     assert meta["adapter_used"] == "MatplotlibAdapter"
     summary = deterministic_summary(meta)
     print("mpl_axes:", summary)
-    assert "matplotlib axes" in summary
+    assert summary == "A matplotlib axes with plotted elements."
 
 
 def test_matplotlib_axes_image_hist() -> None:
@@ -97,4 +101,4 @@ def test_matplotlib_axes_image_hist() -> None:
     meta = dispatch_adapter(ax)
     summary = deterministic_summary(meta)
     print("mpl_axes_image_hist:", summary)
-    assert "matplotlib axes" in summary
+    assert summary == "A matplotlib axes with plotted elements."

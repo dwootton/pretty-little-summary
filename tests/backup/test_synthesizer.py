@@ -19,10 +19,7 @@ def test_deterministic_summary_basic():
 
     result = deterministic_summary(meta)
 
-    assert "pandas.DataFrame" in result
-    assert "Shape: (100, 5)" in result
-    assert "Columns: a, b, c, d, e" in result
-    assert "PandasAdapter" in result
+    assert result == "pandas.DataFrame | Shape: (100, 5) | Columns: a, b, c, d, e | [via PandasAdapter]"
 
 
 def test_deterministic_summary_with_many_columns():
@@ -35,8 +32,7 @@ def test_deterministic_summary_with_many_columns():
 
     result = deterministic_summary(meta)
 
-    assert "..." in result
-    assert "(20 total)" in result
+    assert result == "pandas.DataFrame | Columns: col0, col1, col2, col3, col4, ... (20 total) | [via PandasAdapter]"
 
 
 def test_deterministic_summary_graph():
@@ -50,8 +46,7 @@ def test_deterministic_summary_graph():
 
     result = deterministic_summary(meta)
 
-    assert "Nodes: 50" in result
-    assert "Edges: 120" in result
+    assert result == "networkx.Graph | Nodes: 50 | Edges: 120 | [via NetworkXAdapter]"
 
 
 def test_deterministic_summary_ml_model():
@@ -65,7 +60,7 @@ def test_deterministic_summary_ml_model():
 
     result = deterministic_summary(meta)
 
-    assert "Parameters: 1,000,000" in result
+    assert result == "sklearn.RandomForestClassifier | Parameters: 1,000,000 | Status: fitted | [via SklearnAdapter]"
 
 
 @patch("httpx.post")

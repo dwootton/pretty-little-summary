@@ -20,5 +20,6 @@ def test_attrs_adapter() -> None:
     meta = dispatch_adapter(obj)
     assert meta["adapter_used"] == "AttrsAdapter"
     assert meta["metadata"]["type"] == "attrs"
-    print("attrs:", deterministic_summary(meta))
-    assert "attrs class" in deterministic_summary(meta)
+    summary = deterministic_summary(meta)
+    print("attrs:", summary)
+    assert summary == "An attrs class Person with 2 attributes."

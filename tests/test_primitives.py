@@ -13,7 +13,7 @@ def test_int_special_year() -> None:
     assert meta["metadata"]["special_form"]["type"] == "year"
     summary = deterministic_summary(meta)
     print("int:", summary)
-    assert "integer 2020" in summary
+    assert summary == "The integer 2020, likely a year."
 
 
 def test_float_probability_pattern() -> None:
@@ -23,7 +23,7 @@ def test_float_probability_pattern() -> None:
     assert meta["metadata"]["pattern"] == "probability"
     summary = deterministic_summary(meta)
     print("float:", summary)
-    assert "float 0.5" in summary
+    assert summary == "A float 0.5, likely representing a probability."
 
 
 def test_short_string_url_pattern() -> None:
@@ -32,7 +32,7 @@ def test_short_string_url_pattern() -> None:
     assert meta["metadata"]["pattern"] == "url"
     summary = deterministic_summary(meta)
     print("string_url:", summary)
-    assert "string containing a url" in summary
+    assert summary == "A string containing a url: 'https://example.com/foo'."
 
 
 def test_long_string_markdown_document() -> None:
@@ -43,7 +43,7 @@ def test_long_string_markdown_document() -> None:
     assert meta["metadata"]["document_type"] == "markdown"
     summary = deterministic_summary(meta)
     print("string_md:", summary)
-    assert "markdown document string" in summary
+    assert summary == "A markdown document string (570 chars)."
 
 
 def test_bytes_signature() -> None:
@@ -53,7 +53,7 @@ def test_bytes_signature() -> None:
     assert meta["metadata"]["format"] == "png"
     summary = deterministic_summary(meta)
     print("bytes:", summary)
-    assert "png data" in summary
+    assert summary == "A bytes object containing png data (28 bytes)."
 
 
 def test_complex_number() -> None:
@@ -61,7 +61,7 @@ def test_complex_number() -> None:
     assert meta["metadata"]["type"] == "complex"
     summary = deterministic_summary(meta)
     print("complex:", summary)
-    assert "complex number" in summary
+    assert summary == "A complex number 3.0 + 4.0i."
 
 
 def test_decimal_number() -> None:
@@ -69,7 +69,7 @@ def test_decimal_number() -> None:
     assert meta["metadata"]["type"] == "decimal"
     summary = deterministic_summary(meta)
     print("decimal:", summary)
-    assert "Decimal value" in summary
+    assert summary == "A Decimal value 12.34 with 4 digits of precision."
 
 
 def test_fraction_number() -> None:
@@ -77,4 +77,4 @@ def test_fraction_number() -> None:
     assert meta["metadata"]["type"] == "fraction"
     summary = deterministic_summary(meta)
     print("fraction:", summary)
-    assert "Fraction" in summary
+    assert summary == "A Fraction 1/3."

@@ -16,7 +16,7 @@ def test_numpy_1d_array() -> None:
     assert meta["metadata"]["type"] == "ndarray"
     summary = deterministic_summary(meta)
     print("numpy_1d:", summary)
-    assert "A numpy array with shape (10,)" in summary
+    assert summary == "A numpy array with shape (10,) and dtype int64."
 
 
 def test_numpy_2d_array() -> None:
@@ -25,7 +25,7 @@ def test_numpy_2d_array() -> None:
     assert meta["metadata"]["ndim"] == 2
     summary = deterministic_summary(meta)
     print("numpy_2d:", summary)
-    assert "shape (3, 4)" in summary
+    assert summary == "A numpy array with shape (3, 4) and dtype float64."
 
 
 def test_numpy_scalar() -> None:
@@ -34,4 +34,4 @@ def test_numpy_scalar() -> None:
     assert meta["metadata"]["type"] == "numpy_scalar"
     summary = deterministic_summary(meta)
     print("numpy_scalar:", summary)
-    assert "numpy float64 scalar" in summary
+    assert summary == "A numpy float64 scalar with value 3.14."

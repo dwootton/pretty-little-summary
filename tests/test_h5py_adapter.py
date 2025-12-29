@@ -15,5 +15,6 @@ def test_h5py_dataset() -> None:
         meta = dispatch_adapter(dset)
         assert meta["adapter_used"] == "H5pyAdapter"
         assert meta["metadata"]["type"] == "h5py_dataset"
-        print("h5py:", deterministic_summary(meta))
-        assert "HDF5 Dataset" in deterministic_summary(meta)
+        summary = deterministic_summary(meta)
+        print("h5py:", summary)
+        assert summary == "An HDF5 Dataset '/data' with shape (3,) and dtype int64."

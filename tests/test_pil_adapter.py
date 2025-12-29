@@ -16,8 +16,9 @@ def test_pil_image_adapter() -> None:
     assert meta["adapter_used"] == "PILAdapter"
     assert meta["metadata"]["type"] == "pil_image"
     assert meta["metadata"]["width"] == 64
-    print("pil_image:", deterministic_summary(meta))
-    assert "PIL image" in deterministic_summary(meta)
+    summary = deterministic_summary(meta)
+    print("pil_image:", summary)
+    assert summary == "A PIL image 64x32 in RGB mode."
 
 
 def test_pil_image_list_adapter() -> None:
@@ -25,5 +26,6 @@ def test_pil_image_list_adapter() -> None:
     meta = dispatch_adapter(imgs)
     assert meta["metadata"]["type"] == "pil_image_list"
     assert meta["metadata"]["count"] == 3
-    print("pil_list:", deterministic_summary(meta))
-    assert "list of 3 PIL images" in deterministic_summary(meta)
+    summary = deterministic_summary(meta)
+    print("pil_list:", summary)
+    assert summary == "A list of 3 PIL images."

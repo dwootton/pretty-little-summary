@@ -19,7 +19,7 @@ def test_pandas_series_metadata() -> None:
     assert "null_count" in meta["metadata"]
     summary = deterministic_summary(meta)
     print("pandas_series:", summary)
-    assert "pandas Series 'price'" in summary
+    assert summary == "A pandas Series 'price' with 4 values."
 
 
 def test_pandas_dataframe_metadata() -> None:
@@ -32,7 +32,7 @@ def test_pandas_dataframe_metadata() -> None:
     assert "column_analysis" in meta["metadata"]
     summary = deterministic_summary(meta)
     print("pandas_df:", summary)
-    assert "pandas DataFrame with 3 rows and 2 columns" in summary
+    assert summary == "A pandas DataFrame with 3 rows and 2 columns."
 
 
 def test_pandas_series_sampling_limit_10k() -> None:
@@ -60,7 +60,7 @@ def test_pandas_index_types() -> None:
     assert meta["metadata"]["type"] == "index"
     summary = deterministic_summary(meta)
     print("pandas_index:", summary)
-    assert "pandas Index with 3 entries" in summary
+    assert summary == "A pandas Index with 3 entries."
 
 
 def test_pandas_categorical() -> None:
@@ -69,4 +69,4 @@ def test_pandas_categorical() -> None:
     assert meta["metadata"]["type"] == "categorical"
     summary = deterministic_summary(meta)
     print("pandas_cat:", summary)
-    assert "pandas Categorical" in summary
+    assert summary == "A pandas Categorical with 2 categories."

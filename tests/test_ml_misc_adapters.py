@@ -14,8 +14,9 @@ def test_tensorflow_adapter() -> None:
     meta = dispatch_adapter(tensor)
     assert meta["adapter_used"] == "TensorflowAdapter"
     assert meta["metadata"]["type"] == "tf_tensor"
-    print("tensorflow:", deterministic_summary(meta))
-    assert "TensorFlow tensor" in deterministic_summary(meta)
+    summary = deterministic_summary(meta)
+    print("tensorflow:", summary)
+    assert summary == "A TensorFlow tensor with shape (2,)."
 
 
 jax = pytest.importorskip("jax")
@@ -27,8 +28,9 @@ def test_jax_adapter() -> None:
     meta = dispatch_adapter(arr)
     assert meta["adapter_used"] == "JaxAdapter"
     assert meta["metadata"]["type"] == "jax_array"
-    print("jax:", deterministic_summary(meta))
-    assert "JAX array" in deterministic_summary(meta)
+    summary = deterministic_summary(meta)
+    print("jax:", summary)
+    assert summary == "A JAX array with shape (3,)."
 
 
 statsmodels = pytest.importorskip("statsmodels.api")
@@ -44,8 +46,9 @@ def test_statsmodels_adapter() -> None:
     meta = dispatch_adapter(model)
     assert meta["adapter_used"] == "StatsmodelsAdapter"
     assert meta["metadata"]["type"] == "statsmodels_result"
-    print("statsmodels:", deterministic_summary(meta))
-    assert "statsmodels results object" in deterministic_summary(meta)
+    summary = deterministic_summary(meta)
+    print("statsmodels:", summary)
+    assert summary == "A statsmodels results object RegressionResultsWrapper."
 
 
 sklearn = pytest.importorskip("sklearn")
@@ -65,4 +68,9 @@ def test_sklearn_pipeline_adapter() -> None:
     assert meta["adapter_used"] == "SklearnPipelineAdapter"
     summary = deterministic_summary(meta)
     print("sklearn_pipeline:", summary)
-    assert "sklearn Pipeline" in summary
+    assert summary == (
+        "A unfitted sklearn Pipeline with 2 steps:\n"
+        "1. 'imputer': SimpleImputer\n"
+        "2. 'scaler': StandardScaler\n"
+        "Expects input shape (*, ?), outputs class predictions."
+    )

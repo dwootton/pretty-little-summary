@@ -15,7 +15,7 @@ def test_generic_adapter_nl() -> None:
 
     meta = dispatch_adapter(Custom())
     summary = deterministic_summary(meta)
-    assert "An object of type" in summary
+    assert summary == f"An object of type {meta['object_type']}."
 
 
 def test_async_adapter_nl() -> None:
@@ -25,7 +25,8 @@ def test_async_adapter_nl() -> None:
     coro = sample()
     meta = dispatch_adapter(coro)
     summary = deterministic_summary(meta)
-    assert "async" in summary
+    expected = f"An async {meta['metadata']['type']} in state {meta['metadata']['state']}."
+    assert summary == expected
 
     try:
         loop = asyncio.get_running_loop()
@@ -35,12 +36,14 @@ def test_async_adapter_nl() -> None:
     task = loop.create_task(sample())
     meta = dispatch_adapter(task)
     summary = deterministic_summary(meta)
-    assert "async" in summary
+    expected = f"An async {meta['metadata']['type']} in state {meta['metadata']['state']}."
+    assert summary == expected
 
     fut = asyncio.Future()
     meta = dispatch_adapter(fut)
     summary = deterministic_summary(meta)
-    assert "async" in summary
+    expected = f"An async {meta['metadata']['type']} in state {meta['metadata']['state']}."
+    assert summary == expected
 
 
 def test_traceback_adapter_nl() -> None:
@@ -49,7 +52,18 @@ def test_traceback_adapter_nl() -> None:
     except ValueError as exc:
         meta = dispatch_adapter(exc.__traceback__)
     summary = deterministic_summary(meta)
-    assert "traceback" in summary
+    frames = meta["metadata"]["frames"]
+    expected_parts = [
+        f"A traceback with {meta['metadata']['depth']} frames (most recent last):"
+    ]
+    for frame in frames:
+        expected_parts.append(
+            f"→ {frame.get('filename')}:{frame.get('line')} in {frame.get('name')}()"
+        )
+    last = meta["metadata"].get("last_frame")
+    if last and last.get("code"):
+        expected_parts.append(f"Last frame context: '{last.get('code')}'.")
+    assert summary == "\n".join(expected_parts)
 
 
 networkx = pytest.importorskip("networkx")
@@ -62,7 +76,9 @@ def test_networkx_adapter_nl() -> None:
     g.add_edge("a", "b")
     meta = dispatch_adapter(g)
     summary = deterministic_summary(meta)
-    assert "networkx graph" in summary
+    assert summary == (
+        f"A networkx graph with {meta['node_count']} nodes and {meta['edge_count']} edges."
+    )
 
 
 requests = pytest.importorskip("requests")
@@ -76,7 +92,7 @@ def test_requests_adapter_nl() -> None:
     resp.url = "https://example.com"
     meta = dispatch_adapter(resp)
     summary = deterministic_summary(meta)
-    assert "HTTP response" in summary
+    assert summary == f"An HTTP response with status {meta['status_code']}."
 
 
 polars = pytest.importorskip("polars")
@@ -88,7 +104,7 @@ def test_polars_adapter_nl() -> None:
     df = pl.DataFrame({"a": [1, 2], "b": ["x", "y"]})
     meta = dispatch_adapter(df)
     summary = deterministic_summary(meta)
-    assert "Polars DataFrame" in summary
+    assert summary == f"A Polars DataFrame with shape {meta.get('shape')}."
 
 
 pydantic = pytest.importorskip("pydantic")
@@ -104,7 +120,7 @@ def test_pydantic_adapter_nl() -> None:
     user = User(name="alice", age=30)
     meta = dispatch_adapter(user)
     summary = deterministic_summary(meta)
-    assert "Pydantic model" in summary
+    assert summary == f"A Pydantic model {meta['object_type']}."
 
 
 torch = pytest.importorskip("torch")
@@ -116,7 +132,7 @@ def test_pytorch_adapter_nl() -> None:
     tensor = t.tensor([1.0, 2.0])
     meta = dispatch_adapter(tensor)
     summary = deterministic_summary(meta)
-    assert "PyTorch tensor" in summary
+    assert summary == f"A PyTorch tensor with shape {meta['metadata']['shape']}."
 
 
 xarray = pytest.importorskip("xarray")
@@ -128,4 +144,4 @@ def test_xarray_adapter_nl() -> None:
     arr = xr.DataArray([[1, 2], [3, 4]], dims=["x", "y"])
     meta = dispatch_adapter(arr)
     summary = deterministic_summary(meta)
-    assert "xarray object" in summary
+    assert summary == f"An xarray object {meta['object_type']} with shape {meta.get('shape')}."

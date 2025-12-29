@@ -15,5 +15,6 @@ def test_pyarrow_table() -> None:
     assert meta["adapter_used"] == "PyArrowAdapter"
     assert meta["metadata"]["type"] == "pyarrow_table"
     assert meta["metadata"]["rows"] == 2
-    print("pyarrow:", deterministic_summary(meta))
-    assert "PyArrow Table" in deterministic_summary(meta)
+    summary = deterministic_summary(meta)
+    print("pyarrow:", summary)
+    assert summary == "A PyArrow Table with 2 rows and 2 columns."

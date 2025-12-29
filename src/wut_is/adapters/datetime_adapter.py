@@ -99,7 +99,6 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
         iso = metadata.get("iso")
         tz = metadata.get("timezone")
         weekday = metadata.get("weekday")
-        relative = _format_relative(metadata.get("relative_days"))
         parts = [f"A datetime: {iso}."]
         if tz:
             parts.append(f"Timezone: {tz}.")
@@ -107,18 +106,13 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
             parts.append("Timezone: naive.")
         if weekday:
             parts.append(f"{weekday}.")
-        if relative:
-            parts.append(relative)
         return " ".join(parts)
     if dtype == "date":
         iso = metadata.get("iso")
         weekday = metadata.get("weekday")
-        relative = _format_relative(metadata.get("relative_days"))
         parts = [f"A date: {iso}."]
         if weekday:
             parts.append(f"{weekday}.")
-        if relative:
-            parts.append(relative)
         return " ".join(parts)
     if dtype == "time":
         iso = metadata.get("iso")

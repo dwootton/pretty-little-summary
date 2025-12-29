@@ -13,7 +13,7 @@ def test_json_string() -> None:
     assert meta["metadata"]["format"] == "json"
     summary = deterministic_summary(meta)
     print("json:", summary)
-    assert "JSON string" in summary
+    assert summary == "A valid JSON string containing an object with keys: name, age."
 
 
 def test_xml_string() -> None:
@@ -22,7 +22,7 @@ def test_xml_string() -> None:
     assert meta["metadata"]["format"] == "xml"
     summary = deterministic_summary(meta)
     print("xml:", summary)
-    assert "XML document" in summary
+    assert summary == "A valid XML document with root <root>."
 
 
 def test_html_string() -> None:
@@ -31,7 +31,7 @@ def test_html_string() -> None:
     assert meta["metadata"]["format"] == "html"
     summary = deterministic_summary(meta)
     print("html:", summary)
-    assert "HTML document" in summary
+    assert summary == "An HTML document or fragment."
 
 
 def test_csv_string() -> None:
@@ -40,8 +40,11 @@ def test_csv_string() -> None:
     assert meta["metadata"]["format"] == "csv"
     summary = deterministic_summary(meta)
     print("csv:", summary)
-    assert "A CSV string" in summary
-    assert "Best displayed as sortable table." in summary
+    assert summary == (
+        "A CSV string with 3 rows and 3 columns (,-delimited). "
+        "Header: 'a', 'b', 'c'. Sample: [\"'1'\", \"'2'\", \"'3'\"]. "
+        "Column types: int, int, int. Best displayed as sortable table."
+    )
 
 
 def test_yaml_string() -> None:
@@ -51,4 +54,4 @@ def test_yaml_string() -> None:
     assert meta["metadata"]["format"] == "yaml"
     summary = deterministic_summary(meta)
     print("yaml:", summary)
-    assert "YAML string" in summary
+    assert summary == "A valid YAML string containing keys: name, age."

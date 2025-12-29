@@ -15,5 +15,6 @@ def test_ipython_display_adapter() -> None:
     meta = dispatch_adapter(obj)
     assert meta["adapter_used"] == "IPythonDisplayAdapter"
     assert meta["metadata"]["type"] == "ipython_display"
-    print("ipython_display:", deterministic_summary(meta))
-    assert "IPython display object" in deterministic_summary(meta)
+    summary = deterministic_summary(meta)
+    print("ipython_display:", summary)
+    assert summary == "An IPython display object with representations: _repr_html_."

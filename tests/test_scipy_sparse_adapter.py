@@ -15,5 +15,6 @@ def test_scipy_sparse_csr() -> None:
     assert meta["adapter_used"] == "ScipySparseAdapter"
     assert meta["metadata"]["type"] == "sparse_matrix"
     assert meta["metadata"]["nnz"] == 2
-    print("scipy_sparse:", deterministic_summary(meta))
-    assert "sparse matrix" in deterministic_summary(meta)
+    summary = deterministic_summary(meta)
+    print("scipy_sparse:", summary)
+    assert summary == "A csr sparse matrix with shape (2, 2)."
