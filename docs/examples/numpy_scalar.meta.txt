@@ -1,0 +1,2 @@
+Title: NumPy scalar
+Tags: numpy, scalar

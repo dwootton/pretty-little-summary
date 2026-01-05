@@ -4,22 +4,17 @@ import pytest
 
 from pretty_little_summary.adapters import dispatch_adapter
 from pretty_little_summary.synthesizer import deterministic_summary
+from tests.input import build_input, expected_output, load_example
 
 
 attr = pytest.importorskip("attr")
 
 
-@attr.define
-class Person:
-    name: str
-    age: int
-
-
 def test_attrs_adapter() -> None:
-    obj = Person("alice", 30)
-    meta = dispatch_adapter(obj)
+    example = load_example("attrs_adapter")
+    meta = dispatch_adapter(build_input(example))
     assert meta["adapter_used"] == "AttrsAdapter"
     assert meta["metadata"]["type"] == "attrs"
     summary = deterministic_summary(meta)
     print("attrs:", summary)
-    assert summary == "An attrs class Person with 2 attributes."
+    assert summary == expected_output(example, meta)

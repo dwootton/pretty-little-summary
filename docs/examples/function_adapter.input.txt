@@ -1,0 +1,1 @@
+def sample_fn(x): return x + 1

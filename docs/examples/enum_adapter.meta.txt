@@ -1,0 +1,2 @@
+Title: Enum
+Tags: stdlib, enum

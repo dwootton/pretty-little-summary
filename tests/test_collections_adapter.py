@@ -1,79 +1,79 @@
 """Tests for collections adapter."""
 
-from collections import Counter, OrderedDict, defaultdict, deque
-
 from pretty_little_summary.adapters import dispatch_adapter
 from pretty_little_summary.synthesizer import deterministic_summary
+from tests.input import build_input, expected_output, load_example
 
 
 def test_list_of_ints_summary() -> None:
-    meta = dispatch_adapter([1, 2, 3, 4, 5])
+    example = load_example("list_of_ints_summary")
+    meta = dispatch_adapter(build_input(example))
     assert meta["adapter_used"] == "CollectionsAdapter"
     assert meta["metadata"]["list_type"] == "ints"
     summary = deterministic_summary(meta)
     print("list_ints:", summary)
-    assert summary == "A list of 5 integers."
+    assert summary == expected_output(example, meta)
 
 
 def test_list_of_dicts_schema() -> None:
-    data = [{"a": 1, "b": "x"}, {"a": 2, "b": "y"}]
-    meta = dispatch_adapter(data)
+    example = load_example("list_of_dicts_schema")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["list_type"] == "list_of_dicts"
     assert "schema" in meta["metadata"]
     summary = deterministic_summary(meta)
     print("list_dicts:", summary)
-    assert summary == "A list of 2 records with 2 consistent fields."
+    assert summary == expected_output(example, meta)
 
 
 def test_tuple_metadata() -> None:
-    meta = dispatch_adapter((1, "x", 3.0))
+    example = load_example("tuple_metadata")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "tuple"
     summary = deterministic_summary(meta)
     print("tuple:", summary)
-    assert summary == "A tuple of 3 elements."
+    assert summary == expected_output(example, meta)
 
 
 def test_ordered_dict_metadata() -> None:
-    obj = OrderedDict([("a", 1), ("b", 2)])
-    meta = dispatch_adapter(obj)
+    example = load_example("ordered_dict_metadata")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "ordered_dict"
     summary = deterministic_summary(meta)
     print("ordered_dict:", summary)
-    assert summary == "A ordered_dict with 2 keys."
+    assert summary == expected_output(example, meta)
 
 
 def test_defaultdict_metadata() -> None:
-    obj = defaultdict(list)
-    obj["a"].append(1)
-    meta = dispatch_adapter(obj)
+    example = load_example("defaultdict_metadata")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "defaultdict"
     summary = deterministic_summary(meta)
     print("defaultdict:", summary)
-    assert summary == "A defaultdict with 1 keys."
+    assert summary == expected_output(example, meta)
 
 
 def test_counter_metadata() -> None:
-    obj = Counter({"a": 2, "b": 1})
-    meta = dispatch_adapter(obj)
+    example = load_example("counter_metadata")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "counter"
     summary = deterministic_summary(meta)
     print("counter:", summary)
-    assert "Counter with 2 unique elements" in summary
+    assert summary == expected_output(example, meta)
 
 
 def test_deque_metadata() -> None:
-    obj = deque([1, 2, 3, 4])
-    meta = dispatch_adapter(obj)
+    example = load_example("deque_metadata")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "deque"
     summary = deterministic_summary(meta)
     print("deque:", summary)
-    assert summary == "A deque of 4 items."
+    assert summary == expected_output(example, meta)
 
 
 def test_range_metadata() -> None:
-    obj = range(0, 10, 2)
-    meta = dispatch_adapter(obj)
+    example = load_example("range_metadata")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "range"
     summary = deterministic_summary(meta)
     print("range:", summary)
-    assert summary == "A range from 0 to 10 with step 2."
+    assert summary == expected_output(example, meta)

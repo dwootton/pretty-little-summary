@@ -1,0 +1,1 @@
+A statsmodels results object RegressionResultsWrapper.

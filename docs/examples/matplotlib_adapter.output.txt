@@ -1,0 +1,1 @@
+A matplotlib figure with 1 subplots.

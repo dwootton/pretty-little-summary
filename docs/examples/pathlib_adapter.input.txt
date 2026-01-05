@@ -1,0 +1,1 @@
+Path(tmp_path / 'sample.txt')

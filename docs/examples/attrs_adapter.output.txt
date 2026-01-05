@@ -1,0 +1,1 @@
+An attrs class Person with 2 attributes.

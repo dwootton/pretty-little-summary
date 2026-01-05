@@ -286,6 +286,117 @@
     .output-content .type { color: var(--purple); font-weight: 500; }
     .output-content .dim { color: var(--text-muted); }
 
+    /* Example gallery */
+    .gallery-controls {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 1.5rem 0;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(236, 72, 153, 0.08));
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(124, 58, 237, 0.15);
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--purple);
+      box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+    }
+
+    .gallery-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .example-card {
+      background: white;
+      border-radius: 14px;
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .example-card h4 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .example-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .example-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: var(--purple-soft);
+      color: var(--purple);
+      padding: 0.2rem 0.45rem;
+      border-radius: 999px;
+    }
+
+    .example-pair {
+      background: var(--bg-warm);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .example-pair-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .example-pair pre {
+      background: transparent;
+      color: var(--text);
+      padding: 0;
+      margin: 0;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .gallery-empty {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 2rem 0;
+    }
+
     /* Adapters */
     .adapters-grid {
       display: grid;
@@ -431,6 +542,7 @@
     <a href="#install">Install</a>
     <a href="#usage">Usage</a>
     <a href="#output">Output</a>
+    <a href="#gallery">Examples</a>
     <a href="#adapters">Adapters</a>
     <a href="#extras">Extras</a>
   </nav>
@@ -513,6 +625,19 @@ result = pls.<span class="fn">describe</span>(messy_data)
           <span class="desc">list — jupyter code lineage</span>
         </div>
       </div>
+    </section>
+
+    <section id="gallery">
+      <h2>Example gallery</h2>
+      <p class="subtle">Browse real inputs and the exact summaries they produce. Search by type, tags, or content.</p>
+
+      <div class="gallery-controls">
+        <input class="search-input" id="example-search" type="search" placeholder="Search examples, tags, or outputs..." />
+        <div class="gallery-count" id="example-count">0 examples</div>
+      </div>
+
+      <div class="gallery-grid" id="example-gallery"></div>
+      <div class="gallery-empty" id="example-empty" style="display:none;">No matches. Try a different search.</div>
     </section>
 
     <section id="adapters">
@@ -605,6 +730,113 @@ result = pls.<span class="fn">describe</span>(messy_data)
       document.getElementById('install-cmd').innerHTML = 
         `<span class="var">pip install</span> ${cmds[type]}`;
     }
+
+    const galleryEl = document.getElementById('example-gallery');
+    const searchInput = document.getElementById('example-search');
+    const countEl = document.getElementById('example-count');
+    const emptyEl = document.getElementById('example-empty');
+    let examples = [];
+
+    function normalizeText(value) {
+      return String(value).toLowerCase();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function matchesQuery(example, query) {
+      if (!query) return true;
+      const haystack = [
+        example.title,
+        example.id,
+        example.input,
+        example.output,
+        ...(example.tags || [])
+      ].map(normalizeText).join(' ');
+      return haystack.includes(query);
+    }
+
+    function renderExamples() {
+      const query = normalizeText(searchInput.value.trim());
+      const filtered = examples.filter(example => matchesQuery(example, query));
+
+      galleryEl.innerHTML = filtered.map(example => {
+        const safeTitle = escapeHtml(example.title);
+        const safeInput = escapeHtml(example.input);
+        const safeOutput = escapeHtml(example.output);
+        const tags = (example.tags || [])
+          .map(tag => `<span class="example-tag">${escapeHtml(tag)}</span>`)
+          .join('');
+        return `
+          <article class="example-card">
+            <h4>${safeTitle}</h4>
+            <div class="example-tags">${tags}</div>
+            <div class="example-pair">
+              <div class="example-pair-label">Input</div>
+              <pre>${safeInput}</pre>
+            </div>
+            <div class="example-pair">
+              <div class="example-pair-label">Output (result.content)</div>
+              <pre>${safeOutput}</pre>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      countEl.textContent = `${filtered.length} example${filtered.length === 1 ? '' : 's'}`;
+      emptyEl.style.display = filtered.length ? 'none' : 'block';
+    }
+
+    function parseMeta(text) {
+      const lines = text.trim().split('\n');
+      const meta = { title: '', tags: [] };
+      lines.forEach(line => {
+        if (line.startsWith('Title:')) {
+          meta.title = line.replace('Title:', '').trim();
+        } else if (line.startsWith('Tags:')) {
+          const tagText = line.replace('Tags:', '').trim();
+          meta.tags = tagText ? tagText.split(',').map(tag => tag.trim()) : [];
+        }
+      });
+      return meta;
+    }
+
+    function loadExample(exampleId) {
+      return Promise.all([
+        fetch(`examples/${exampleId}.meta.txt`).then(res => res.text()),
+        fetch(`examples/${exampleId}.input.txt`).then(res => res.text()),
+        fetch(`examples/${exampleId}.output.txt`).then(res => res.text())
+      ]).then(([metaText, inputText, outputText]) => {
+        const meta = parseMeta(metaText);
+        return {
+          id: exampleId,
+          title: meta.title || exampleId.replace(/_/g, ' '),
+          tags: meta.tags,
+          input: inputText.trim(),
+          output: outputText.trim()
+        };
+      });
+    }
+
+    fetch('examples/index.txt')
+      .then(response => response.text())
+      .then(text => text.split('\n').map(line => line.trim()).filter(Boolean))
+      .then(ids => Promise.all(ids.map(loadExample)))
+      .then(data => {
+        examples = data;
+        renderExamples();
+      })
+      .catch(() => {
+        galleryEl.innerHTML = '<div class="gallery-empty">Example data failed to load.</div>';
+      });
+
+    searchInput.addEventListener('input', renderExamples);
   </script>
 </body>
 </html>

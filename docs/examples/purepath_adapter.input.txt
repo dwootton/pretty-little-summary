@@ -1,0 +1,1 @@
+PurePath('foo/bar.txt')

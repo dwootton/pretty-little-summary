@@ -1,0 +1,3 @@
+A traceback with 1 frames (most recent last):
+→ /Users/dwootton/vibe_check/tests/input/traceback_adapter.py:9 in build()
+Last frame context: 'raise ValueError("boom")'.

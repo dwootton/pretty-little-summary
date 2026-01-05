@@ -1,21 +1,19 @@
 """NL summary tests for remaining adapters."""
 
 import asyncio
-import types
 
 import pytest
 
 from pretty_little_summary.adapters import dispatch_adapter
 from pretty_little_summary.synthesizer import deterministic_summary
+from tests.input import build_input, expected_output, load_example
 
 
 def test_generic_adapter_nl() -> None:
-    class Custom:
-        pass
-
-    meta = dispatch_adapter(Custom())
+    example = load_example("generic_adapter_nl")
+    meta = dispatch_adapter(build_input(example))
     summary = deterministic_summary(meta)
-    assert summary == f"An object of type {meta['object_type']}."
+    assert summary == expected_output(example, meta)
 
 
 def test_async_adapter_nl() -> None:
@@ -47,117 +45,67 @@ def test_async_adapter_nl() -> None:
 
 
 def test_traceback_adapter_nl() -> None:
-    try:
-        raise ValueError("boom")
-    except ValueError as exc:
-        meta = dispatch_adapter(exc.__traceback__)
+    example = load_example("traceback_adapter")
+    meta = dispatch_adapter(build_input(example))
     summary = deterministic_summary(meta)
-    frames = meta["metadata"]["frames"]
-    expected_parts = [
-        f"A traceback with {meta['metadata']['depth']} frames (most recent last):"
-    ]
-    for frame in frames:
-        expected_parts.append(
-            f"→ {frame.get('filename')}:{frame.get('line')} in {frame.get('name')}()"
-        )
-    last = meta["metadata"].get("last_frame")
-    if last and last.get("code"):
-        expected_parts.append(f"Last frame context: '{last.get('code')}'.")
-    assert summary == "\n".join(expected_parts)
+    assert summary == expected_output(example, meta)
 
 
 networkx = pytest.importorskip("networkx")
 
 
 def test_networkx_adapter_nl() -> None:
-    import networkx as nx
-
-    g = nx.Graph()
-    g.add_edge("a", "b")
-    meta = dispatch_adapter(g)
+    example = load_example("networkx_adapter_nl")
+    meta = dispatch_adapter(build_input(example))
     summary = deterministic_summary(meta)
-    assert summary == (
-        f"A networkx graph with {meta['node_count']} nodes and {meta['edge_count']} edges."
-    )
+    assert summary == expected_output(example, meta)
 
 
 requests = pytest.importorskip("requests")
 
 
 def test_requests_adapter_nl() -> None:
-    import requests as rq
-
-    resp = rq.Response()
-    resp.status_code = 200
-    resp.url = "https://example.com"
-    meta = dispatch_adapter(resp)
+    example = load_example("requests_adapter_nl")
+    meta = dispatch_adapter(build_input(example))
     summary = deterministic_summary(meta)
-    assert summary == f"An HTTP response with status {meta['status_code']}."
+    assert summary == expected_output(example, meta)
 
 
 polars = pytest.importorskip("polars")
 
 
 def test_polars_adapter_nl() -> None:
-    import polars as pl
-
-    df = pl.DataFrame({"a": [1, 2], "b": ["x", "y"]})
-    meta = dispatch_adapter(df)
+    example = load_example("polars_adapter_nl")
+    meta = dispatch_adapter(build_input(example))
     summary = deterministic_summary(meta)
-    parts = [f"A Polars DataFrame with shape {meta.get('shape')}."]
-    schema = meta.get("schema") or {}
-    if schema:
-        cols = []
-        for name, dtype in list(schema.items())[:3]:
-            cols.append(f"{name} ({dtype})")
-        if cols:
-            parts.append(f"Schema: {', '.join(cols)}.")
-    sample_rows = meta.get("metadata", {}).get("sample_rows")
-    if sample_rows:
-        parts.append(f"Sample row: {sample_rows[0]}.")
-    elif meta.get("metadata", {}).get("sample_rows_omitted"):
-        parts.append("Sample rows omitted for size/perf.")
-    assert summary == " ".join(parts)
+    assert summary == expected_output(example, meta)
 
 
 pydantic = pytest.importorskip("pydantic")
 
 
 def test_pydantic_adapter_nl() -> None:
-    from pydantic import BaseModel
-
-    class User(BaseModel):
-        name: str
-        age: int
-
-    user = User(name="alice", age=30)
-    meta = dispatch_adapter(user)
+    example = load_example("pydantic_adapter_nl")
+    meta = dispatch_adapter(build_input(example))
     summary = deterministic_summary(meta)
-    assert summary == f"A Pydantic model {meta['object_type']}."
+    assert summary == expected_output(example, meta)
 
 
 torch = pytest.importorskip("torch")
 
 
 def test_pytorch_adapter_nl() -> None:
-    import torch as t
-
-    tensor = t.tensor([1.0, 2.0])
-    meta = dispatch_adapter(tensor)
+    example = load_example("pytorch_adapter_nl")
+    meta = dispatch_adapter(build_input(example))
     summary = deterministic_summary(meta)
-    assert summary == f"A PyTorch tensor with shape {meta['metadata']['shape']}."
+    assert summary == expected_output(example, meta)
 
 
 xarray = pytest.importorskip("xarray")
 
 
 def test_xarray_adapter_nl() -> None:
-    import xarray as xr
-
-    arr = xr.DataArray([[1, 2], [3, 4]], dims=["x", "y"])
-    meta = dispatch_adapter(arr)
+    example = load_example("xarray_adapter_nl")
+    meta = dispatch_adapter(build_input(example))
     summary = deterministic_summary(meta)
-    assert summary == (
-        f"An xarray object {meta['object_type']} with shape {meta.get('shape')}. "
-        "Sample: [1, 2, 3, 4]."
-    )
+    assert summary == expected_output(example, meta)

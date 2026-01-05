@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import random
 import re
 import statistics
 from collections import Counter
@@ -11,6 +12,9 @@ from enum import Enum, auto
 from typing import Any, Iterator, Protocol, Sequence, TypeVar
 
 T = TypeVar("T")
+
+# Ensure deterministic sampling across runs.
+random.seed(0)
 
 
 # =============================================================================
@@ -216,7 +220,7 @@ def compute_numeric_stats(
     values: Sequence[float | int], sample_limit: int = 10000
 ) -> NumericStats | None:
     """Compute statistics for numeric sequence."""
-    if not values:
+    if values is None or len(values) == 0:
         return None
 
     if len(values) > sample_limit:
@@ -233,14 +237,21 @@ def compute_numeric_stats(
         try:
             if math.isnan(v):
                 n_nan += 1
-            elif math.isinf(v):
+                continue
+            if math.isinf(v):
                 n_inf += 1
-            else:
-                finite_vals.append(v)
-                if v == 0:
-                    n_zeros += 1
+                continue
+        except (TypeError, ValueError):
+            pass
+
+        try:
+            v_float = float(v)
         except (TypeError, ValueError):
             continue
+
+        finite_vals.append(v_float)
+        if v_float == 0:
+            n_zeros += 1
 
     if not finite_vals:
         return None
@@ -297,7 +308,7 @@ def compute_cardinality(
     values: Sequence[Any], sample_limit: int = 10000
 ) -> CardinalityInfo:
     """Analyze cardinality of a sequence."""
-    if not values:
+    if values is None or len(values) == 0:
         return CardinalityInfo(0, 0, 0, False, False, True, None)
 
     total = len(values)

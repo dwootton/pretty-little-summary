@@ -1,0 +1,1 @@
+altair.Chart(df).mark_line().encode(x='x', y='y')

@@ -1,0 +1,2 @@
+Title: Pydantic model
+Tags: pydantic, model

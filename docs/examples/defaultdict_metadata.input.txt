@@ -1,0 +1,1 @@
+defaultdict(list, {'a': [1]})

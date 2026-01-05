@@ -1,0 +1,2 @@
+Title: Deque
+Tags: collections, deque

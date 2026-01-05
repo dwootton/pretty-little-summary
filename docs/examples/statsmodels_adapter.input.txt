@@ -1,0 +1,1 @@
+sm.OLS(y, sm.add_constant(x)).fit()

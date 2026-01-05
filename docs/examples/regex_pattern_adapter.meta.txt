@@ -1,0 +1,2 @@
+Title: Regex pattern
+Tags: stdlib, regex

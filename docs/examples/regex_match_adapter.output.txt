@@ -1,0 +1,1 @@
+A regex match result: matched '123' at position 3:6.

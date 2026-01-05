@@ -1,0 +1,1 @@
+A pandas DataFrame with 3 rows and 2 columns. Nulls: 1. Memory: 306.0 B. Columns: a (float64, 1 nulls, stats: range 1 to 2, mean 1.5, std 0.71), b (object, cardinality: 3 categories including 'x', 'y', 'z'). Sample row: {'a': '1.0', 'b': "'x'"}.

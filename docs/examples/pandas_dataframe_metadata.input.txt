@@ -1,0 +1,1 @@
+pd.DataFrame({'a': [1, 2, None], 'b': ['x', 'y', 'z']})

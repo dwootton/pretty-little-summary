@@ -1,0 +1,1 @@
+A networkx graph with 2 nodes and 1 edges.

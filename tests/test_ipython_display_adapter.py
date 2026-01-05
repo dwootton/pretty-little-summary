@@ -4,17 +4,17 @@ import pytest
 
 from pretty_little_summary.adapters import dispatch_adapter
 from pretty_little_summary.synthesizer import deterministic_summary
+from tests.input import build_input, expected_output, load_example
 
 
 ipython = pytest.importorskip("IPython")
-from IPython.display import HTML  # noqa: E402
 
 
 def test_ipython_display_adapter() -> None:
-    obj = HTML("<h1>Hi</h1>")
-    meta = dispatch_adapter(obj)
+    example = load_example("ipython_display_adapter")
+    meta = dispatch_adapter(build_input(example))
     assert meta["adapter_used"] == "IPythonDisplayAdapter"
     assert meta["metadata"]["type"] == "ipython_display"
     summary = deterministic_summary(meta)
     print("ipython_display:", summary)
-    assert summary == "An IPython display object with representations: _repr_html_."
+    assert summary == expected_output(example, meta)

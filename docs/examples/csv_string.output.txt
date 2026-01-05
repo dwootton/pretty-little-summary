@@ -1,0 +1,1 @@
+A CSV string with 3 rows and 3 columns (,-delimited). Header: 'a', 'b', 'c'. Sample: ["'1'", "'2'", "'3'"]. Column types: int, int, int. Best displayed as sortable table.

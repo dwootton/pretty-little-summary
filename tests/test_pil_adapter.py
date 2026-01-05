@@ -4,28 +4,28 @@ import pytest
 
 from pretty_little_summary.adapters import dispatch_adapter
 from pretty_little_summary.synthesizer import deterministic_summary
+from tests.input import build_input, expected_output, load_example
 
 
 pil = pytest.importorskip("PIL")
-from PIL import Image  # noqa: E402
 
 
 def test_pil_image_adapter() -> None:
-    img = Image.new("RGB", (64, 32))
-    meta = dispatch_adapter(img)
+    example = load_example("pil_image_adapter")
+    meta = dispatch_adapter(build_input(example))
     assert meta["adapter_used"] == "PILAdapter"
     assert meta["metadata"]["type"] == "pil_image"
     assert meta["metadata"]["width"] == 64
     summary = deterministic_summary(meta)
     print("pil_image:", summary)
-    assert summary == "A PIL image 64x32 in RGB mode."
+    assert summary == expected_output(example, meta)
 
 
 def test_pil_image_list_adapter() -> None:
-    imgs = [Image.new("RGB", (32, 32)) for _ in range(3)]
-    meta = dispatch_adapter(imgs)
+    example = load_example("pil_image_list_adapter")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "pil_image_list"
     assert meta["metadata"]["count"] == 3
     summary = deterministic_summary(meta)
     print("pil_list:", summary)
-    assert summary == "A list of 3 PIL images."
+    assert summary == expected_output(example, meta)

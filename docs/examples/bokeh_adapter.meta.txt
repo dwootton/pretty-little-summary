@@ -1,0 +1,2 @@
+Title: Bokeh figure
+Tags: bokeh, chart

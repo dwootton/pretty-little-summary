@@ -1,0 +1,1 @@
+A valid XML document with root <root>.

@@ -1,0 +1,1 @@
+[Image.new('RGB', (32, 32)) for _ in range(3)]

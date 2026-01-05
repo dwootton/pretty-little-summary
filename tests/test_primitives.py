@@ -2,79 +2,83 @@
 
 from pretty_little_summary.adapters import dispatch_adapter
 from pretty_little_summary.synthesizer import deterministic_summary
-from decimal import Decimal
-from fractions import Fraction
+from tests.input import build_input, expected_output, load_example
 
 
 def test_int_special_year() -> None:
-    meta = dispatch_adapter(2020)
+    example = load_example("int_special_year")
+    meta = dispatch_adapter(build_input(example))
     assert meta["adapter_used"] == "PrimitiveAdapter"
     assert meta["metadata"]["type"] == "int"
     assert meta["metadata"]["special_form"]["type"] == "year"
     summary = deterministic_summary(meta)
     print("int:", summary)
-    assert summary == "The integer 2020, likely a year."
+    assert summary == expected_output(example, meta)
 
 
 def test_float_probability_pattern() -> None:
-    meta = dispatch_adapter(0.5)
+    example = load_example("float_probability_pattern")
+    meta = dispatch_adapter(build_input(example))
     assert meta["adapter_used"] == "PrimitiveAdapter"
     assert meta["metadata"]["type"] == "float"
     assert meta["metadata"]["pattern"] == "probability"
     summary = deterministic_summary(meta)
     print("float:", summary)
-    assert summary == "A float 0.5, likely representing a probability."
+    assert summary == expected_output(example, meta)
 
 
 def test_short_string_url_pattern() -> None:
-    meta = dispatch_adapter("https://example.com/foo")
+    example = load_example("short_string_url_pattern")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "string"
     assert meta["metadata"]["pattern"] == "url"
     summary = deterministic_summary(meta)
     print("string_url:", summary)
-    assert summary == "A string containing a url: 'https://example.com/foo'."
+    assert summary == expected_output(example, meta)
 
 
 def test_long_string_markdown_document() -> None:
-    text = "# Title\n\nThis is a paragraph.\n\n```python\nprint('hi')\n```\n"
-    text = text * 10
-    meta = dispatch_adapter(text)
+    example = load_example("long_string_markdown_document")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "string"
     assert meta["metadata"]["document_type"] == "markdown"
     summary = deterministic_summary(meta)
     print("string_md:", summary)
-    assert summary == "A markdown document string (570 chars)."
+    assert summary == expected_output(example, meta)
 
 
 def test_bytes_signature() -> None:
-    png_header = b"\x89PNG\r\n\x1a\n" + b"\x00" * 20
-    meta = dispatch_adapter(png_header)
+    example = load_example("bytes_signature")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "bytes"
     assert meta["metadata"]["format"] == "png"
     summary = deterministic_summary(meta)
     print("bytes:", summary)
-    assert summary == "A bytes object containing png data (28 bytes)."
+    assert summary == expected_output(example, meta)
 
 
 def test_complex_number() -> None:
-    meta = dispatch_adapter(3 + 4j)
+    example = load_example("complex_number")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "complex"
     summary = deterministic_summary(meta)
     print("complex:", summary)
-    assert summary == "A complex number 3.0 + 4.0i."
+    assert summary == expected_output(example, meta)
 
 
 def test_decimal_number() -> None:
-    meta = dispatch_adapter(Decimal("12.34"))
+    example = load_example("decimal_number")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "decimal"
     summary = deterministic_summary(meta)
     print("decimal:", summary)
-    assert summary == "A Decimal value 12.34 with 4 digits of precision."
+    assert summary == expected_output(example, meta)
 
 
 def test_fraction_number() -> None:
-    meta = dispatch_adapter(Fraction(1, 3))
+    example = load_example("fraction_number")
+    meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "fraction"
     summary = deterministic_summary(meta)
     print("fraction:", summary)
-    assert summary == "A Fraction 1/3."
+    assert summary == expected_output(example, meta)

@@ -1,0 +1,4 @@
+A unfitted sklearn Pipeline with 2 steps:
+1. 'imputer': SimpleImputer
+2. 'scaler': StandardScaler
+Expects input shape (*, ?), outputs class predictions.

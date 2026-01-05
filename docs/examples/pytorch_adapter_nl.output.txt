@@ -1,0 +1,1 @@
+A PyTorch tensor with shape (2,).

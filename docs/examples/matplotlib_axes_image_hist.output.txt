@@ -1,0 +1,1 @@
+A matplotlib axes with plotted elements.

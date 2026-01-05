@@ -1,0 +1,1 @@
+An in-memory bytes buffer of 5 bytes.

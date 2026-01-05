@@ -1,0 +1,1 @@
+A valid JSON string containing an object with keys: name, age.

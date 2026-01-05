@@ -1,0 +1,1 @@
+go.Figure(data=[go.Scatter(y=[1, 2, 3])])

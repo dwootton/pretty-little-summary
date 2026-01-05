@@ -1,0 +1,2 @@
+Title: Pandas Categorical
+Tags: pandas, categorical
