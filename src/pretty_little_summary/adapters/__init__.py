@@ -1,4 +1,10 @@
-"""Adapter system for pretty_little_summary."""
+"""Adapter system for pretty_little_summary.
+
+Adapter modules are imported lazily via :func:`load_all_adapters`, which runs on
+the first ``describe()`` / ``list_available_adapters()`` call rather than at
+``import pretty_little_summary`` time. This keeps import instant and avoids
+pulling in heavy optional libraries until they are actually needed.
+"""
 
 from pretty_little_summary.adapters._base import (
     Adapter,
@@ -7,200 +13,82 @@ from pretty_little_summary.adapters._base import (
     list_available_adapters,
 )
 
-# Import specialized adapters FIRST (before GenericAdapter)
-# They will be registered in import order and checked in that order
-# GenericAdapter MUST be imported last so it's lowest priority (fallback)
+# Registration order among same-priority adapters still matters (it is the
+# tiebreaker), so this list is the source of truth for that order. Specialized
+# adapters come first; GenericAdapter registers itself at fallback priority.
+_ADAPTER_MODULES: tuple[str, ...] = (
+    "text_formats",
+    "primitives",
+    "pandas",
+    "polars",
+    "matplotlib",
+    "altair",
+    "seaborn_adapter",
+    "plotly_adapter",
+    "bokeh_adapter",
+    "sklearn_pipeline",
+    "sklearn",
+    "statsmodels_adapter",
+    "numpy_adapter",
+    "scipy_sparse_adapter",
+    "pyarrow_adapter",
+    "h5py_adapter",
+    "pil_adapter",
+    "pytorch",
+    "tensorflow_adapter",
+    "jax_adapter",
+    "xarray",
+    "pydantic",
+    "networkx",
+    "requests",
+    "datetime_adapter",
+    "pathlib_adapter",
+    "regex_adapter",
+    "uuid_adapter",
+    "io_adapter",
+    "attrs_adapter",
+    "ipython_display",
+    "structured",
+    "callables",
+    "async_adapter",
+    "errors",
+    # Core collections come after specialized adapters so they don't shadow them.
+    "collections",
+    # GenericAdapter (fallback) is imported last and self-registers lowest.
+    "generic",
+)
 
-# Optional adapters - import attempts, silently skips if library unavailable
-try:
-    from pretty_little_summary.adapters.text_formats import TextFormatAdapter
-except ImportError:
-    pass
+_loaded = False
 
-try:
-    from pretty_little_summary.adapters.primitives import PrimitiveAdapter
-except ImportError:
-    pass
 
-try:
-    from pretty_little_summary.adapters.pandas import PandasAdapter
-except ImportError:
-    pass
+def load_all_adapters() -> None:
+    """Import every built-in adapter module once (idempotent).
 
-try:
-    from pretty_little_summary.adapters.polars import PolarsAdapter
-except ImportError:
-    pass
+    Each module self-registers with :class:`AdapterRegistry` on import. Modules
+    whose backing library is unavailable raise ``ImportError`` and are skipped;
+    :meth:`AdapterRegistry.register` is idempotent, so calling this repeatedly is
+    safe.
+    """
+    global _loaded
+    if _loaded:
+        return
 
-try:
-    from pretty_little_summary.adapters.matplotlib import MatplotlibAdapter
-except ImportError:
-    pass
+    from importlib import import_module
 
-try:
-    from pretty_little_summary.adapters.altair import AltairAdapter
-except ImportError:
-    pass
+    for name in _ADAPTER_MODULES:
+        try:
+            import_module(f"pretty_little_summary.adapters.{name}")
+        except ImportError:
+            # Optional dependency for this adapter is not installed — skip it.
+            continue
 
-try:
-    from pretty_little_summary.adapters.seaborn_adapter import SeabornAdapter
-except ImportError:
-    pass
+    _loaded = True
 
-try:
-    from pretty_little_summary.adapters.plotly_adapter import PlotlyAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.bokeh_adapter import BokehAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.sklearn_pipeline import SklearnPipelineAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.sklearn import SklearnAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.statsmodels_adapter import StatsmodelsAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.numpy_adapter import NumpyAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.scipy_sparse_adapter import ScipySparseAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.pyarrow_adapter import PyArrowAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.h5py_adapter import H5pyAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.pil_adapter import PILAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.pytorch import PytorchAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.tensorflow_adapter import TensorflowAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.jax_adapter import JaxAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.xarray import XarrayAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.pydantic import PydanticAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.networkx import NetworkXAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.requests import RequestsAdapter
-except ImportError:
-    pass
-
-# Stdlib adapters
-try:
-    from pretty_little_summary.adapters.datetime_adapter import DateTimeAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.pathlib_adapter import PathlibAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.regex_adapter import RegexAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.uuid_adapter import UUIDAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.io_adapter import IOAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.attrs_adapter import AttrsAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.ipython_display import IPythonDisplayAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.structured import StructuredAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.callables import CallableAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.async_adapter import AsyncAdapter
-except ImportError:
-    pass
-
-try:
-    from pretty_little_summary.adapters.errors import ErrorAdapter
-except ImportError:
-    pass
-
-# Core collections (after specialized adapters to avoid shadowing)
-try:
-    from pretty_little_summary.adapters.collections import CollectionsAdapter
-except ImportError:
-    pass
-
-# Import GenericAdapter LAST (fallback adapter, lowest priority)
-from pretty_little_summary.adapters.generic import GenericAdapter
 
 __all__ = [
     "Adapter",
     "AdapterRegistry",
     "dispatch_adapter",
     "list_available_adapters",
-    "GenericAdapter",
+    "load_all_adapters",
 ]

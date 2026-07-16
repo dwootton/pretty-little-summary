@@ -2,25 +2,25 @@
 
 from typing import Any
 
-try:
-    import torch
-    import torch.nn as nn
-    LIBRARY_AVAILABLE = True
-except ImportError:
-    LIBRARY_AVAILABLE = False
-
-from pretty_little_summary.adapters._base import AdapterRegistry
+from pretty_little_summary.adapters._base import AdapterRegistry, module_loaded
 from pretty_little_summary.core import MetaDescription
 
 
 class PytorchAdapter:
-    """Adapter for PyTorch nn.Module and Tensor objects."""
+    """Adapter for PyTorch nn.Module and Tensor objects.
+
+    Detection is gated on torch already being imported, so this adapter never
+    triggers torch's (heavy) import on its own.
+    """
 
     @staticmethod
     def can_handle(obj: Any) -> bool:
-        if not LIBRARY_AVAILABLE:
+        if not module_loaded("torch"):
             return False
         try:
+            import torch
+            import torch.nn as nn
+
             return isinstance(obj, (nn.Module, torch.Tensor))
         except Exception:
             return False
@@ -28,6 +28,8 @@ class PytorchAdapter:
     @staticmethod
     def extract_metadata(obj: Any) -> MetaDescription:
         try:
+            import torch  # already imported (can_handle gated on it)
+
             if isinstance(obj, torch.Tensor):
                 meta: MetaDescription = {
                     "object_type": f"{type(obj).__module__}.{type(obj).__name__}",
@@ -91,6 +93,5 @@ class PytorchAdapter:
 
 
 
-# Auto-register if library is available
-if LIBRARY_AVAILABLE:
-    AdapterRegistry.register(PytorchAdapter)
+# Registered unconditionally; can_handle stays inert unless torch is imported.
+AdapterRegistry.register(PytorchAdapter)

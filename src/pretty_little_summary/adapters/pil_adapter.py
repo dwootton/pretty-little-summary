@@ -54,7 +54,7 @@ class PILAdapter:
         return meta
 
 
-def _describe_image(img: "Image.Image") -> dict[str, Any]:
+def _describe_image(img: Image.Image) -> dict[str, Any]:
     width, height = img.size
     metadata: dict[str, Any] = {
         "type": "pil_image",
@@ -70,7 +70,7 @@ def _describe_image(img: "Image.Image") -> dict[str, Any]:
     return metadata
 
 
-def _describe_image_list(images: list["Image.Image"]) -> dict[str, Any]:
+def _describe_image_list(images: list[Image.Image]) -> dict[str, Any]:
     sizes = [img.size for img in images[:5]]
     modes = list({img.mode for img in images[:5]})
     uniform = len(set(sizes)) == 1 if sizes else False

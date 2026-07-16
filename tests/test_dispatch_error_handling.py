@@ -46,7 +46,7 @@ class PartiallyBrokenAdapter:
 def test_dispatch_adapter_fallback_to_generic():
     """When an adapter fails, should fall back to GenericAdapter."""
     # Register a broken adapter at the BEGINNING (before GenericAdapter)
-    AdapterRegistry._adapters.insert(0, BrokenAdapter)
+    AdapterRegistry.register(BrokenAdapter, priority=10_000)
 
     try:
         obj = CustomTestObject("fallback_test")
@@ -69,15 +69,13 @@ def test_dispatch_adapter_fallback_to_generic():
 
     finally:
         # Clean up: remove BrokenAdapter from registry
-        AdapterRegistry._adapters = [
-            a for a in AdapterRegistry._adapters if a != BrokenAdapter
-        ]
+        AdapterRegistry.unregister(BrokenAdapter)
 
 
 def test_dispatch_adapter_attribute_error_fallback():
     """Test fallback when adapter fails with AttributeError (version incompatibility)."""
     # Register adapter that simulates version incompatibility at the BEGINNING
-    AdapterRegistry._adapters.insert(0, PartiallyBrokenAdapter)
+    AdapterRegistry.register(PartiallyBrokenAdapter, priority=10_000)
 
     try:
         obj = CustomTestObject("version_test")
@@ -94,9 +92,7 @@ def test_dispatch_adapter_attribute_error_fallback():
         assert any("version incompatibility" in w for w in meta["warnings"])
 
     finally:
-        AdapterRegistry._adapters = [
-            a for a in AdapterRegistry._adapters if a != PartiallyBrokenAdapter
-        ]
+        AdapterRegistry.unregister(PartiallyBrokenAdapter)
 
 
 def test_dispatch_emergency_fallback():
@@ -162,9 +158,11 @@ def test_dispatch_emergency_fallback_repr_fails():
         assert "adapter_used" in meta
         assert "emergency fallback" in meta["adapter_used"]
 
-        # Should have placeholder for failed repr
+        # Should have a safe placeholder when repr() fails. The canonical
+        # formatter degrades to the type name (more informative than a generic
+        # marker) rather than propagating the error.
         assert "raw_repr" in meta
-        assert meta["raw_repr"] == "<repr failed>"
+        assert meta["raw_repr"] == "<UnrepresentableObject>"
 
     finally:
         # Restore original GenericAdapter
@@ -174,7 +172,7 @@ def test_dispatch_emergency_fallback_repr_fails():
 def test_full_api_with_adapter_failure():
     """Test that api.is_() handles adapter failures gracefully."""
     # Register broken adapter at the BEGINNING
-    AdapterRegistry._adapters.insert(0, BrokenAdapter)
+    AdapterRegistry.register(BrokenAdapter, priority=10_000)
 
     try:
         obj = CustomTestObject("api_test")
@@ -196,9 +194,7 @@ def test_full_api_with_adapter_failure():
         assert len(result.meta["warnings"]) > 0
 
     finally:
-        AdapterRegistry._adapters = [
-            a for a in AdapterRegistry._adapters if a != BrokenAdapter
-        ]
+        AdapterRegistry.unregister(BrokenAdapter)
 
 
 def test_successful_adapter_unchanged():
@@ -251,7 +247,7 @@ def test_adapter_error_message_preserved():
             raise ValueError("Specific error: version 2.0.0 required, found 1.5.0")
 
     # Register at the BEGINNING
-    AdapterRegistry._adapters.insert(0, SpecificErrorAdapter)
+    AdapterRegistry.register(SpecificErrorAdapter, priority=10_000)
 
     try:
         obj = CustomTestObject()
@@ -264,9 +260,7 @@ def test_adapter_error_message_preserved():
         assert "found 1.5.0" in warnings_text
 
     finally:
-        AdapterRegistry._adapters = [
-            a for a in AdapterRegistry._adapters if a != SpecificErrorAdapter
-        ]
+        AdapterRegistry.unregister(SpecificErrorAdapter)
 
 
 def test_multiple_adapter_failures_in_sequence():
@@ -295,8 +289,8 @@ def test_multiple_adapter_failures_in_sequence():
             raise AttributeError("Second adapter failed")
 
     # Register at the BEGINNING
-    AdapterRegistry._adapters.insert(0, FirstAdapter)
-    AdapterRegistry._adapters.insert(0, SecondAdapter)
+    AdapterRegistry.register(FirstAdapter, priority=10_000)
+    AdapterRegistry.register(SecondAdapter, priority=10_000)
 
     try:
         # Test first object
@@ -312,8 +306,5 @@ def test_multiple_adapter_failures_in_sequence():
         assert any("Second adapter failed" in w for w in meta2.get("warnings", []))
 
     finally:
-        AdapterRegistry._adapters = [
-            a
-            for a in AdapterRegistry._adapters
-            if a not in (FirstAdapter, SecondAdapter)
-        ]
+        AdapterRegistry.unregister(FirstAdapter)
+        AdapterRegistry.unregister(SecondAdapter)

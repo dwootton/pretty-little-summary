@@ -28,6 +28,7 @@ class XarrayAdapter:
     def extract_metadata(obj: Any) -> MetaDescription:
         try:
             import xarray as xr
+
             from pretty_little_summary.descriptor_registry import DescribeConfigRegistry
 
             config = DescribeConfigRegistry.get()

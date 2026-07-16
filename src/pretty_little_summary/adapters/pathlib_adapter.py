@@ -5,10 +5,9 @@ from __future__ import annotations
 from pathlib import Path, PurePath
 from typing import Any
 
-from pretty_little_summary.adapters._base import AdapterRegistry, dispatch_adapter
+from pretty_little_summary.adapters._base import AdapterRegistry
 from pretty_little_summary.core import MetaDescription
 from pretty_little_summary.descriptor_utils import format_bytes
-
 
 # Default configuration for directory scanning
 DEFAULT_MAX_DEPTH = 3
@@ -48,6 +47,12 @@ class PathlibAdapter:
                         size = obj.stat().st_size
                         metadata["size_bytes"] = size
                         metadata["size"] = format_bytes(size)
+                        # Describe the file's *content* with the zero-dependency
+                        # sniffer tier (reads only the head; never executes or
+                        # fully loads the file).
+                        content = _sniff_file(obj)
+                        if content:
+                            metadata["content"] = content
                     elif obj.is_dir():
                         # Recursively describe directory contents
                         tree_result = _describe_directory_tree(
@@ -87,8 +92,6 @@ def _describe_directory_tree(
     Returns:
         Dictionary with tree structure and statistics
     """
-    from pretty_little_summary.file_loader import load_file, should_describe_file
-
     tree_lines: list[str] = []
     file_count = 0
     dir_count = 0
@@ -116,7 +119,7 @@ def _describe_directory_tree(
             tree_lines.append(f"{prefix}... (permission denied)")
             return
         except Exception as e:
-            tree_lines.append(f"{prefix}... (error: {str(e)})")
+            tree_lines.append(f"{prefix}... (error: {e!s})")
             return
 
         for i, entry in enumerate(entries):
@@ -142,7 +145,7 @@ def _describe_directory_tree(
                     tree_lines.append(f"{prefix}{connector}{entry.name} - {description}")
 
             except Exception as e:
-                tree_lines.append(f"{prefix}{connector}{entry.name} - (error: {str(e)})")
+                tree_lines.append(f"{prefix}{connector}{entry.name} - (error: {e!s})")
 
     # Start the walk
     _walk_directory(root_path)
@@ -154,44 +157,44 @@ def _describe_directory_tree(
     }
 
 
-def _describe_file(file_path: Path) -> str:
-    """
-    Describe a single file by loading it and using the adapter system.
-
-    Args:
-        file_path: Path to the file
-
-    Returns:
-        String description of the file
-    """
-    from pretty_little_summary.file_loader import load_file, should_describe_file
-
-    # Check if we should even try to describe this file
-    if not should_describe_file(file_path):
-        size = file_path.stat().st_size
-        return f"(large or binary file, {format_bytes(size)})"
+def _sniff_file(file_path: Path) -> dict[str, Any] | None:
+    """Return the sniffer's fact document for a file, or None on failure."""
+    from pretty_little_summary.sniffers import sniff_path
 
     try:
-        # Load the file content
-        content = load_file(file_path)
+        meta = sniff_path(file_path)
+    except Exception:
+        return None
+    if not meta:
+        return None
+    result: dict[str, Any] = {"summary": meta.get("nl_summary", "")}
+    if meta.get("metadata"):
+        result["details"] = meta["metadata"]
+    return result
 
-        # Use the adapter system to describe it
-        metadata = dispatch_adapter(content)
 
-        # Return the natural language summary if available
-        if "nl_summary" in metadata:
-            return metadata["nl_summary"]
+def _describe_file(file_path: Path) -> str:
+    """Describe a single file using the zero-dependency sniffer tier.
 
-        # Fallback to object type
-        return metadata.get("object_type", "unknown file type")
+    This never loads the whole file, imports a third-party parser, or executes
+    file contents (e.g. it does not unpickle) — it reads only the head. That
+    keeps directory scans fast and safe regardless of what is on disk.
+    """
+    from pretty_little_summary.sniffers import sniff_path
 
+    try:
+        meta = sniff_path(file_path)
+        if meta and meta.get("nl_summary"):
+            return meta["nl_summary"]
+        if meta:
+            return meta.get("object_type", "unknown file type")
     except Exception as e:
-        # If we can't load/describe the file, show basic info
         try:
             size = file_path.stat().st_size
             return f"{file_path.suffix or 'unknown file'} ({format_bytes(size)})"
         except Exception:
             return f"(error: {str(e)[:50]})"
+    return "unknown file type"
 
 
 def _build_nl_summary(metadata: dict[str, Any]) -> str:
@@ -214,6 +217,10 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
 
         if metadata.get("is_file"):
             size = metadata.get("size")
+            content = metadata.get("content") or {}
+            content_summary = content.get("summary")
+            if content_summary:
+                return f"'{path}': {content_summary}"
             if size:
                 return f"A path '{path}' pointing to an existing file ({size})."
             return f"A path '{path}' pointing to an existing file."

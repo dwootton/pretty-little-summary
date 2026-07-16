@@ -16,4 +16,4 @@ from pretty_little_summary.adapters._base import list_available_adapters
 from pretty_little_summary.api import Description, describe
 
 __version__ = "0.1.0"
-__all__ = ["describe", "Description", "list_available_adapters"]
+__all__ = ["Description", "describe", "list_available_adapters"]

@@ -1,6 +1,6 @@
 """Core types and utilities for Pretty Little Summary."""
 
-from typing import Any, Optional, TypedDict
+from typing import Any, TypedDict
 
 
 class MetaDescription(TypedDict, total=False):
@@ -16,42 +16,42 @@ class MetaDescription(TypedDict, total=False):
     adapter_used: str  # e.g., "PandasAdapter"
 
     # Data structure fields
-    shape: Optional[tuple[int, ...]]
-    columns: Optional[list[str]]
-    dtypes: Optional[dict[str, str]]
-    sample_data: Optional[str]  # Markdown table or JSON
+    shape: tuple[int, ...] | None
+    columns: list[str] | None
+    dtypes: dict[str, str] | None
+    sample_data: str | None  # Markdown table or JSON
 
     # Metadata extraction
-    metadata: Optional[dict[str, Any]]  # Generic metadata dict
+    metadata: dict[str, Any] | None  # Generic metadata dict
 
     # Graph/Network specific
-    node_count: Optional[int]
-    edge_count: Optional[int]
-    density: Optional[float]
+    node_count: int | None
+    edge_count: int | None
+    density: float | None
 
     # ML Model specific
-    parameters: Optional[dict[str, Any]]
-    parameter_count: Optional[int]
-    is_fitted: Optional[bool]
+    parameters: dict[str, Any] | None
+    parameter_count: int | None
+    is_fitted: bool | None
 
     # Visualization specific
-    chart_type: Optional[str]
-    spec: Optional[dict[str, Any]]  # Altair/Vega spec
-    visual_elements: Optional[dict[str, Any]]  # Matplotlib elements
-    style: Optional[str]  # e.g., "imperative" for matplotlib
+    chart_type: str | None
+    spec: dict[str, Any] | None  # Altair/Vega spec
+    visual_elements: dict[str, Any] | None  # Matplotlib elements
+    style: str | None  # e.g., "imperative" for matplotlib
 
     # HTTP Response specific
-    status_code: Optional[int]
-    url: Optional[str]
-    headers: Optional[dict[str, str]]
+    status_code: int | None
+    url: str | None
+    headers: dict[str, str] | None
 
     # Schema-specific (Pydantic, etc.)
-    schema: Optional[dict[str, Any]]
-    fields: Optional[dict[str, Any]]
+    schema: dict[str, Any] | None
+    fields: dict[str, Any] | None
 
     # Additional context
-    warnings: Optional[list[str]]  # Any issues during introspection
-    raw_repr: Optional[str]  # Fallback string representation
+    warnings: list[str] | None  # Any issues during introspection
+    raw_repr: str | None  # Fallback string representation
 
 
 class HistorySlicer:
@@ -79,8 +79,8 @@ class HistorySlicer:
 
     @staticmethod
     def get_history(
-        var_name: Optional[str] = None, max_lines: int = 10
-    ) -> Optional[list[str]]:
+        var_name: str | None = None, max_lines: int = 10
+    ) -> list[str] | None:
         """
         Extract relevant history lines.
 

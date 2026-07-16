@@ -290,7 +290,7 @@ def _sample_series_values(series: "pd.Series", limit: int) -> list[Any]:
 def _describe_index(index: "pd.Index", config) -> dict[str, Any]:
     metadata: dict[str, Any] = {
         "type": "index",
-        "length": int(len(index)),
+        "length": len(index),
         "dtype": str(index.dtype),
         "name": index.name,
         "is_unique": bool(index.is_unique),
@@ -305,7 +305,7 @@ def _describe_index(index: "pd.Index", config) -> dict[str, Any]:
 def _describe_multiindex(index: "pd.MultiIndex", config) -> dict[str, Any]:
     metadata: dict[str, Any] = {
         "type": "multiindex",
-        "length": int(len(index)),
+        "length": len(index),
         "levels": int(index.nlevels),
         "names": list(index.names),
     }

@@ -7,14 +7,26 @@ import random
 import re
 import statistics
 from collections import Counter
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Iterator, Protocol, Sequence, TypeVar
+from typing import Any, Protocol, TypeVar
+
+from pretty_little_summary.canonical import canonical_repr, canonical_str
 
 T = TypeVar("T")
 
-# Ensure deterministic sampling across runs.
-random.seed(0)
+# Deterministic sampling without touching the global RNG. Using the process-wide
+# random.seed(0) here would silently make the *caller's* program deterministic
+# too — a surprising side effect for a summary library — so we keep our own
+# generator and reseed it per sampling call for reproducibility.
+_RNG = random.Random(0)
+
+
+def _deterministic_sample(values: list[Any], k: int) -> list[Any]:
+    """Sample k items reproducibly, independent of the global RNG state."""
+    _RNG.seed(0)
+    return _RNG.sample(values, k)
 
 
 # =============================================================================
@@ -152,25 +164,17 @@ def _take(iterable: Iterator[T], n: int) -> Iterator[T]:
 
 
 def safe_repr(obj: Any, max_len: int = 50) -> str:
-    """Safe repr with length limit."""
-    try:
-        r = repr(obj)
-        if len(r) > max_len:
-            return r[: max_len - 3] + "..."
-        return r
-    except Exception:
-        return f"<{type(obj).__name__}>"
+    """Safe, version-stable repr with a length limit.
+
+    Delegates to :func:`canonical_repr` so library scalars (e.g. numpy) render
+    the same way regardless of the installed version.
+    """
+    return canonical_repr(obj, max_len)
 
 
 def safe_str(obj: Any, max_len: int = 100) -> str:
-    """Safe str with length limit."""
-    try:
-        s = str(obj)
-        if len(s) > max_len:
-            return s[: max_len - 3] + "..."
-        return s
-    except Exception:
-        return f"<{type(obj).__name__}>"
+    """Safe, version-stable str with a length limit."""
+    return canonical_str(obj, max_len)
 
 
 # =============================================================================
@@ -224,9 +228,7 @@ def compute_numeric_stats(
         return None
 
     if len(values) > sample_limit:
-        import random
-
-        values = random.sample(list(values), sample_limit)
+        values = _deterministic_sample(list(values), sample_limit)
 
     finite_vals = []
     n_nan = 0
@@ -314,9 +316,7 @@ def compute_cardinality(
     total = len(values)
 
     if total > sample_limit:
-        import random
-
-        sample = random.sample(list(values), sample_limit)
+        sample = _deterministic_sample(list(values), sample_limit)
     else:
         sample = list(values)
 

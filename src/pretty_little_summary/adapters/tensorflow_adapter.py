@@ -4,25 +4,25 @@ from __future__ import annotations
 
 from typing import Any
 
-try:
-    import tensorflow as tf
-    LIBRARY_AVAILABLE = True
-except ImportError:
-    LIBRARY_AVAILABLE = False
-
-from pretty_little_summary.adapters._base import AdapterRegistry
+from pretty_little_summary.adapters._base import AdapterRegistry, module_loaded
 from pretty_little_summary.core import MetaDescription
 from pretty_little_summary.descriptor_utils import safe_repr
 
 
 class TensorflowAdapter:
-    """Adapter for tf.Tensor objects."""
+    """Adapter for tf.Tensor objects.
+
+    Detection is gated on tensorflow already being imported so this adapter
+    never triggers tensorflow's (heavy) import on its own.
+    """
 
     @staticmethod
     def can_handle(obj: Any) -> bool:
-        if not LIBRARY_AVAILABLE:
+        if not module_loaded("tensorflow"):
             return False
         try:
+            import tensorflow as tf
+
             return isinstance(obj, tf.Tensor)
         except Exception:
             return False
@@ -50,5 +50,4 @@ class TensorflowAdapter:
         return meta
 
 
-if LIBRARY_AVAILABLE:
-    AdapterRegistry.register(TensorflowAdapter)
+AdapterRegistry.register(TensorflowAdapter)

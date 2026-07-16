@@ -61,7 +61,7 @@ class PyArrowAdapter:
         return meta
 
 
-def _describe_table(table: "pa.Table") -> dict[str, Any]:
+def _describe_table(table: pa.Table) -> dict[str, Any]:
     schema = {field.name: str(field.type) for field in table.schema}
     size = table.nbytes
     return {

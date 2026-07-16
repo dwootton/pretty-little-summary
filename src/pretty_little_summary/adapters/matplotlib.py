@@ -3,8 +3,8 @@
 from typing import Any
 
 try:
-    import matplotlib.figure
     import matplotlib.axes
+    import matplotlib.figure
     LIBRARY_AVAILABLE = True
 except ImportError:
     LIBRARY_AVAILABLE = False
@@ -28,8 +28,8 @@ class MatplotlibAdapter:
     @staticmethod
     def extract_metadata(obj: Any) -> MetaDescription:
         try:
-            import matplotlib.figure
             import matplotlib.axes
+            import matplotlib.figure
 
             is_figure = isinstance(obj, matplotlib.figure.Figure)
 

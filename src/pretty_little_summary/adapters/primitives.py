@@ -2,20 +2,20 @@
 
 from __future__ import annotations
 
-from collections import Counter
-from datetime import datetime
-from decimal import Decimal
-from fractions import Fraction
 import cmath
 import json
 import math
 import re
+from collections import Counter
+from datetime import datetime
+from decimal import Decimal
+from fractions import Fraction
 from typing import Any
 
 from pretty_little_summary.adapters._base import AdapterRegistry
+from pretty_little_summary.core import MetaDescription
 from pretty_little_summary.descriptor_registry import DescribeConfigRegistry
 from pretty_little_summary.descriptor_utils import format_bytes, safe_repr
-from pretty_little_summary.core import MetaDescription
 
 
 class PrimitiveAdapter:

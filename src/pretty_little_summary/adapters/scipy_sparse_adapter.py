@@ -47,7 +47,7 @@ class ScipySparseAdapter:
         return meta
 
 
-def _describe_sparse(matrix: "sp.spmatrix") -> dict[str, Any]:
+def _describe_sparse(matrix: sp.spmatrix) -> dict[str, Any]:
     rows, cols = matrix.shape
     nnz = int(matrix.nnz)
     density = nnz / (rows * cols) if rows and cols else 0.0

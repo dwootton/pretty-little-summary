@@ -7,15 +7,18 @@ from pathlib import Path
 from typing import Any
 
 
-def load_file(file_path: Path) -> Any:
+def load_file(file_path: Path, allow_unpickle: bool = False) -> Any:
     """
     Load a file and return its content as a Python object.
 
-    Attempts to intelligently load the file based on its extension,
-    falling back to reading as text if no specific loader is available.
+    This is the *deep*, library-backed loader used only in opt-in deep mode;
+    the default description path uses the zero-dependency sniffer tier instead.
+    It intelligently loads by extension, falling back to reading as text.
 
     Args:
         file_path: Path to the file to load
+        allow_unpickle: Permit executing pickle files. Off by default because
+            unpickling untrusted data runs arbitrary code.
 
     Returns:
         Loaded Python object (DataFrame, dict, Image, etc.) or raw text
@@ -37,9 +40,9 @@ def load_file(file_path: Path) -> Any:
     if suffix in {'.parquet', '.pq'}:
         return _load_parquet(file_path)
 
-    # Pickle files -> any Python object
+    # Pickle files -> any Python object (guarded: unpickling executes code)
     if suffix in {'.pkl', '.pickle'}:
-        return _load_pickle(file_path)
+        return _load_pickle(file_path, allow_unpickle)
 
     # Image files -> PIL Image
     if suffix in {'.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.webp'}:
@@ -73,7 +76,7 @@ def _load_csv(file_path: Path) -> Any:
 
 def _load_json(file_path: Path) -> Any:
     """Load JSON file as dict/list."""
-    with open(file_path, 'r') as f:
+    with open(file_path) as f:
         return json.load(f)
 
 
@@ -86,8 +89,19 @@ def _load_parquet(file_path: Path) -> Any:
         raise ImportError("pandas with pyarrow/fastparquet required to load Parquet files")
 
 
-def _load_pickle(file_path: Path) -> Any:
-    """Load pickle file as Python object."""
+def _load_pickle(file_path: Path, allow_unpickle: bool = False) -> Any:
+    """Load a pickle file as a Python object.
+
+    Refuses by default: ``pickle.load`` executes arbitrary code embedded in the
+    file, so it must never run implicitly on files pls is merely describing. The
+    sniffer tier inspects pickles safely (protocol + referenced globals) without
+    executing them.
+    """
+    if not allow_unpickle:
+        raise PermissionError(
+            "Refusing to unpickle by default (arbitrary code execution risk). "
+            "Pass allow_unpickle=True to override."
+        )
     import pickle
     with open(file_path, 'rb') as f:
         return pickle.load(f)
@@ -114,7 +128,7 @@ def _load_text(file_path: Path, max_size: int = 10_000) -> str:
         File contents as string (truncated if too large)
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             content = f.read(max_size)
             # Check if there's more content
             if f.read(1):
@@ -122,7 +136,7 @@ def _load_text(file_path: Path, max_size: int = 10_000) -> str:
             return content
     except UnicodeDecodeError:
         # Try with latin-1 encoding as fallback
-        with open(file_path, 'r', encoding='latin-1') as f:
+        with open(file_path, encoding='latin-1') as f:
             content = f.read(max_size)
             if f.read(1):
                 content += f"\n... (file truncated at {max_size} characters)"

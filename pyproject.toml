@@ -8,6 +8,8 @@ authors = [
 ]
 requires-python = ">=3.10"
 license = {file = "LICENSE"}
+# Core dependencies (always installed) — pls has zero required runtime deps
+dependencies = []
 keywords = ["introspection", "jupyter", "data-science", "metadata", "summarization"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -25,9 +27,6 @@ Homepage = "https://github.com/dwootton/pretty-little-summary"
 Repository = "https://github.com/dwootton/pretty-little-summary"
 Issues = "https://github.com/dwootton/pretty-little-summary/issues"
 Documentation = "https://dwootton.github.io/pretty-little-summary"
-
-# Core dependencies (always installed)
-dependencies = []
 
 [project.optional-dependencies]
 # Development dependencies

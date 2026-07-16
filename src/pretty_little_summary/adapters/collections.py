@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
-from collections import Counter, OrderedDict, defaultdict, deque
 import types
-from typing import Any, Iterable
+from collections import Counter, OrderedDict, defaultdict, deque
+from collections.abc import Iterable
+from typing import Any
 
 from pretty_little_summary.adapters._base import AdapterRegistry
 from pretty_little_summary.core import MetaDescription
 from pretty_little_summary.descriptor_registry import DescribeConfigRegistry
 from pretty_little_summary.descriptor_utils import (
-    compute_cardinality,
     compute_numeric_stats,
     safe_repr,
     safe_sample,

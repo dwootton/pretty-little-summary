@@ -46,7 +46,7 @@ class H5pyAdapter:
         return meta
 
 
-def _describe_dataset(dataset: "h5py.Dataset") -> dict[str, Any]:
+def _describe_dataset(dataset: h5py.Dataset) -> dict[str, Any]:
     attrs = {k: safe_repr(v, 100) for k, v in dataset.attrs.items()}
     sample = None
     try:

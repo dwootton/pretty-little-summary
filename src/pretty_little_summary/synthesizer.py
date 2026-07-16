@@ -1,12 +1,11 @@
 """Deterministic summary generation."""
 
-from typing import Optional
 
 from pretty_little_summary.core import MetaDescription
 
 
 def deterministic_summary(
-    metadata: MetaDescription, history: Optional[list[str]] = None
+    metadata: MetaDescription, history: list[str] | None = None
 ) -> str:
     """
     Generate a deterministic summary.
@@ -153,7 +152,7 @@ def deterministic_summary(
             lines.append(f"Path: {gen_meta['path']}")
         if "iso" in gen_meta:
             lines.append(f"ISO: {gen_meta['iso']}")
-        if "timezone" in gen_meta and gen_meta["timezone"]:
+        if gen_meta.get("timezone"):
             lines.append(f"Timezone: {gen_meta['timezone']}")
         if "pattern" in gen_meta:
             lines.append(f"Pattern: {gen_meta['pattern']}")
@@ -182,7 +181,7 @@ def deterministic_summary(
         if "axes_count" in gen_meta:
             lines.append(f"Axes: {gen_meta['axes_count']}")
     # Warnings
-    if "warnings" in metadata and metadata["warnings"]:
+    if metadata.get("warnings"):
         lines.append(f"Warnings: {len(metadata['warnings'])} issue(s)")
 
     # Adapter used

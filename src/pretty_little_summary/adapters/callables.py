@@ -8,7 +8,6 @@ from typing import Any
 
 from pretty_little_summary.adapters._base import AdapterRegistry
 from pretty_little_summary.core import MetaDescription
-from pretty_little_summary.descriptor_utils import safe_repr
 
 
 class CallableAdapter:

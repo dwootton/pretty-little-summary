@@ -55,7 +55,7 @@ class NumpyAdapter:
         return meta
 
 
-def _describe_ndarray(arr: "np.ndarray", config) -> dict[str, Any]:
+def _describe_ndarray(arr: np.ndarray, config) -> dict[str, Any]:
     metadata: dict[str, Any] = {
         "type": "ndarray",
         "dtype": str(arr.dtype),
@@ -84,7 +84,7 @@ def _describe_ndarray(arr: "np.ndarray", config) -> dict[str, Any]:
     return metadata
 
 
-def _describe_scalar(value: "np.generic") -> dict[str, Any]:
+def _describe_scalar(value: np.generic) -> dict[str, Any]:
     return {
         "type": "numpy_scalar",
         "dtype": str(value.dtype),
@@ -93,7 +93,7 @@ def _describe_scalar(value: "np.generic") -> dict[str, Any]:
     }
 
 
-def _sample_numeric_array(arr: "np.ndarray", limit: int) -> list[float | int]:
+def _sample_numeric_array(arr: np.ndarray, limit: int) -> list[float | int]:
     flat = arr.ravel()
     if flat.size > limit:
         sample = flat[:limit]
@@ -102,7 +102,7 @@ def _sample_numeric_array(arr: "np.ndarray", limit: int) -> list[float | int]:
     return [float(v) if hasattr(v, "__float__") else int(v) for v in sample.tolist()]
 
 
-def _is_numeric_dtype(dtype: "np.dtype") -> bool:
+def _is_numeric_dtype(dtype: np.dtype) -> bool:
     return dtype.kind in {"i", "u", "f"}
 
 

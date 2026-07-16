@@ -16,4 +16,9 @@ def build(tmp_path=None):
 
 
 def expected(meta):
+    # The file's content is now described via the zero-dependency sniffer tier.
+    content = meta["metadata"].get("content", {})
+    summary = content.get("summary")
+    if summary:
+        return f"'{meta['metadata']['path']}': {summary}"
     return f"A path '{meta['metadata']['path']}' pointing to an existing file (5.0 B)."

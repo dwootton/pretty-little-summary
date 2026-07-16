@@ -4,26 +4,25 @@ from __future__ import annotations
 
 from typing import Any
 
-try:
-    import jax
-    import jax.numpy as jnp
-    LIBRARY_AVAILABLE = True
-except ImportError:
-    LIBRARY_AVAILABLE = False
-
-from pretty_little_summary.adapters._base import AdapterRegistry
+from pretty_little_summary.adapters._base import AdapterRegistry, module_loaded
 from pretty_little_summary.core import MetaDescription
 
 
 class JaxAdapter:
-    """Adapter for JAX array objects."""
+    """Adapter for JAX array objects.
+
+    Detection is gated on jax already being imported so this adapter never
+    triggers jax's (heavy) import on its own.
+    """
 
     @staticmethod
     def can_handle(obj: Any) -> bool:
-        if not LIBRARY_AVAILABLE:
+        if not module_loaded("jax"):
             return False
         try:
-            return isinstance(obj, jax.Array) or isinstance(obj, jnp.ndarray)
+            import jax
+
+            return isinstance(obj, jax.Array)
         except Exception:
             return False
 
@@ -43,5 +42,4 @@ class JaxAdapter:
         return meta
 
 
-if LIBRARY_AVAILABLE:
-    AdapterRegistry.register(JaxAdapter)
+AdapterRegistry.register(JaxAdapter)

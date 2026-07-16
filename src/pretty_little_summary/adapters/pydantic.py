@@ -40,8 +40,11 @@ class PydanticAdapter:
 
             # Get field info
             try:
+                # Access model_fields on the class: reading it from the instance
+                # is deprecated in Pydantic 2.11+.
+                model_fields = type(obj).model_fields
                 meta["fields"] = {
-                    k: str(v.annotation) for k, v in obj.model_fields.items()
+                    k: str(v.annotation) for k, v in model_fields.items()
                 }
             except Exception as e:
                 meta.setdefault("warnings", []).append(f"Could not get fields: {e}")

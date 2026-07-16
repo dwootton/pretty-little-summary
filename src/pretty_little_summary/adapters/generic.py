@@ -2,7 +2,11 @@
 
 from typing import Any
 
-from pretty_little_summary.adapters._base import Adapter, AdapterRegistry
+from pretty_little_summary.adapters._base import (
+    PRIORITY_FALLBACK,
+    AdapterRegistry,
+)
+from pretty_little_summary.canonical import canonical_repr
 from pretty_little_summary.core import MetaDescription
 
 
@@ -64,9 +68,9 @@ class GenericAdapter:
         elif obj is None:
             metadata["value"] = "None"
 
-        # Try to get repr for everything
+        # Try to get repr for everything (address-normalized for determinism).
         try:
-            meta["raw_repr"] = repr(obj)[:1000]
+            meta["raw_repr"] = canonical_repr(obj, 1000)
         except Exception:
             meta["raw_repr"] = f"<{type_name} object>"
 
@@ -85,5 +89,6 @@ class GenericAdapter:
         return meta
 
 
-# Always register GenericAdapter (lowest priority)
-AdapterRegistry.register(GenericAdapter)
+# Always register GenericAdapter at fallback priority so it is only chosen when
+# no specialized adapter claims the object.
+AdapterRegistry.register(GenericAdapter, priority=PRIORITY_FALLBACK)

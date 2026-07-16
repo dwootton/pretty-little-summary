@@ -1,8 +1,21 @@
 """Base classes for the adapter system."""
 
-from typing import Any, Protocol, Type
+import sys
+from typing import Any, ClassVar, Protocol
 
 from pretty_little_summary.core import MetaDescription
+
+
+def module_loaded(name: str) -> bool:
+    """True if a module is already imported in this process.
+
+    Lets a heavy-library adapter (torch, tensorflow, jax) detect its objects
+    without importing the library itself: if the library has not been imported
+    by the user's program, it cannot have produced the object being described,
+    so there is nothing for the adapter to handle. This is what keeps a bare
+    ``describe(df)`` from dragging in multi-second imports.
+    """
+    return name in sys.modules
 
 
 class Adapter(Protocol):
@@ -19,33 +32,62 @@ class Adapter(Protocol):
         ...
 
 
+# Priority tiers. Higher wins; adapters checked highest-first, ties broken by
+# registration order (so import order still decides among same-priority peers).
+PRIORITY_DEFAULT = 0
+PRIORITY_FALLBACK = -1000  # GenericAdapter — always last resort.
+
+
 class AdapterRegistry:
     """
     Registry for managing adapters.
 
     Design:
-    - Lazy loading: Only import libraries when needed
-    - Priority ordering: Check adapters in registration order
-    - Fallback: GenericAdapter for unknown types
+    - Explicit priority ordering (not import order): each adapter registers with
+      a priority; higher is checked first, ties broken by registration order.
+      This decouples "must be imported last" from "must be checked last".
+    - Idempotent registration: re-registering the same class is a no-op, so the
+      module can be imported/reloaded without duplicating adapters.
+    - Fallback: GenericAdapter for unknown types.
     """
 
-    _adapters: list[Type[Adapter]] = []
+    # Each entry: (priority, sequence, adapter). `sequence` is a stable tiebreaker.
+    _entries: ClassVar[list[tuple[int, int, type[Adapter]]]] = []
+    _seq: int = 0
 
     @classmethod
-    def register(cls, adapter: Type[Adapter]) -> None:
-        """Register a new adapter."""
-        cls._adapters.append(adapter)
+    def register(cls, adapter: type[Adapter], priority: int = PRIORITY_DEFAULT) -> None:
+        """Register an adapter at the given priority (idempotent by class)."""
+        if any(existing is adapter for _, _, existing in cls._entries):
+            return
+        cls._entries.append((priority, cls._seq, adapter))
+        cls._seq += 1
+        # Sort once at registration: highest priority first, then insertion order.
+        cls._entries.sort(key=lambda e: (-e[0], e[1]))
 
     @classmethod
-    def get_adapter(cls, obj: Any) -> Type[Adapter]:
-        """Find the first adapter that can handle obj."""
-        for adapter in cls._adapters:
-            if adapter.can_handle(obj):
-                return adapter
-        # Import GenericAdapter on-demand to avoid circular import
+    def get_adapter(cls, obj: Any) -> type[Adapter]:
+        """Find the highest-priority adapter that can handle obj."""
+        for _, _, adapter in cls._entries:
+            try:
+                if adapter.can_handle(obj):
+                    return adapter
+            except Exception:
+                # A misbehaving can_handle must never break dispatch.
+                continue
         from pretty_little_summary.adapters.generic import GenericAdapter
 
         return GenericAdapter
+
+    @classmethod
+    def unregister(cls, adapter: type[Adapter]) -> None:
+        """Remove an adapter if present (no-op otherwise)."""
+        cls._entries = [e for e in cls._entries if e[2] is not adapter]
+
+    @classmethod
+    def adapters(cls) -> list[type[Adapter]]:
+        """Return registered adapter classes in priority order."""
+        return [adapter for _, _, adapter in cls._entries]
 
 
 def dispatch_adapter(obj: Any) -> MetaDescription:
@@ -63,6 +105,7 @@ def dispatch_adapter(obj: Any) -> MetaDescription:
     Returns:
         MetaDescription with extracted metadata
     """
+    _ensure_adapters_loaded()
     adapter = AdapterRegistry.get_adapter(obj)
     adapter_name = adapter.__name__
 
@@ -70,7 +113,7 @@ def dispatch_adapter(obj: Any) -> MetaDescription:
         return adapter.extract_metadata(obj)
     except Exception as e:
         # Log the failure for debugging
-        warning_msg = f"{adapter_name} failed: {str(e)}"
+        warning_msg = f"{adapter_name} failed: {e!s}"
 
         # If the failed adapter was NOT GenericAdapter, try GenericAdapter
         if adapter_name != "GenericAdapter":
@@ -111,12 +154,14 @@ def _create_emergency_metadata(
     Returns:
         Minimal MetaDescription with error information
     """
-    warnings = [f"{adapter_name} failed: {str(primary_error)}"]
+    warnings = [f"{adapter_name} failed: {primary_error!s}"]
     if fallback_error:
-        warnings.append(f"GenericAdapter fallback also failed: {str(fallback_error)}")
+        warnings.append(f"GenericAdapter fallback also failed: {fallback_error!s}")
+
+    from pretty_little_summary.canonical import canonical_repr
 
     try:
-        raw_repr = repr(obj)[:500]
+        raw_repr = canonical_repr(obj, 500)
     except Exception:
         raw_repr = "<repr failed>"
 
@@ -128,19 +173,29 @@ def _create_emergency_metadata(
     }
 
 
+def _ensure_adapters_loaded() -> None:
+    """Import the built-in adapter modules on first use.
+
+    Deferring these imports keeps ``import pretty_little_summary`` instant and,
+    for a zero-dependency install, means we never touch a heavy library until
+    the user actually asks us to describe something.
+    """
+    from pretty_little_summary.adapters import load_all_adapters
+
+    load_all_adapters()
+
+
 def list_available_adapters() -> list[str]:
     """
-    List all currently registered adapters.
+    List all currently registered adapters, in priority order.
 
-    Returns a list of adapter names that are available based on installed libraries.
-    This is useful for debugging and understanding which adapters are active.
-
-    Returns:
-        List of adapter class names
+    Returns a list of adapter names that are available based on installed
+    libraries. Useful for debugging which adapters are active.
 
     Example:
         >>> import pretty_little_summary as pls
         >>> pls.list_available_adapters()
         ['PandasAdapter', 'MatplotlibAdapter', 'NumpyAdapter', 'GenericAdapter']
     """
-    return [adapter.__name__ for adapter in AdapterRegistry._adapters]
+    _ensure_adapters_loaded()
+    return [adapter.__name__ for adapter in AdapterRegistry.adapters()]

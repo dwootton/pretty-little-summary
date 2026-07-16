@@ -1,7 +1,7 @@
 """Main API entry point for pretty_little_summary."""
 
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 from pretty_little_summary.adapters import dispatch_adapter
 from pretty_little_summary.core import HistorySlicer
@@ -21,10 +21,10 @@ class Description:
 
     content: str
     meta: dict
-    history: Optional[list[str]]
+    history: list[str] | None
 
 
-def describe(obj: Any, name: Optional[str] = None) -> Description:
+def describe(obj: Any, name: str | None = None) -> Description:
     """
     Generate a structured summary of any Python object.
 
@@ -59,7 +59,7 @@ def describe(obj: Any, name: Optional[str] = None) -> Description:
     metadata = dispatch_adapter(obj)
 
     # Get history if available
-    history: Optional[list[str]] = None
+    history: list[str] | None = None
     if HistorySlicer.is_ipython_environment():
         history = HistorySlicer.get_history(var_name=name, max_lines=50)
 
@@ -70,7 +70,7 @@ def describe(obj: Any, name: Optional[str] = None) -> Description:
     return Description(content=content, meta=metadata, history=history)
 
 
-def _try_get_variable_name(obj: Any) -> Optional[str]:
+def _try_get_variable_name(obj: Any) -> str | None:
     """
     Attempt to auto-detect variable name from IPython namespace.
 

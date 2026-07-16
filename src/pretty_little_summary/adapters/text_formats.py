@@ -54,10 +54,9 @@ def _detect_format(value: str) -> dict[str, Any] | None:
     if json_meta:
         return json_meta
 
-    if YAML_AVAILABLE:
-        yaml_meta = _detect_yaml(stripped)
-        if yaml_meta:
-            return yaml_meta
+    yaml_meta = _detect_yaml(stripped)
+    if yaml_meta:
+        return yaml_meta
 
     html_meta = _detect_html(stripped)
     if html_meta:
@@ -90,18 +89,90 @@ def _detect_json(value: str) -> dict[str, Any] | None:
 
 
 def _detect_yaml(value: str) -> dict[str, Any] | None:
-    if not YAML_AVAILABLE:
+    """Detect block-style YAML, with or without PyYAML installed.
+
+    JSON (a YAML subset) is handled earlier, so this only sees non-JSON text.
+    We first confirm the text is structurally YAML-shaped with a stdlib check —
+    this keeps detection working in a zero-dependency install and prevents PyYAML
+    from claiming ordinary prose that happens to parse as a scalar. If PyYAML is
+    present we use it for accurate key extraction; otherwise we read top-level
+    keys ourselves.
+    """
+    if not _looks_like_yaml(value):
         return None
-    if not (value.startswith("---") or re.search(r"^\w+:\s", value, re.M)):
-        return None
-    try:
-        parsed = yaml.safe_load(value)
-    except Exception:
-        return None
-    meta: dict[str, Any] = {"format": "yaml", "parsed_type": type(parsed).__name__}
-    if isinstance(parsed, dict):
-        meta["keys"] = list(parsed.keys())[:10]
-    return meta
+
+    if YAML_AVAILABLE:
+        try:
+            parsed = yaml.safe_load(value)
+        except Exception:
+            parsed = None
+        if parsed is not None:
+            meta: dict[str, Any] = {
+                "format": "yaml",
+                "parsed_type": type(parsed).__name__,
+            }
+            if isinstance(parsed, dict):
+                meta["keys"] = [str(k) for k in list(parsed.keys())[:10]]
+            return meta
+
+    # Zero-dependency fallback: read the structure directly.
+    keys = _yaml_top_level_keys(value)
+    if keys:
+        return {"format": "yaml", "parsed_type": "dict", "keys": keys[:10]}
+    if value.lstrip().startswith("- "):
+        return {"format": "yaml", "parsed_type": "list"}
+    if value.startswith("---"):
+        return {"format": "yaml", "parsed_type": "str"}
+    return None
+
+
+# A zero-indent mapping line: `key:` or `key: value` (keys may contain spaces,
+# dots, hyphens). Requires end-of-line or whitespace after the colon so that
+# URLs like `http://x` are not mistaken for mappings.
+_YAML_MAPPING_RE = re.compile(r"^[A-Za-z_][\w .\-]*:(\s.*)?$")
+
+
+def _looks_like_yaml(value: str) -> bool:
+    """True only when *every* significant line is YAML-shaped.
+
+    Requiring all lines to fit (mapping, list item, comment, document marker, or
+    indented continuation) rejects prose such as ``"Note: see below."`` while
+    accepting real block-style documents.
+    """
+    lines = [ln for ln in value.splitlines() if ln.strip()]
+    if not lines:
+        return False
+
+    saw_structure = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped in {"---", "..."} or stripped.startswith("#"):
+            continue
+        if line[0] in (" ", "\t"):
+            # Indented content belongs to a parent mapping/list we already saw.
+            continue
+        if stripped.startswith("- "):
+            saw_structure = True
+            continue
+        if _YAML_MAPPING_RE.match(line):
+            saw_structure = True
+            continue
+        return False
+    return saw_structure or value.startswith("---")
+
+
+def _yaml_top_level_keys(value: str) -> list[str]:
+    """Extract keys of a zero-indented block mapping using stdlib only."""
+    keys: list[str] = []
+    for line in value.splitlines():
+        if not line or line[0] in (" ", "\t"):
+            continue
+        stripped = line.strip()
+        if not stripped or stripped.startswith(("#", "-")) or stripped in {"---", "..."}:
+            continue
+        if _YAML_MAPPING_RE.match(line):
+            keys.append(line.split(":", 1)[0].strip())
+    return keys
 
 
 def _detect_xml(value: str) -> dict[str, Any] | None:
@@ -127,7 +198,9 @@ def _detect_csv(value: str) -> dict[str, Any] | None:
         return None
     sample = "\n".join(lines[:5])
     try:
-        dialect = csv.Sniffer().sniff(sample)
+        # Restrict to real field separators: without this, csv.Sniffer happily
+        # calls space-separated prose ("hello world") a two-column CSV.
+        dialect = csv.Sniffer().sniff(sample, delimiters=",\t;|")
     except Exception:
         return None
     reader = csv.reader(lines[:5], dialect)
