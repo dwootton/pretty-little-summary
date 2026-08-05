@@ -1,0 +1,1 @@
+A pandas Series 'price' with 4 values. Nulls: 1. Dtype: float64. Stats: range 1 to 3, mean 2, std 1. Sample: [1.0, 2.0, 3.0, nan].

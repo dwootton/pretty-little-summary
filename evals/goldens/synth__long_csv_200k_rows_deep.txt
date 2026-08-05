@@ -1,0 +1,1 @@
+A pandas DataFrame with 100000 rows and 3 columns. Nulls: 0. Memory: 2.3 MB. Columns: id (int64, stats: range 6 to 1e+05, mean 5e+04, std 2.9e+04), value (int64, stats: range 0 to 1e+03, mean 5e+02, std 2.9e+02), flag (int64, stats: range 0 to 1, mean 0.5, std 0.5). Sample rows omitted for size/perf. (profiled from a sample of the first 100,000 rows; pass full=True to read all)

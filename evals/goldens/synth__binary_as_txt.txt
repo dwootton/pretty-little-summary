@@ -1,0 +1,2 @@
+A PNG image, 4x2 pixels (61.0 B).
+Tip: pass deep=True to load and fully profile this file.

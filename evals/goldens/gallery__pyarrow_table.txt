@@ -1,0 +1,1 @@
+A PyArrow Table with 2 rows and 2 columns. Schema: a (int64), b (string). Memory: 26.0 B. Sample row: {'a': '1', 'b': "'x'"}.

@@ -1,0 +1,1 @@
+A pandas DataFrame with 100 rows and 3 columns. Nulls: 100. Memory: 2.8 KB. Columns: a (int64, stats: range 0 to 99, mean 50, std 29), b (str, cardinality: 100 unique values (likely identifiers)), c (float64, 100 nulls). Sample rows omitted for size/perf.

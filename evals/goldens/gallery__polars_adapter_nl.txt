@@ -1,0 +1,1 @@
+A Polars DataFrame with shape (2, 2). Schema: a (Int64), b (String). Sample row: {'a': '1', 'b': "'x'"}.

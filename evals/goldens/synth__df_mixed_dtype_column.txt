@@ -1,0 +1,1 @@
+A pandas DataFrame with 50 rows and 1 columns. Nulls: 10. Memory: 2.1 KB. Columns: mixed (object, 10 nulls, cardinality: 4 categories including '1', 'two', '4.5'). Sample rows omitted for size/perf.

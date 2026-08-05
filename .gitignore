@@ -20,6 +20,8 @@ wheels/
 .installed.cfg
 *.egg
 
+data/
+
 # Virtual environments
 venv/
 env/
@@ -51,3 +53,7 @@ uv.lock
 .meridian/
 
 planning/
+
+# Eval harness artifacts (committed: goldens/, scores.json, manifest.json)
+evals/out/
+evals/cache/

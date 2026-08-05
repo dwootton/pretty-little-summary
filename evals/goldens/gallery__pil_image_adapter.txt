@@ -1,0 +1,1 @@
+A PIL image 64x32 in RGB mode.

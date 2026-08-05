@@ -1,0 +1,2 @@
+A JSON file containing an object with keys: score, limit, vals (60.0 B).
+Tip: pass deep=True to load and fully profile this file.

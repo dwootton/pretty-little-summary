@@ -1,0 +1,1 @@
+A bytes object containing png data (28 bytes).

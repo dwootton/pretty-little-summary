@@ -1,0 +1,1 @@
+A pandas DataFrame with 344 rows and 7 columns. Nulls: 19. Memory: 24.9 KB. Columns: species (str, cardinality: 3 categories including 'Adelie', 'Gentoo', 'Chinstrap'), island (str, cardinality: 3 categories including 'Biscoe', 'Dream', 'Torgersen'), bill_length_mm (float64, 2 nulls, stats: range 32 to 60, mean 44, std 5.5). Sample rows omitted for size/perf.

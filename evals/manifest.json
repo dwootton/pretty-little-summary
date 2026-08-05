@@ -1,0 +1,25 @@
+{
+  "datasets": [
+    {
+      "id": "seaborn_titanic",
+      "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv",
+      "filename": "titanic.csv",
+      "sha256": "81787d320d7f7b03df935e91de8bd19e11d45c5bbcab86ef4d4a76dc91b7d4f2",
+      "notes": "891 rows, 15 cols, mixed types, nulls in age/deck"
+    },
+    {
+      "id": "seaborn_penguins",
+      "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv",
+      "filename": "penguins.csv",
+      "sha256": "e07636bd8af74260099ea2f8678e2eabbf35def579940cc76f67061ee16c06c1",
+      "notes": "344 rows, NA values, categorical species column"
+    },
+    {
+      "id": "vega_flights_200k",
+      "url": "https://raw.githubusercontent.com/vega/vega-datasets/main/data/flights-200k.json",
+      "filename": "flights-200k.json",
+      "sha256": "82c60682ccdec1a9cf1102b2a011bef789243053f1ac01a531580c72be3d8bc0",
+      "notes": "~2MB columnar JSON (dict of parallel arrays)"
+    }
+  ]
+}

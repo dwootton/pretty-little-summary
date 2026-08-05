@@ -1,0 +1,2 @@
+A CSV file with 3 columns (2.4 MB). Header: 'id', 'value', 'flag'.
+Tip: pass deep=True to load and fully profile this file.

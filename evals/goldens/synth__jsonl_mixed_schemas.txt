@@ -1,0 +1,2 @@
+A JSON Lines file (~20+ records sampled) (2.6 KB).
+Tip: pass deep=True to load and fully profile this file.

@@ -1,0 +1,1 @@
+A numpy array with shape (0, 5) and dtype float64. Sample corner: [].

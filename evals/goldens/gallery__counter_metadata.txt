@@ -1,0 +1,1 @@
+A Counter with 2 unique elements totaling 3 observations.

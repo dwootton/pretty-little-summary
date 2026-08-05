@@ -1,0 +1,1 @@
+A PIL image 320x200 in RGB mode.

@@ -1,0 +1,1 @@
+A pandas DataFrame with 20 rows and 500 columns. Nulls: 0. Memory: 78.3 KB. Columns: c0 (float64, stats: range 0.013 to 0.99, mean 0.48, std 0.3), c1 (float64, stats: range 0.06 to 0.97, mean 0.56, std 0.32), c2 (float64, stats: range 0.012 to 0.97, mean 0.53, std 0.34). Sample rows omitted for size/perf.

@@ -1,0 +1,1 @@
+A valid YAML string containing keys: name, age.

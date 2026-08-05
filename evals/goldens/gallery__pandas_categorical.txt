@@ -1,0 +1,1 @@
+A pandas Categorical with 2 categories.
