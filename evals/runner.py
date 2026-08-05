@@ -146,7 +146,11 @@ def run_case(case_obj: Case, ctx: CaseCtx) -> dict[str, Any]:
         with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             result = pls.describe(obj, **case_obj.describe_kwargs)
     except Exception:
-        record.update(status="error", traceback=traceback.format_exc(limit=8))
+        record.update(
+            status="error",
+            traceback=traceback.format_exc(limit=8),
+            duration_ms=round((time.perf_counter() - start) * 1000, 2),
+        )
         return record
     finally:
         try:

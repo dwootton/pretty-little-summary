@@ -6,12 +6,27 @@ from pathlib import Path, PurePath
 from typing import Any
 
 from pretty_little_summary.adapters._base import AdapterRegistry
+from pretty_little_summary.adapters._directory_grouping import (
+    FilenameFamily,
+    format_family_line,
+    group_filename_families,
+)
 from pretty_little_summary.core import MetaDescription
 from pretty_little_summary.descriptor_utils import format_bytes
 
-# Default configuration for directory scanning
+# Default configuration for directory scanning. Three independent limits:
+#  - DEFAULT_MAX_DEPTH: how many levels deep to recurse.
+#  - DEFAULT_MAX_FILES_PER_FOLDER: how many file/family lines ONE directory's
+#    own listing may show. A folder with thousands of files (e.g. a sensor
+#    archive) can only ever contribute this many lines, so it can never
+#    starve sibling files or directories of the global budget below.
+#  - DEFAULT_MAX_TOTAL_FILES: a global cap on files actually content-sniffed
+#    across the whole walk. Once spent, remaining files are still listed by
+#    name (structure stays visible) with a placeholder instead of a real
+#    description.
 DEFAULT_MAX_DEPTH = 3
-DEFAULT_MAX_FILES = 100
+DEFAULT_MAX_FILES_PER_FOLDER = 20
+DEFAULT_MAX_TOTAL_FILES = 150
 
 
 class PathlibAdapter:
@@ -58,7 +73,8 @@ class PathlibAdapter:
                         tree_result = _describe_directory_tree(
                             obj,
                             max_depth=DEFAULT_MAX_DEPTH,
-                            max_files=DEFAULT_MAX_FILES
+                            max_files_per_folder=DEFAULT_MAX_FILES_PER_FOLDER,
+                            max_total_files=DEFAULT_MAX_TOTAL_FILES,
                         )
                         metadata["tree"] = tree_result["tree"]
                         metadata["file_count"] = tree_result["file_count"]
@@ -86,7 +102,8 @@ def describe_directory(root_path: Path, deep: bool = False) -> MetaDescription:
     tree_result = _describe_directory_tree(
         root_path,
         max_depth=DEFAULT_MAX_DEPTH,
-        max_files=DEFAULT_MAX_FILES,
+        max_files_per_folder=DEFAULT_MAX_FILES_PER_FOLDER,
+        max_total_files=DEFAULT_MAX_TOTAL_FILES,
         deep=deep,
     )
     metadata: dict[str, Any] = {
@@ -111,7 +128,8 @@ def describe_directory(root_path: Path, deep: bool = False) -> MetaDescription:
 def _describe_directory_tree(
     root_path: Path,
     max_depth: int = DEFAULT_MAX_DEPTH,
-    max_files: int = DEFAULT_MAX_FILES,
+    max_files_per_folder: int = DEFAULT_MAX_FILES_PER_FOLDER,
+    max_total_files: int = DEFAULT_MAX_TOTAL_FILES,
     deep: bool = False,
 ) -> dict[str, Any]:
     """
@@ -120,7 +138,13 @@ def _describe_directory_tree(
     Args:
         root_path: Root directory to describe
         max_depth: Maximum depth to traverse
-        max_files: Maximum number of files to describe
+        max_files_per_folder: Maximum number of file/family lines ONE
+            directory's own listing may show. Bounding this per folder (not
+            globally) means a folder with thousands of files can never
+            starve sibling files or folders of display space.
+        max_total_files: Global cap on files actually content-described
+            (sniffed) across the whole walk. Once spent, further files are
+            still listed by name — just without a real description.
         deep: Deep-profile each file (load into a rich object) instead of only
             head-sniffing it.
 
@@ -130,21 +154,34 @@ def _describe_directory_tree(
     tree_lines: list[str] = []
     file_count = 0
     dir_count = 0
-    files_processed = 0
+    files_described = 0
+
+    def _describe_for_grouping(path: Path) -> str:
+        # Used only to confirm/reject a candidate filename family. Always
+        # describes for real — the sampling in group_filename_families
+        # already bounds this to a handful of calls per family, so gating
+        # it on the global budget too would risk a family "matching" only
+        # because every sample hit the placeholder string.
+        nonlocal files_described
+        files_described += 1
+        return _describe_file(path, deep=deep)
+
+    def _describe_or_placeholder(path: Path) -> str:
+        nonlocal files_described
+        if files_described >= max_total_files:
+            return "(not described — total file budget reached)"
+        files_described += 1
+        return _describe_file(path, deep=deep)
 
     def _walk_directory(
         path: Path,
         prefix: str = "",
         depth: int = 0,
     ) -> None:
-        nonlocal file_count, dir_count, files_processed
+        nonlocal file_count, dir_count
 
         if depth >= max_depth:
             tree_lines.append(f"{prefix}... (max depth reached)")
-            return
-
-        if files_processed >= max_files:
-            tree_lines.append(f"{prefix}... (max files reached)")
             return
 
         try:
@@ -157,30 +194,51 @@ def _describe_directory_tree(
             tree_lines.append(f"{prefix}... (error: {e!s})")
             return
 
-        for i, entry in enumerate(entries):
-            if files_processed >= max_files:
-                tree_lines.append(f"{prefix}... (max files reached)")
-                break
+        dir_entries = [e for e in entries if e.is_dir()]
+        file_entries = [e for e in entries if not e.is_dir()]
+        file_count += len(file_entries)
+        dir_count += len(dir_entries)
 
-            is_last = i == len(entries) - 1
+        units = group_filename_families(file_entries, _describe_for_grouping)
+        shown_units = units[:max_files_per_folder]
+        hidden_units = units[max_files_per_folder:]
+        hidden_file_count = sum(
+            len(u.members) if isinstance(u, FilenameFamily) else 1 for u in hidden_units
+        )
+
+        # Build one combined display list so tree connectors (last-item vs.
+        # not) are computed over what's actually shown: subdirectories are
+        # never truncated here (a folder is one cheap line regardless of
+        # what it contains), only this folder's own file-level units are.
+        display_items: list[tuple[str, Any]] = [("dir", d) for d in dir_entries]
+        display_items += [
+            ("family", u) if isinstance(u, FilenameFamily) else ("file", u)
+            for u in shown_units
+        ]
+        if hidden_file_count:
+            display_items.append(("truncated", hidden_file_count))
+
+        for i, (kind, payload) in enumerate(display_items):
+            is_last = i == len(display_items) - 1
             connector = "└── " if is_last else "├── "
             extension = "    " if is_last else "│   "
 
             try:
-                if entry.is_dir():
-                    dir_count += 1
-                    tree_lines.append(f"{prefix}{connector}{entry.name}/")
-                    _walk_directory(entry, prefix + extension, depth + 1)
-                else:
-                    file_count += 1
-                    files_processed += 1
-
-                    # Try to describe the file
-                    description = _describe_file(entry, deep=deep)
-                    tree_lines.append(f"{prefix}{connector}{entry.name} - {description}")
-
+                if kind == "dir":
+                    tree_lines.append(f"{prefix}{connector}{payload.name}/")
+                    _walk_directory(payload, prefix + extension, depth + 1)
+                elif kind == "family":
+                    tree_lines.append(f"{prefix}{connector}{format_family_line(payload)}")
+                elif kind == "file":
+                    description = _describe_or_placeholder(payload)
+                    tree_lines.append(f"{prefix}{connector}{payload.name} - {description}")
+                else:  # truncated
+                    tree_lines.append(
+                        f"{prefix}... ({payload} more files in this folder)"
+                    )
             except Exception as e:
-                tree_lines.append(f"{prefix}{connector}{entry.name} - (error: {e!s})")
+                name = payload.name if hasattr(payload, "name") else ""
+                tree_lines.append(f"{prefix}{connector}{name} - (error: {e!s})")
 
     # Start the walk
     _walk_directory(root_path)

@@ -413,3 +413,28 @@ def np_nan_inf(ctx: CaseCtx):
     a[10] = np.inf
     a[20] = -np.inf
     return a
+
+
+# ---------------------------------------------------------------------------
+# Directory trees: filename-pattern collapsing + per-folder truncation
+
+
+@case(
+    "synth/dir_filename_family",
+    tags=("pathlib", "directory", "edge"),
+    describe_kwargs={"deep": True},
+    display_input="directory with 30 numbered files forming one family, plus 2 unrelated siblings",
+    notes=(
+        "The 30 numbered files should collapse into a single "
+        "'{000..029}' line, not 30 individual lines, and both unrelated "
+        "sibling files must still be listed."
+    ),
+)
+def dir_filename_family(ctx: CaseCtx):
+    d = ctx.tmp / "dir_filename_family"
+    d.mkdir()
+    for i in range(30):
+        (d / f"reading_{i:03d}.txt").write_text("sensor value")
+    (d / "README.txt").write_text("about this dataset")
+    (d / "manifest.json").write_text('{"version": 1}')
+    return d

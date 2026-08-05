@@ -1,0 +1,29 @@
+/Users/dylanw/Documents/pretty-little-summary/data/G10010_SIBT1850_V2/ (2041 files, 2 subdirectories)
+├── sibt1850_browse/
+│   └── sibt_ext_ease2_{185001..201712}.png (2016 files) - A PIL image 360x360 in P mode.
+├── source_montages/
+│   ├── montage_01_PassiveMicrowave.png - A PIL image 486x508 in P mode.
+│   ├── montage_02_DanishMetInst.png - A PIL image 486x508 in P mode.
+│   ├── montage_03_Dehn.png - A PIL image 486x508 in P mode.
+│   ├── montage_04_NAVO.png - A PIL image 486x508 in P mode.
+│   ├── montage_05_AARI.png - A PIL image 486x508 in P mode.
+│   ├── montage_06_Hill.png - A PIL image 486x508 in P mode.
+│   ├── montage_07_Whaling_AllSeaIce.png - A PIL image 486x508 in P mode.
+│   ├── montage_08_Whaling_PartialSeaIce.png - A PIL image 486x508 in P mode.
+│   ├── montage_09_Whaling_NoSeaIce.png - A PIL image 486x508 in P mode.
+│   ├── montage_10_DMI_Yearbook.png - A PIL image 486x508 in P mode.
+│   ├── montage_11_ACSYS.png - A PIL image 486x508 in P mode.
+│   ├── montage_12_WalshJohnson.png - A PIL image 486x508 in P mode.
+│   ├── montage_13_JMA_Charts.png - A PIL image 486x508 in P mode.
+│   ├── montage_14_Kelly.png - A PIL image 486x508 in P mode.
+│   ├── montage_15_LandmaskFill.png - A PIL image 486x508 in P mode.
+│   ├── montage_16_LandmaskChange.png - A PIL image 486x508 in P mode.
+│   ├── montage_17_AnalogSpatial.png - A PIL image 486x508 in P mode.
+│   ├── montage_18_AnalogTemporal.png - A PIL image 486x508 in P mode.
+│   └── montage_legend.png - A PIL image 486x508 in LA mode.
+├── G10010_sibt1850_v2.0.nc - An HDF5 file (60.8 MB). Install h5py and use deep mode to read its datasets.
+├── legend_for_sibt1850_source_v2_pano.cpt.png - A PIL image 547x693 in RGBA mode.
+├── sibt1850_conc_v2_to120.cpt - A text file with 25 lines (743.0 B).
+├── sibt1850_source_v2_pano.cpt - A text file with 24 lines (1.3 KB).
+├── sibt_areas_v2.csv - A pandas DataFrame with 2018 rows and 18 columns. Nulls: 0. Memory: 558.7 KB. Columns: (G10010) Gridded Monthly Sea Ice Extent and Concentration, 1850 Onward, Version 2  - Daily Ice Area by Region in Square Kilometers on the 15th of each month (str, cardinality: 2018 unique values (likely identifiers)), Unnamed: 1 (str, cardinality: 1907 unique values out of 2018), Unnamed: 2 (str, cardinality: 1516 unique values out of 2018). Sample rows omitted for size/perf.
+└── sibt_extents_v2.csv - A pandas DataFrame with 2018 rows and 18 columns. Nulls: 0. Memory: 561.0 KB. Columns: (G10010) Gridded Monthly Sea Ice Extent and Concentration, 1850 Onward, Version 2 - Daily Ice Extent by Region in Square Kilometers on the 15th of each month (str, cardinality: 2018 unique values (likely identifiers)), Unnamed: 1 (str, cardinality: 1891 unique values out of 2018), Unnamed: 2 (str, cardinality: 437 unique values out of 2018). Sample rows omitted for size/perf.

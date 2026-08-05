@@ -853,6 +853,30 @@
    "critique": "With the cap raised to 50, all 27 columns now fit and are listed in full \u2014 more informative than the prior 10-name truncation, still a single concise sentence.",
    "judged_at": "2026-08-05T18:18:16+00:00"
   },
+  "real/local_sibt1850_dir": {
+   "output_hash": "a8f5b6df876232ed",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 2,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.25,
+   "critique": "Shallow describe() of a directory doesn't build a tree at all (pre-existing behavior: sniff_path only handles files, so the sniffer falls through to a bare 'could not read' warning) and just tips the user toward deep=True. Accurate and not misleading, but uninformative \u2014 this gap is pre-existing and out of scope for the truncation/collapsing fix (tag: wontfix, tracked separately from this iteration's focus).",
+   "judged_at": "2026-08-05T19:26:47+00:00"
+  },
+  "real/local_sibt1850_dir_deep": {
+   "output_hash": "b6de15b44849a2ea",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "The core motivating case: the 2016-file sibt1850_browse/ PNG family collapses to a single line instead of dominating the entire output, and every top-level sibling (source_montages/, the .nc file, .cpt files, both CSVs) is visible \u2014 the sibling-starvation bug is fixed and the family-collapsing feature works as intended on the real dataset.",
+   "judged_at": "2026-08-05T19:26:39+00:00"
+  },
   "real/penguins_deep": {
    "output_hash": "bf0003be06ad300f",
    "scores": {
@@ -1032,6 +1056,18 @@
    "overall": 4.5,
    "critique": "Correctly gives the count without enumerating keys, but drops the str->int mapping type and value stats that are sitting in the metadata; 'A dict with 10000 str keys mapping to ints' would satisfy NOTES fully.",
    "judged_at": "2026-08-05T17:47:55+00:00"
+  },
+  "synth/dir_filename_family": {
+   "output_hash": "33e99ca249f8a958",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 4,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.75,
+   "critique": "Correctly collapses the 30-file numbered family into one line and keeps both unrelated siblings (README.txt, manifest.json) visible \u2014 exactly the sibling-preservation and collapsing behavior this feature targets. Slightly generic per-family description (just 'text file, 1 line') but that's accurate for the fixture.",
+   "judged_at": "2026-08-05T19:26:33+00:00"
   },
   "synth/empty_containers": {
    "output_hash": "b6a4f8a05c5b9e9a",
