@@ -818,16 +818,16 @@
    "judged_at": "2026-08-05T17:44:42+00:00"
   },
   "real/local_nlsy": {
-   "output_hash": "91714ad8670c3b82",
+   "output_hash": "ddd4276db677f13d",
    "scores": {
-    "accuracy": 3,
-    "informativeness": 1,
-    "conciseness": 4,
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 3.25,
-   "critique": "The magic bytes 0x3c73746174615f64 literally spell '<stata_d' and the extension is .dta, yet it's reported as 'binary file of unknown type' \u2014 a data-savvy user gets zero signal that this is a Stata dataset readable via pandas.read_stata. Add a Stata sniffer (or at least echo the ASCII decode of the magic and honor the extension).",
-   "judged_at": "2026-08-05T17:44:35+00:00"
+   "overall": 5.0,
+   "critique": "Now correctly identifies the Stata format, reports the exact observation/variable counts (305502 x 14, matching pandas.read_stata), and lists variable names with a truncation note. Fully resolves the prior 'unknown binary' misreport.",
+   "judged_at": "2026-08-05T18:11:57+00:00"
   },
   "real/local_population_a_mcp": {
    "output_hash": "00d79a7340d1c360",
@@ -1176,6 +1176,18 @@
    "overall": 4.25,
    "critique": "Handles the self-referential list without looping (sample even shows '[...]'), but the summary 'A list of 4 items' omits the self-reference NOTES ask for \u2014 the metadata already detected it, so surface 'contains a reference to itself'.",
    "judged_at": "2026-08-05T17:47:55+00:00"
+  },
+  "synth/stata_dta_v118": {
+   "output_hash": "8381fb6d8d14dc7a",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Correctly parses the format-118 XML header to report 3 observations, 3 variables, and their names without needing pandas installed at read time.",
+   "judged_at": "2026-08-05T18:11:57+00:00"
   },
   "synth/truncated_json": {
    "output_hash": "43c87e4a0c2f7c85",

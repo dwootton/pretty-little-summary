@@ -136,6 +136,28 @@ def csv_semicolon(ctx: CaseCtx):
 
 
 # ---------------------------------------------------------------------------
+# Files: binary formats sniffed without parsing libraries
+
+
+@case(
+    "synth/stata_dta_v118",
+    tags=("sniffer", "stata", "binary"),
+    requires=("pandas",),
+    display_input="Stata .dta file (format 118), 3 rows x 3 columns",
+    notes="Magic bytes are an XML-ish '<stata_dta>' header, not a common signature; "
+    "must not be reported as unknown binary. Should surface observation/variable "
+    "counts and variable names without needing pandas installed.",
+)
+def stata_dta_v118(ctx: CaseCtx):
+    import pandas as pd
+
+    p = ctx.tmp / "synth.dta"
+    df = pd.DataFrame({"id": [1, 2, 3], "score": [1.5, 2.5, 3.5], "label": ["a", "b", "c"]})
+    df.to_stata(p, write_index=False, version=118)
+    return p
+
+
+# ---------------------------------------------------------------------------
 # Files: scale
 
 

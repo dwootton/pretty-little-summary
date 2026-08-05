@@ -1,0 +1,2 @@
+A Stata data file with 3 observations and 3 variables (2.5 KB). Variables: id, score, label.
+Tip: pass deep=True to load and fully profile this file.

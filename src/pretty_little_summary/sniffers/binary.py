@@ -10,6 +10,7 @@ parse it.
 from __future__ import annotations
 
 import ast
+import re
 import struct
 from pathlib import Path
 from typing import Any
@@ -481,6 +482,83 @@ class Hdf5Sniffer:
             "Install h5py and use deep mode to read its datasets."
         )
         return meta
+
+
+@_register
+class StataSniffer:
+    """Modern (release 117+) Stata .dta files: an XML-tagged header."""
+
+    name = "StataSniffer"
+
+    # release 117 uses 33-byte varname fields; 118 and 119 use 129 bytes.
+    _VARNAME_WIDTH = {117: 33, 118: 129, 119: 129}
+
+    @staticmethod
+    def can_sniff(path: Path, head: bytes) -> bool:
+        return head[:11] == b"<stata_dta>"
+
+    @staticmethod
+    def sniff(path: Path, head: bytes) -> MetaDescription:
+        meta = _base_meta(path, "StataSniffer", "stata.file")
+        md = meta["metadata"]
+        md["format"] = "Stata"
+
+        release = _search_int(head, rb"<release>(\d+)</release>")
+        n_obs = _search_struct(head, rb"<N>(.{8})</N>", ">Q" if b"<byteorder>MSF</byteorder>" in head else "<Q")
+        n_vars = _search_struct(head, rb"<K>(.{2})</K>", ">H" if b"<byteorder>MSF</byteorder>" in head else "<H")
+        if release is not None:
+            md["release"] = release
+        if n_obs is not None:
+            md["rows"] = n_obs
+        if n_vars is not None:
+            md["columns"] = n_vars
+
+        width = StataSniffer._VARNAME_WIDTH.get(release or 0)
+        if width is not None and n_vars:
+            names = _stata_varnames(head, width, n_vars)
+            if names:
+                md["columns_list"] = names
+
+        parts = ["A Stata data file"]
+        if n_obs is not None and n_vars is not None:
+            parts.append(f"with {n_obs} observations and {n_vars} variables")
+        parts_str = " ".join(parts) + f" ({md.get('size', 'unknown size')})."
+        cols = md.get("columns_list")
+        if cols:
+            shown = cols[:10]
+            suffix = f", ... ({len(cols)} total)" if len(cols) > 10 else ""
+            parts_str += f" Variables: {', '.join(shown)}{suffix}."
+        meta["nl_summary"] = parts_str
+        return meta
+
+
+def _search_int(head: bytes, pattern: bytes) -> int | None:
+    m = re.search(pattern, head)
+    return int(m.group(1)) if m else None
+
+
+def _search_struct(head: bytes, pattern: bytes, fmt: str) -> int | None:
+    m = re.search(pattern, head, re.DOTALL)
+    if not m:
+        return None
+    try:
+        return struct.unpack(fmt, m.group(1))[0]
+    except struct.error:
+        return None
+
+
+def _stata_varnames(head: bytes, width: int, n_vars: int) -> list[str] | None:
+    m = re.search(rb"<variable_types>.*?</variable_types><varnames>(.*?)</varnames>", head, re.DOTALL)
+    if not m:
+        return None
+    raw = m.group(1)
+    if len(raw) < width * n_vars:
+        return None
+    names = []
+    for i in range(n_vars):
+        field = raw[i * width : (i + 1) * width]
+        names.append(field.split(b"\x00", 1)[0].decode("latin-1"))
+    return names
 
 
 @_register

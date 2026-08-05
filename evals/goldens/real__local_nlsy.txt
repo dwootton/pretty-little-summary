@@ -1,0 +1,2 @@
+A Stata data file with 305502 observations and 14 variables (15.5 MB). Variables: id, year, sample_id, race, sex, afqt, self_emp, income, age, hourswork, ... (14 total).
+Tip: pass deep=True to load and fully profile this file.
