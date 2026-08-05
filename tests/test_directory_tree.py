@@ -96,6 +96,64 @@ def test_non_conforming_member_breaks_run(tmp_path: Path) -> None:
     assert "montage_legend.png" in content
 
 
+def test_non_conforming_member_mid_run_splits_into_two_families(tmp_path: Path) -> None:
+    # A non-conforming name that sorts *between* two halves of an otherwise
+    # contiguous run (not just at an edge) ends the first run there and
+    # starts a fresh one after — it does not merge the two halves.
+    for i in range(1, 11):
+        (tmp_path / f"scan_{i:03d}.tif").write_text("hello")
+    (tmp_path / "scan_005b_extra.tif").write_text("hello")  # sorts after scan_005
+    content = pls.describe(tmp_path, deep=True).content
+    assert "scan_{001..005}.tif (5 files)" in content
+    assert "scan_005b_extra.tif" in content
+    assert "scan_{006..010}.tif (5 files)" in content
+
+
+def test_two_distinct_families_in_one_folder_both_collapse(tmp_path: Path) -> None:
+    # Two unrelated filename shapes (different prefixes) that don't
+    # alphabetically interleave each form their own contiguous block and
+    # both collapse independently.
+    for i in range(20):
+        (tmp_path / f"photo_{i:03d}.jpg").write_text("hello")
+    for i in range(20):
+        (tmp_path / f"report_{i:03d}.csv").write_text("id,val\n1,2")
+    content = pls.describe(tmp_path, deep=True).content
+    assert "photo_{000..019}.jpg (20 files)" in content
+    assert "report_{000..019}.csv (20 files)" in content
+
+
+def test_interleaved_families_do_not_collapse(tmp_path: Path) -> None:
+    # Two shapes that alphabetically interleave (m_000_alpha, m_000_beta,
+    # m_001_alpha, m_001_beta, ...) never form a contiguous same-shape run,
+    # since grouping only merges *immediately adjacent* sorted entries with
+    # an identical (prefix, suffix, width) key. This is a known limitation,
+    # not a crash: every file still renders individually (subject to the
+    # per-folder cap), just without the collapsing benefit.
+    for i in range(10):
+        (tmp_path / f"m_{i:03d}_alpha.txt").write_text("hello")
+        (tmp_path / f"m_{i:03d}_beta.txt").write_text("hello")
+    content = pls.describe(tmp_path, deep=True).content
+    assert "{" not in content
+    assert "m_000_alpha.txt" in content
+    assert "m_000_beta.txt" in content
+
+
+def test_gap_in_numeric_run_still_collapses_silently(tmp_path: Path) -> None:
+    # A missing item inside the numeric range (e.g. a real dataset missing
+    # one year) is silently absorbed into the {first..last} display —
+    # grouping only checks prefix/suffix/width, not that every intermediate
+    # number is present. The collapsed range therefore overstates coverage
+    # by exactly the gap; this is a deliberate simplicity tradeoff (see
+    # module docstring) rather than a bug, and this test pins the behavior
+    # down so a future change to it is a conscious decision.
+    years = [y for y in range(1850, 1900) if y != 1892]
+    for y in years:
+        (tmp_path / f"sibt_ext_ease2_{y}01.png").write_text("hello")
+    content = pls.describe(tmp_path, deep=True).content
+    assert f"sibt_ext_ease2_{{185001..189901}}.png ({len(years)} files)" in content
+    assert "1892" not in content
+
+
 def test_directory_describe_is_deterministic(tmp_path: Path) -> None:
     for i in range(10):
         (tmp_path / f"item_{i:02d}.txt").write_text("hello")

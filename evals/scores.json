@@ -1069,6 +1069,42 @@
    "critique": "Correctly collapses the 30-file numbered family into one line and keeps both unrelated siblings (README.txt, manifest.json) visible \u2014 exactly the sibling-preservation and collapsing behavior this feature targets. Slightly generic per-family description (just 'text file, 1 line') but that's accurate for the fixture.",
    "judged_at": "2026-08-05T19:26:33+00:00"
   },
+  "synth/dir_filename_family_with_gap": {
+   "output_hash": "a71a60689ee1c40c",
+   "scores": {
+    "accuracy": 4,
+    "informativeness": 3,
+    "conciseness": 5,
+    "hallucination_free": 4
+   },
+   "overall": 4.0,
+   "critique": "File count (49) is correct, but the {1850..1899} range implies full year coverage when 1892 is actually missing -- a user skimming the line would assume continuity. Known limitation, tracked rather than fixed this iteration (tag: wontfix); grouping only checks prefix/suffix/width, not that every intermediate number is present.",
+   "judged_at": "2026-08-05T20:15:46+00:00"
+  },
+  "synth/dir_interleaved_shapes_do_not_collapse": {
+   "output_hash": "406ff72b1a54a07b",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 3,
+    "conciseness": 3,
+    "hallucination_free": 5
+   },
+   "overall": 4.0,
+   "critique": "Correct and doesn't crash or wrongly merge the two shapes, but a real dataset with this alternating pattern would list every file individually with zero collapsing, which is exactly the noisy-listing problem this feature exists to fix. Known limitation: grouping only merges immediately-adjacent identical-shape entries, so alternating shapes never form a run of 4+ (tag: wontfix, tracked separately).",
+   "judged_at": "2026-08-05T20:15:46+00:00"
+  },
+  "synth/dir_two_distinct_families": {
+   "output_hash": "9f002d0343ad0cea",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Both unrelated numbered families (photo_*.jpg, report_*.csv) collapse independently into their own {000..019} lines without interfering with each other, exactly as intended for non-interleaving shapes.",
+   "judged_at": "2026-08-05T20:15:46+00:00"
+  },
   "synth/empty_containers": {
    "output_hash": "b6a4f8a05c5b9e9a",
    "scores": {

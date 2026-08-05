@@ -438,3 +438,67 @@ def dir_filename_family(ctx: CaseCtx):
     (d / "README.txt").write_text("about this dataset")
     (d / "manifest.json").write_text('{"version": 1}')
     return d
+
+
+@case(
+    "synth/dir_filename_family_with_gap",
+    tags=("pathlib", "directory", "edge"),
+    describe_kwargs={"deep": True},
+    display_input="directory with a numbered file family missing one item from the middle of its range",
+    notes=(
+        "The family is missing year 1892 from an otherwise-consecutive "
+        "1850-1899 run. Current behavior silently absorbs the gap into "
+        "'{1850..1899}' rather than reporting it as discontinuous — this "
+        "case documents that known limitation rather than asserting a fix."
+    ),
+)
+def dir_filename_family_with_gap(ctx: CaseCtx):
+    d = ctx.tmp / "dir_filename_family_with_gap"
+    d.mkdir()
+    for year in range(1850, 1900):
+        if year == 1892:
+            continue
+        (d / f"reading_{year}.txt").write_text("sensor value")
+    return d
+
+
+@case(
+    "synth/dir_two_distinct_families",
+    tags=("pathlib", "directory", "edge"),
+    describe_kwargs={"deep": True},
+    display_input="directory with two unrelated numbered-file families (photos and reports)",
+    notes=(
+        "Two non-interleaving filename shapes should each collapse into "
+        "their own '{first..last}' line rather than merging or blocking "
+        "one another."
+    ),
+)
+def dir_two_distinct_families(ctx: CaseCtx):
+    d = ctx.tmp / "dir_two_distinct_families"
+    d.mkdir()
+    for i in range(20):
+        (d / f"photo_{i:03d}.jpg").write_text("fake jpg bytes")
+    for i in range(20):
+        (d / f"report_{i:03d}.csv").write_text("id,val\n1,2\n")
+    return d
+
+
+@case(
+    "synth/dir_interleaved_shapes_do_not_collapse",
+    tags=("pathlib", "directory", "edge"),
+    describe_kwargs={"deep": True},
+    display_input="directory with two filename shapes that alphabetically interleave (m_000_alpha, m_000_beta, m_001_alpha, ...)",
+    notes=(
+        "Because grouping only merges immediately-adjacent same-shape "
+        "entries, alternating shapes never form a run of 4+ and so never "
+        "collapse — every file is listed individually (subject to the "
+        "per-folder cap). This case documents that known limitation."
+    ),
+)
+def dir_interleaved_shapes_do_not_collapse(ctx: CaseCtx):
+    d = ctx.tmp / "dir_interleaved_shapes_do_not_collapse"
+    d.mkdir()
+    for i in range(10):
+        (d / f"m_{i:03d}_alpha.txt").write_text("sensor value")
+        (d / f"m_{i:03d}_beta.txt").write_text("sensor value")
+    return d
