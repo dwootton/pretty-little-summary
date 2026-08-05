@@ -94,15 +94,20 @@ if LIBRARY_AVAILABLE:
 
 
 def _build_nl_summary(meta: MetaDescription) -> str:
-    shape = meta.get("shape")
     schema = meta.get("schema") or {}
-    parts = [f"A Polars DataFrame with shape {shape}."]
-    if schema:
-        cols = []
-        for name, dtype in list(schema.items())[:3]:
-            cols.append(f"{name} ({dtype})")
-        if cols:
-            parts.append(f"Schema: {', '.join(cols)}.")
+    cols = [f"{name} ({dtype})" for name, dtype in list(schema.items())[:3]]
+    schema_str = f" Schema: {', '.join(cols)}." if cols else ""
+
+    if meta.get("object_type") == "polars.LazyFrame":
+        parts = [f"A Polars LazyFrame (unevaluated query, no shape until collected).{schema_str}"]
+        plan = meta.get("metadata", {}).get("optimized_plan")
+        if plan:
+            first_line = plan.strip().splitlines()[0]
+            parts.append(f"Optimized plan: {first_line}.")
+        return " ".join(parts)
+
+    shape = meta.get("shape")
+    parts = [f"A Polars DataFrame with shape {shape}.{schema_str}"]
     sample_rows = meta.get("metadata", {}).get("sample_rows")
     if sample_rows:
         parts.append(f"Sample row: {sample_rows[0]}.")

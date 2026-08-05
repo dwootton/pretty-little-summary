@@ -42,8 +42,29 @@ class StructuredAdapter:
 
         if metadata:
             meta["metadata"] = metadata
-            meta["nl_summary"] = f"A structured object of type {metadata.get('type')}."
+            meta["nl_summary"] = _build_nl_summary(metadata)
         return meta
+
+
+def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    kind = metadata.get("type")
+    class_name = metadata.get("class_name")
+    if kind in ("dataclass", "namedtuple"):
+        label = "A dataclass" if kind == "dataclass" else "A namedtuple"
+        fields = metadata.get("fields", [])
+        values = metadata.get("values", {})
+        shown = fields[:8]
+        pairs = ", ".join(f"{name}={values.get(name)}" for name in shown)
+        suffix = f", ... ({len(fields)} fields total)" if len(fields) > 8 else ""
+        return f"{label} {class_name} with fields: {pairs}{suffix}."
+    if kind == "enum":
+        members = metadata.get("members", [])
+        member_word = "member" if len(members) == 1 else "members"
+        return (
+            f"An enum {class_name}: {metadata.get('name')} "
+            f"(one of {len(members)} {member_word}: {', '.join(members)})."
+        )
+    return f"A structured object of type {kind}."
 
 
 def _describe_dataclass(obj: Any) -> dict[str, Any]:

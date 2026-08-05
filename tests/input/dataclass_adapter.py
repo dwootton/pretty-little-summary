@@ -2,7 +2,7 @@ ID = "dataclass_adapter"
 TITLE = "Dataclass"
 TAGS = ["stdlib", "dataclass"]
 DISPLAY_INPUT = "Point(x=1, y=2)"
-EXPECTED = "A structured object of type dataclass."
+EXPECTED = "A dataclass Point with fields: x=1, y=2."
 
 
 def build():

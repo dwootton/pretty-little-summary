@@ -1,0 +1,1 @@
+A Polars LazyFrame (unevaluated query, no shape until collected). Schema: g (Int64), v (Float64). Optimized plan: AGGREGATE[maintain_order: false].

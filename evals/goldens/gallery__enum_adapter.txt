@@ -1,0 +1,1 @@
+An enum Color: RED (one of 2 members: RED, BLUE).

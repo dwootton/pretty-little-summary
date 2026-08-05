@@ -62,16 +62,16 @@
    "judged_at": "2026-08-05T17:39:04+00:00"
   },
   "gallery/dataclass_adapter": {
-   "output_hash": "79a9945ff101cf1e",
+   "output_hash": "b89c3691ed1d4d12",
    "scores": {
-    "accuracy": 4,
-    "informativeness": 1,
-    "conciseness": 4,
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 3.5,
-   "critique": "Vacuous: says only 'a structured object of type dataclass' while meta has class_name Point, fields x,y and values 1,2. Should read like 'A dataclass Point with fields x=1, y=2'. Also contrast with attrs case which does name the class.",
-   "judged_at": "2026-08-05T17:45:06+00:00"
+   "overall": 5.0,
+   "critique": "Now names the class and lists field=value pairs (x=1, y=2), matching the rich metadata already extracted; concise and fully accurate.",
+   "judged_at": "2026-08-05T18:01:29+00:00"
   },
   "gallery/date_adapter": {
    "output_hash": "099072f0a444f6ea",
@@ -134,16 +134,16 @@
    "judged_at": "2026-08-05T17:47:34+00:00"
   },
   "gallery/enum_adapter": {
-   "output_hash": "06689cec405f6d74",
+   "output_hash": "b440fb0290473280",
    "scores": {
-    "accuracy": 4,
-    "informativeness": 1,
-    "conciseness": 4,
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 3.5,
-   "critique": "Vacuous: meta has class_name Color, member name RED, value 1, and sibling members \u2014 none surfaced. Should be like 'Enum member Color.RED (value 1), one of 2 members'.",
-   "judged_at": "2026-08-05T17:47:34+00:00"
+   "overall": 5.0,
+   "critique": "Now names the enum class, current member, and lists sibling members with a count; concise and accurate.",
+   "judged_at": "2026-08-05T18:01:30+00:00"
   },
   "gallery/float_probability_pattern": {
    "output_hash": "a33f2c67c68e742d",
@@ -746,16 +746,16 @@
    "judged_at": "2026-08-05T17:47:34+00:00"
   },
   "live/polars_lazyframe": {
-   "output_hash": "1d91bcb31a48ce8e",
+   "output_hash": "aeafd1db0a0e5c96",
    "scores": {
-    "accuracy": 1,
-    "informativeness": 2,
+    "accuracy": 5,
+    "informativeness": 5,
     "conciseness": 4,
-    "hallucination_free": 2
+    "hallucination_free": 5
    },
-   "overall": 2.25,
-   "critique": "Calls a LazyFrame a Polars DataFrame with shape None \u2014 wrong type and a nonsense shape; NOTES require stating laziness and meta even has the optimized plan (filter + groupby mean). Branch on LazyFrame: say lazy/unevaluated query, show schema, and sketch the plan instead of a null shape.",
-   "judged_at": "2026-08-05T17:47:34+00:00"
+   "overall": 4.75,
+   "critique": "Correctly identifies it as a LazyFrame, states it's unevaluated with no shape, shows schema, and surfaces the first line of the optimized plan (AGGREGATE). Minor: truncating the plan to one line loses the filter step, but this is a reasonable conciseness tradeoff.",
+   "judged_at": "2026-08-05T18:01:30+00:00"
   },
   "live/pydantic_model_instance": {
    "output_hash": "ff2c124015f9a3ec",

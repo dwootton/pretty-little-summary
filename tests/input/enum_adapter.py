@@ -2,7 +2,7 @@ ID = "enum_adapter"
 TITLE = "Enum"
 TAGS = ["stdlib", "enum"]
 DISPLAY_INPUT = "Color.RED"
-EXPECTED = "A structured object of type enum."
+EXPECTED = "An enum Color: RED (one of 2 members: RED, BLUE)."
 
 
 def build():
