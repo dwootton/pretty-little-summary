@@ -926,16 +926,40 @@
    "judged_at": "2026-08-05T17:44:55+00:00"
   },
   "synth/csv_utf16_bom": {
-   "output_hash": "3983ed7d8ccd7005",
+   "output_hash": "7350d9a1b546d1eb",
    "scores": {
-    "accuracy": 2,
-    "informativeness": 1,
+    "accuracy": 5,
+    "informativeness": 4,
     "conciseness": 5,
-    "hallucination_free": 2
+    "hallucination_free": 5
    },
-   "overall": 2.5,
-   "critique": "Calls a UTF-16LE CSV 'a binary file of unknown type' \u2014 the magic bytes 0xFFFE are a well-known UTF-16 BOM and the content is a 3x100 table. Sniffer should decode UTF-16 (or at least name the BOM) instead of misreporting text data as unknown binary.",
-   "judged_at": "2026-08-05T17:44:54+00:00"
+   "overall": 4.75,
+   "critique": "Now decodes the UTF-16LE BOM and correctly reports it as a 3-column, 101-row CSV with header a,b,c. Minor: doesn't mention the encoding itself was non-UTF8, which could be a nice-to-have detail.",
+   "judged_at": "2026-08-05T18:03:45+00:00"
+  },
+  "synth/csv_utf16be_bom": {
+   "output_hash": "7350d9a1b546d1eb",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 4,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.75,
+   "critique": "Correctly decodes UTF-16BE with BOM as a 3-column, 101-row CSV; header is clean.",
+   "judged_at": "2026-08-05T18:04:12+00:00"
+  },
+  "synth/csv_utf8_bom": {
+   "output_hash": "a643369cb0608352",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 4,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.75,
+   "critique": "Correctly strips the UTF-8 BOM; header 'a' has no leaked BOM character, and CSV structure is reported accurately.",
+   "judged_at": "2026-08-05T18:04:13+00:00"
   },
   "synth/deep_nested_dict": {
    "output_hash": "5a8409c372e3b462",

@@ -83,6 +83,32 @@ def csv_utf16(ctx: CaseCtx):
 
 
 @case(
+    "synth/csv_utf16be_bom",
+    tags=("sniffer", "csv", "encoding"),
+    display_input="UTF-16BE CSV with BOM, 3 cols x 100 rows",
+    notes="Same as the LE case but big-endian; should also decode as CSV, not binary.",
+)
+def csv_utf16be(ctx: CaseCtx):
+    p = ctx.tmp / "u16be.csv"
+    rows = "a,b,c\n" + "\n".join(f"{i},{i * 2},x{i}" for i in range(100))
+    p.write_bytes(codecs.BOM_UTF16_BE + rows.encode("utf-16-be"))
+    return p
+
+
+@case(
+    "synth/csv_utf8_bom",
+    tags=("sniffer", "csv", "encoding"),
+    display_input="UTF-8 CSV with a BOM (utf-8-sig), 3 cols x 100 rows",
+    notes="A common Excel-exported CSV; the BOM must not leak into the first column name.",
+)
+def csv_utf8_bom(ctx: CaseCtx):
+    p = ctx.tmp / "u8bom.csv"
+    rows = "a,b,c\n" + "\n".join(f"{i},{i * 2},x{i}" for i in range(100))
+    p.write_bytes(codecs.BOM_UTF8 + rows.encode("utf-8"))
+    return p
+
+
+@case(
     "synth/csv_latin1",
     tags=("sniffer", "csv", "encoding"),
     display_input="latin-1 CSV with accented city names (non-UTF8 bytes)",

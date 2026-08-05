@@ -8,6 +8,7 @@ line counts) are added here.
 
 from __future__ import annotations
 
+import codecs
 import json
 import re
 from pathlib import Path
@@ -34,8 +35,25 @@ except ImportError:  # pragma: no cover - depends on interpreter version
     tomllib = None
 
 
+# Checked longest-prefix-first: the UTF-16 BOM is a byte-prefix of the UTF-32
+# BOM in the same endianness, so UTF-32 must be tried before UTF-16.
+_BOM_ENCODINGS = (
+    (codecs.BOM_UTF32_LE, "utf-32-le"),
+    (codecs.BOM_UTF32_BE, "utf-32-be"),
+    (codecs.BOM_UTF8, "utf-8-sig"),
+    (codecs.BOM_UTF16_LE, "utf-16-le"),
+    (codecs.BOM_UTF16_BE, "utf-16-be"),
+)
+
+
 def _decode(head: bytes) -> str | None:
     """Decode a byte head as text, or return None if it looks binary."""
+    for bom, encoding in _BOM_ENCODINGS:
+        if head.startswith(bom):
+            try:
+                return head[len(bom):].decode(encoding)
+            except UnicodeDecodeError:
+                return None
     if b"\x00" in head:
         return None
     control = sum(

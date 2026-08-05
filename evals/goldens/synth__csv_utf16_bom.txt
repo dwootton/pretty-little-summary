@@ -1,0 +1,2 @@
+A CSV file with 3 columns (2.0 KB). Header: 'a', 'b', 'c'.
+Tip: pass deep=True to load and fully profile this file.
