@@ -842,16 +842,16 @@
    "judged_at": "2026-08-05T17:44:26+00:00"
   },
   "real/local_raw_soccer_data": {
-   "output_hash": "605dfed254f3df19",
+   "output_hash": "1836d80ecae8fbce",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
-    "conciseness": 3,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.25,
-   "critique": "Correctly detects a 27-column CSV and the full header, which is genuinely useful here. But it dumps all 27 quoted column names in one run-on sentence and says nothing about scale (26.8 MB implies ~150k+ rows; the sniffer sampled 364) \u2014 an approximate row count would beat the tail of the header list.",
-   "judged_at": "2026-08-05T17:44:18+00:00"
+   "overall": 4.75,
+   "critique": "27-column header is now truncated to 10 with a total count instead of a run-on list of all 27 names \u2014 more concise, still fully accurate. Row-count-vs-file-size mismatch (sampled 364 of a 26.8MB file) still isn't surfaced.",
+   "judged_at": "2026-08-05T18:14:20+00:00"
   },
   "real/penguins_deep": {
    "output_hash": "bf0003be06ad300f",
@@ -878,16 +878,16 @@
    "judged_at": "2026-08-05T17:43:49+00:00"
   },
   "real/titanic_shallow": {
-   "output_hash": "36fb9666b17e0cc3",
+   "output_hash": "08f06e886908745b",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
-    "conciseness": 4,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.5,
-   "critique": "Identifies the CSV, size and all 15 headers accurately; meta even inferred column types and the sample row shows an empty deck value, but neither the mixed types nor the null hint reach the summary as NOTES want. 15 quoted names is at the edge of listy; adding types (int/str/float/bool mix) would earn them.",
-   "judged_at": "2026-08-05T17:47:35+00:00"
+   "overall": 4.75,
+   "critique": "Now truncates the 15-column header list to 10 with a '(15 total)' suffix instead of quoting all 15 names \u2014 more concise, still fully accurate; the mixed-types/nulls detail from meta still isn't surfaced in the summary.",
+   "judged_at": "2026-08-05T18:13:51+00:00"
   },
   "synth/binary_as_txt": {
    "output_hash": "b958d330e1d7e70c",
@@ -1214,16 +1214,16 @@
    "judged_at": "2026-08-05T17:44:55+00:00"
   },
   "synth/wide_csv_500_cols": {
-   "output_hash": "2209d059d438667b",
+   "output_hash": "1ab95d85d9010d11",
    "scores": {
     "accuracy": 5,
-    "informativeness": 2,
-    "conciseness": 1,
+    "informativeness": 4,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 3.25,
-   "critique": "Dumps all 500 column names into the one-liner, exactly what NOTES forbid; the useful facts (500 cols, 10 rows, 13.6 KB) drown in the list. Truncate header display to first ~10 names plus '... (500 total)'.",
-   "judged_at": "2026-08-05T17:44:55+00:00"
+   "overall": 4.75,
+   "critique": "Now shows column count (500), size, and 10 example names with a total count instead of dumping all 500 \u2014 resolves the exact issue NOTES called out.",
+   "judged_at": "2026-08-05T18:14:01+00:00"
   }
  }
 }

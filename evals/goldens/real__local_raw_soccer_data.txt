@@ -1,0 +1,2 @@
+A CSV file with 27 columns (26.8 MB). Header: 'playerShort', 'player', 'club', 'leagueCountry', 'birthday', 'height', 'weight', 'position', 'games', 'victories', ... (27 total).
+Tip: pass deep=True to load and fully profile this file.

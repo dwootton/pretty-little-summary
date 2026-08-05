@@ -252,7 +252,11 @@ def _structured_summary(md: dict[str, Any]) -> str:
     if fmt == "csv":
         cols = md.get("columns")
         header = md.get("header", [])
-        head_str = f" Header: {', '.join(header)}." if header else ""
+        head_str = ""
+        if header:
+            shown = header[:10]
+            suffix = f", ... ({len(header)} total)" if len(header) > 10 else ""
+            head_str = f" Header: {', '.join(shown)}{suffix}."
         return f"A CSV file with {cols} columns ({size}).{head_str}"
     if fmt == "yaml":
         keys = md.get("keys")
