@@ -6,8 +6,22 @@ import json
 from pathlib import Path
 from typing import Any
 
+# Default cap on rows read from row-oriented files (CSV/JSONL/Stata) in deep
+# mode. Keeps profiling of huge datasets fast and memory-bounded; pass
+# ``sample_rows=None`` (or ``full=True`` at the API layer) to read everything.
+DEFAULT_SAMPLE_ROWS = 100_000
 
-def load_file(file_path: Path, allow_unpickle: bool = False) -> Any:
+# Extensions whose loaders honour ``sample_rows`` (i.e. row-oriented tabular
+# formats). Used by :func:`load_file_sampled` to decide whether truncation to
+# ``sample_rows`` was even possible.
+_ROW_ORIENTED_SUFFIXES = {'.csv', '.jsonl', '.ndjson', '.dta'}
+
+
+def load_file(
+    file_path: Path,
+    allow_unpickle: bool = False,
+    sample_rows: int | None = None,
+) -> Any:
     """
     Load a file and return its content as a Python object.
 
@@ -19,6 +33,8 @@ def load_file(file_path: Path, allow_unpickle: bool = False) -> Any:
         file_path: Path to the file to load
         allow_unpickle: Permit executing pickle files. Off by default because
             unpickling untrusted data runs arbitrary code.
+        sample_rows: For row-oriented formats (CSV/JSONL/Stata), read at most
+            this many rows. ``None`` (the default) reads the whole file.
 
     Returns:
         Loaded Python object (DataFrame, dict, Image, etc.) or raw text
@@ -30,11 +46,19 @@ def load_file(file_path: Path, allow_unpickle: bool = False) -> Any:
 
     # CSV files -> pandas DataFrame
     if suffix == '.csv':
-        return _load_csv(file_path)
+        return _load_csv(file_path, sample_rows)
+
+    # JSON Lines / newline-delimited JSON -> pandas DataFrame
+    if suffix in {'.jsonl', '.ndjson'}:
+        return _load_jsonl(file_path, sample_rows)
 
     # JSON files -> dict/list
     if suffix == '.json':
         return _load_json(file_path)
+
+    # Stata files -> pandas DataFrame
+    if suffix == '.dta':
+        return _load_stata(file_path, sample_rows)
 
     # Parquet files -> pandas DataFrame
     if suffix in {'.parquet', '.pq'}:
@@ -64,14 +88,88 @@ def load_file(file_path: Path, allow_unpickle: bool = False) -> Any:
     return _load_text(file_path)
 
 
-def _load_csv(file_path: Path) -> Any:
+def load_file_sampled(
+    file_path: Path,
+    sample_rows: int | None = None,
+    full: bool = False,
+) -> tuple[Any, bool, int | None]:
+    """Load a file for deep profiling, reporting whether it was truncated.
+
+    Wraps :func:`load_file` for the deep-description path. For row-oriented
+    tabular formats it reads at most ``sample_rows`` rows (unless ``full``),
+    then reports whether that cap actually truncated the data.
+
+    Args:
+        file_path: Path to load.
+        sample_rows: Row cap for row-oriented formats. Ignored when ``full``.
+        full: Read the whole file regardless of size.
+
+    Returns:
+        ``(obj, was_sampled, sampled_rows)`` where ``was_sampled`` is True only
+        when a row cap actually cut the data short, and ``sampled_rows`` is the
+        number of rows kept (``None`` when not row-oriented / not truncated).
+    """
+    # Resolve the default at call time (not as a default arg) so the module
+    # constant can be patched, e.g. in tests.
+    if sample_rows is None:
+        sample_rows = DEFAULT_SAMPLE_ROWS
+    effective_cap = None if full else sample_rows
+    obj = load_file(file_path, sample_rows=effective_cap)
+
+    if effective_cap is None:
+        return obj, False, None
+    if file_path.suffix.lower() not in _ROW_ORIENTED_SUFFIXES:
+        return obj, False, None
+
+    # A DataFrame filled exactly to the cap almost certainly had more rows.
+    n_rows = getattr(obj, "shape", (None,))[0]
+    if isinstance(n_rows, int) and n_rows >= effective_cap:
+        return obj, True, n_rows
+    return obj, False, None
+
+
+def _load_csv(file_path: Path, sample_rows: int | None = None) -> Any:
     """Load CSV file as pandas DataFrame."""
     try:
         import pandas as pd
-        return pd.read_csv(file_path)
+        return pd.read_csv(file_path, nrows=sample_rows)
     except ImportError:
         # Fallback: read as text
         return _load_text(file_path)
+
+
+def _load_jsonl(file_path: Path, sample_rows: int | None = None) -> Any:
+    """Load JSON Lines / newline-delimited JSON as a pandas DataFrame."""
+    try:
+        import pandas as pd
+        return pd.read_json(file_path, lines=True, nrows=sample_rows)
+    except ImportError:
+        # Fallback: read as text
+        return _load_text(file_path)
+
+
+def _load_stata(file_path: Path, sample_rows: int | None = None) -> Any:
+    """Load a Stata ``.dta`` file as a pandas DataFrame.
+
+    When ``sample_rows`` is set, read only the first chunk via Stata's native
+    iterator instead of materialising the whole file.
+    """
+    try:
+        import pandas as pd
+    except ImportError:
+        raise ImportError("pandas required to load Stata (.dta) files")
+    if sample_rows is None:
+        return pd.read_stata(file_path)
+    import warnings
+    with warnings.catch_warnings():
+        # Chunked reads can't know all category labels up front; harmless for a
+        # profiling sample, so silence the expected CategoricalConversionWarning.
+        warnings.simplefilter("ignore")
+        with pd.read_stata(file_path, chunksize=sample_rows) as reader:
+            for chunk in reader:
+                return chunk
+    # File had zero rows: return an empty frame with the right columns.
+    return pd.read_stata(file_path)
 
 
 def _load_json(file_path: Path) -> Any:

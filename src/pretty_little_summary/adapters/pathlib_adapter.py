@@ -76,10 +76,43 @@ class PathlibAdapter:
 AdapterRegistry.register(PathlibAdapter)
 
 
+def describe_directory(root_path: Path, deep: bool = False) -> MetaDescription:
+    """Describe a directory as a full :class:`MetaDescription`.
+
+    This mirrors what :class:`PathlibAdapter` builds for a directory, but takes
+    a ``deep`` flag so callers (``describe_path``) can request that each dataset
+    in the tree be fully profiled rather than only head-sniffed.
+    """
+    tree_result = _describe_directory_tree(
+        root_path,
+        max_depth=DEFAULT_MAX_DEPTH,
+        max_files=DEFAULT_MAX_FILES,
+        deep=deep,
+    )
+    metadata: dict[str, Any] = {
+        "type": "path",
+        "path": str(root_path),
+        "name": root_path.name,
+        "is_dir": True,
+        "exists": True,
+        "tree": tree_result["tree"],
+        "file_count": tree_result["file_count"],
+        "dir_count": tree_result["dir_count"],
+    }
+    meta: MetaDescription = {
+        "object_type": "pathlib.PosixPath",
+        "adapter_used": "PathlibAdapter",
+        "metadata": metadata,
+        "nl_summary": _build_nl_summary(metadata),
+    }
+    return meta
+
+
 def _describe_directory_tree(
     root_path: Path,
     max_depth: int = DEFAULT_MAX_DEPTH,
     max_files: int = DEFAULT_MAX_FILES,
+    deep: bool = False,
 ) -> dict[str, Any]:
     """
     Recursively describe a directory and its contents.
@@ -88,6 +121,8 @@ def _describe_directory_tree(
         root_path: Root directory to describe
         max_depth: Maximum depth to traverse
         max_files: Maximum number of files to describe
+        deep: Deep-profile each file (load into a rich object) instead of only
+            head-sniffing it.
 
     Returns:
         Dictionary with tree structure and statistics
@@ -141,7 +176,7 @@ def _describe_directory_tree(
                     files_processed += 1
 
                     # Try to describe the file
-                    description = _describe_file(entry)
+                    description = _describe_file(entry, deep=deep)
                     tree_lines.append(f"{prefix}{connector}{entry.name} - {description}")
 
             except Exception as e:
@@ -173,17 +208,25 @@ def _sniff_file(file_path: Path) -> dict[str, Any] | None:
     return result
 
 
-def _describe_file(file_path: Path) -> str:
-    """Describe a single file using the zero-dependency sniffer tier.
+def _describe_file(file_path: Path, deep: bool = False) -> str:
+    """Describe a single file for the directory tree.
 
-    This never loads the whole file, imports a third-party parser, or executes
-    file contents (e.g. it does not unpickle) — it reads only the head. That
-    keeps directory scans fast and safe regardless of what is on disk.
+    Shallow (default): uses the zero-dependency sniffer tier — reads only the
+    head, never loads the whole file, imports a third-party parser, or executes
+    contents (e.g. never unpickles). That keeps directory scans fast and safe.
+
+    Deep: loads the file into a rich object and profiles it (row counts, nulls,
+    per-column stats for tabular data), falling back to the sniff when a deep
+    load isn't possible. Chosen per-file by the directory walker.
     """
     from pretty_little_summary.sniffers import sniff_path
+    from pretty_little_summary.sniffers._base import describe_path
 
     try:
-        meta = sniff_path(file_path)
+        if deep:
+            meta = describe_path(file_path, deep=True)
+        else:
+            meta = sniff_path(file_path)
         if meta and meta.get("nl_summary"):
             return meta["nl_summary"]
         if meta:

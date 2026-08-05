@@ -8,6 +8,7 @@ line counts) are added here.
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 from typing import Any
@@ -190,18 +191,27 @@ SnifferRegistry.register(PlainTextSniffer, priority=PRIORITY_FALLBACK)
 
 
 def _detect_jsonl(text: str) -> dict[str, Any] | None:
-    """Detect newline-delimited JSON: several lines that each parse as JSON."""
-    
+    """Detect newline-delimited JSON: several lines that each parse as JSON.
+
+    The final sampled line is allowed to fail parsing: when the sample is a
+    truncated head of a large file, that line is commonly cut mid-record.
+    """
+
     lines = [ln for ln in text.splitlines() if ln.strip()]
     if len(lines) < 2:
         return None
     # A single JSON object/array spanning lines is JSON, not JSONL.
+    candidates = lines[:20]
     parseable = 0
-    for line in lines[:20]:
+    for i, line in enumerate(candidates):
         try:
             json.loads(line)
             parseable += 1
         except ValueError:
+            # Tolerate only the trailing sampled line being unparseable; a
+            # mid-file failure means this is not newline-delimited JSON.
+            if i == len(candidates) - 1:
+                break
             return None
     if parseable < 2:
         return None

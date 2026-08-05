@@ -186,6 +186,19 @@ def test_jsonl_file(tmp_path: Path) -> None:
     assert meta["metadata"]["format"] == "jsonl"
 
 
+def test_jsonl_with_truncated_final_line(tmp_path: Path) -> None:
+    # A large JSONL file: the head sample cuts the last record mid-object.
+    # Detection must tolerate that trailing partial line and still say "jsonl"
+    # (regression: it previously fell through and mis-detected as HTML).
+    from pretty_little_summary.sniffers._base import HEAD_BYTES
+
+    record = json.dumps({"tag": "<html-ish value>", "n": 1}) + "\n"
+    p = tmp_path / "big.jsonl"
+    p.write_text(record * (HEAD_BYTES // len(record) + 50))
+    meta = sniff_path(p)
+    assert meta["metadata"]["format"] == "jsonl"
+
+
 def test_csv_file(tmp_path: Path) -> None:
     p = tmp_path / "d.csv"
     p.write_text("name,age,city\nalice,30,nyc\nbob,25,la\n")

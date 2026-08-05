@@ -1,6 +1,8 @@
 """Main API entry point for pretty_little_summary."""
 
+import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from pretty_little_summary.adapters import dispatch_adapter
@@ -24,7 +26,13 @@ class Description:
     history: list[str] | None
 
 
-def describe(obj: Any, name: str | None = None) -> Description:
+def describe(
+    obj: Any,
+    name: str | None = None,
+    *,
+    deep: bool = False,
+    full: bool = False,
+) -> Description:
     """
     Generate a structured summary of any Python object.
 
@@ -33,10 +41,22 @@ def describe(obj: Any, name: str | None = None) -> Description:
     2. Retrieves code history (if in IPython/Jupyter)
     3. Generates a deterministic summary
 
+    Filesystem paths are first-class. Pass a ``pathlib.Path`` (or a plain string
+    that names an existing file/directory — it is promoted to ``Path``
+    automatically) to describe what is on disk. By default a path is described
+    from a cheap head sample; pass ``deep=True`` to load the file into a rich
+    object (e.g. a DataFrame) and return a full profile — row counts, nulls, and
+    per-column stats — and to deep-profile every dataset in a directory.
+
     Args:
-        obj: Any Python object to analyze
+        obj: Any Python object to analyze. A string naming an existing path is
+            promoted to ``pathlib.Path``.
         name: Optional variable name for history filtering.
               If None, attempts to auto-detect from calling context.
+        deep: For paths, load and fully profile the file(s) instead of only
+            head-sniffing. No effect on non-path objects.
+        full: For a deep row-oriented file load, read every row instead of a
+            bounded sample. No effect unless ``deep`` is set.
 
     Returns:
         Description object with content, meta, and history attributes
@@ -50,13 +70,31 @@ def describe(obj: Any, name: str | None = None) -> Description:
         "pandas.DataFrame | Shape: (1000, 5) | Columns: product, price, quantity, date, customer_id"
         >>> print(result.meta)
         {'object_type': 'pandas.DataFrame', 'shape': (1000, 5), ...}
+
+        >>> # Describe a file straight from disk, then load and profile it:
+        >>> print(pls.describe("data.csv").content)                # head sniff + tip
+        >>> print(pls.describe("data.csv", deep=True).content)     # full profile
     """
+    # Promote a string that names an existing path to a Path so callers can pass
+    # "data.csv" instead of Path("data.csv"). Existence-gated so ordinary
+    # strings are described as strings, unchanged.
+    if isinstance(obj, str) and _looks_like_existing_path(obj):
+        obj = Path(obj)
+
+    is_path = isinstance(obj, Path)
+
     # Auto-detect variable name if not provided
     if name is None:
         name = _try_get_variable_name(obj)
 
-    # Extract metadata using adapter system
-    metadata = dispatch_adapter(obj)
+    # Extract metadata. Paths flow through describe_path so deep loading and
+    # directory profiling share one entry point; everything else uses adapters.
+    if is_path:
+        from pretty_little_summary.sniffers._base import describe_path
+
+        metadata = describe_path(obj, deep=deep, full=full)
+    else:
+        metadata = dispatch_adapter(obj)
 
     # Get history if available
     history: list[str] | None = None
@@ -66,8 +104,29 @@ def describe(obj: Any, name: str | None = None) -> Description:
     # Generate deterministic summary
     content = deterministic_summary(metadata, history)
 
+    # Nudge toward the richer profile when a path was described shallowly.
+    if is_path and not deep:
+        content += (
+            "\nTip: pass deep=True to load and fully profile this "
+            f"{'directory' if obj.is_dir() else 'file'}."
+        )
+
     # Return Description object
     return Description(content=content, meta=metadata, history=history)
+
+
+def _looks_like_existing_path(value: str) -> bool:
+    """True when a string names an existing file/dir and is safe to promote.
+
+    Guards against pathological inputs (very long strings, embedded newlines)
+    that are clearly data rather than paths, then checks the filesystem.
+    """
+    if not value or len(value) > 4096 or "\n" in value or "\x00" in value:
+        return False
+    try:
+        return os.path.exists(value)
+    except (OSError, ValueError):
+        return False
 
 
 def _try_get_variable_name(obj: Any) -> str | None:

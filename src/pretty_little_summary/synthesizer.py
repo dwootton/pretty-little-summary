@@ -26,7 +26,7 @@ def deterministic_summary(
     """
     nl = metadata.get("nl_summary")
     if nl:
-        return nl
+        return nl + _sampled_note(metadata)
 
     lines = []
 
@@ -188,4 +188,20 @@ def deterministic_summary(
     adapter = metadata.get("adapter_used", "Unknown")
     lines.append(f"[via {adapter}]")
 
-    return " | ".join(lines)
+    return " | ".join(lines) + _sampled_note(metadata)
+
+
+def _sampled_note(metadata: MetaDescription) -> str:
+    """Return a trailing note when a deep profile came from a bounded sample.
+
+    ``describe_path`` sets ``sampled``/``sampled_rows`` on the inner ``metadata``
+    dict when a row cap truncated the load, so a profile is never silently
+    presented as if it covered the whole file.
+    """
+    inner = metadata.get("metadata")
+    if not isinstance(inner, dict) or not inner.get("sampled"):
+        return ""
+    rows = inner.get("sampled_rows")
+    if isinstance(rows, int):
+        return f" (profiled from a sample of the first {rows:,} rows; pass full=True to read all)"
+    return " (profiled from a sample of rows; pass full=True to read all)"
