@@ -27,6 +27,10 @@ from pretty_little_summary.sniffers._base import (
 # Bytes that effectively never appear in text files; their presence means binary.
 _TEXT_CONTROL_ALLOWED = {0x09, 0x0A, 0x0D, 0x0C}  # tab, LF, CR, form-feed
 
+# Wide tabular data (hundreds of columns) is common; list up to this many
+# column names before summarizing the rest as a count.
+_MAX_LISTED_COLUMNS = 50
+
 # tomllib is stdlib on Python 3.11+. When it is missing we can still recognise
 # a .toml file by suffix, we just can't parse it for its keys.
 try:
@@ -254,8 +258,10 @@ def _structured_summary(md: dict[str, Any]) -> str:
         header = md.get("header", [])
         head_str = ""
         if header:
-            shown = header[:10]
-            suffix = f", ... ({len(header)} total)" if len(header) > 10 else ""
+            shown = header[:_MAX_LISTED_COLUMNS]
+            suffix = (
+                f", ... ({len(header)} total)" if len(header) > _MAX_LISTED_COLUMNS else ""
+            )
             head_str = f" Header: {', '.join(shown)}{suffix}."
         return f"A CSV file with {cols} columns ({size}).{head_str}"
     if fmt == "yaml":

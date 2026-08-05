@@ -23,6 +23,10 @@ from pretty_little_summary.sniffers._base import PRIORITY_MAGIC, SnifferRegistry
 # file is neither a known format nor decodable text.
 PRIORITY_BINARY_FALLBACK = -100
 
+# Wide tabular data (hundreds of columns) is common; list up to this many
+# column/variable names before summarizing the rest as a count.
+_MAX_LISTED_COLUMNS = 50
+
 
 def _file_size(path: Path) -> int | None:
     try:
@@ -525,8 +529,8 @@ class StataSniffer:
         parts_str = " ".join(parts) + f" ({md.get('size', 'unknown size')})."
         cols = md.get("columns_list")
         if cols:
-            shown = cols[:10]
-            suffix = f", ... ({len(cols)} total)" if len(cols) > 10 else ""
+            shown = cols[:_MAX_LISTED_COLUMNS]
+            suffix = f", ... ({len(cols)} total)" if len(cols) > _MAX_LISTED_COLUMNS else ""
             parts_str += f" Variables: {', '.join(shown)}{suffix}."
         meta["nl_summary"] = parts_str
         return meta

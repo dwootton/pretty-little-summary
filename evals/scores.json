@@ -818,7 +818,7 @@
    "judged_at": "2026-08-05T17:44:42+00:00"
   },
   "real/local_nlsy": {
-   "output_hash": "ddd4276db677f13d",
+   "output_hash": "287825a098709c1a",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -826,8 +826,8 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Now correctly identifies the Stata format, reports the exact observation/variable counts (305502 x 14, matching pandas.read_stata), and lists variable names with a truncation note. Fully resolves the prior 'unknown binary' misreport.",
-   "judged_at": "2026-08-05T18:11:57+00:00"
+   "critique": "With the cap raised to 50, all 14 Stata variable names now fit without truncation.",
+   "judged_at": "2026-08-05T18:18:16+00:00"
   },
   "real/local_population_a_mcp": {
    "output_hash": "00d79a7340d1c360",
@@ -842,16 +842,16 @@
    "judged_at": "2026-08-05T17:44:26+00:00"
   },
   "real/local_raw_soccer_data": {
-   "output_hash": "1836d80ecae8fbce",
+   "output_hash": "605dfed254f3df19",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "27-column header is now truncated to 10 with a total count instead of a run-on list of all 27 names \u2014 more concise, still fully accurate. Row-count-vs-file-size mismatch (sampled 364 of a 26.8MB file) still isn't surfaced.",
-   "judged_at": "2026-08-05T18:14:20+00:00"
+   "overall": 5.0,
+   "critique": "With the cap raised to 50, all 27 columns now fit and are listed in full \u2014 more informative than the prior 10-name truncation, still a single concise sentence.",
+   "judged_at": "2026-08-05T18:18:16+00:00"
   },
   "real/penguins_deep": {
    "output_hash": "bf0003be06ad300f",
@@ -878,16 +878,16 @@
    "judged_at": "2026-08-05T17:43:49+00:00"
   },
   "real/titanic_shallow": {
-   "output_hash": "08f06e886908745b",
+   "output_hash": "36fb9666b17e0cc3",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "Now truncates the 15-column header list to 10 with a '(15 total)' suffix instead of quoting all 15 names \u2014 more concise, still fully accurate; the mixed-types/nulls detail from meta still isn't surfaced in the summary.",
-   "judged_at": "2026-08-05T18:13:51+00:00"
+   "overall": 5.0,
+   "critique": "With the cap raised to 50, all 15 columns now fit and are listed in full with no truncation needed \u2014 maximally informative and still concise for a table this narrow.",
+   "judged_at": "2026-08-05T18:18:16+00:00"
   },
   "synth/binary_as_txt": {
    "output_hash": "b958d330e1d7e70c",
@@ -1214,16 +1214,16 @@
    "judged_at": "2026-08-05T17:44:55+00:00"
   },
   "synth/wide_csv_500_cols": {
-   "output_hash": "1ab95d85d9010d11",
+   "output_hash": "7f26483e10b2601d",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
-    "conciseness": 5,
+    "conciseness": 4,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "Now shows column count (500), size, and 10 example names with a total count instead of dumping all 500 \u2014 resolves the exact issue NOTES called out.",
-   "judged_at": "2026-08-05T18:14:01+00:00"
+   "overall": 4.5,
+   "critique": "Cap raised to 50 (from 10) per user request for wide tabular data; a 500-col file still truncates cleanly with a total count, just showing more names before the ellipsis.",
+   "judged_at": "2026-08-05T18:18:16+00:00"
   }
  }
 }
