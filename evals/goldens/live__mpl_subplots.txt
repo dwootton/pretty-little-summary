@@ -1,0 +1,1 @@
+A matplotlib figure with 4 subplots, showing: a bar/histogram plot (titled "hist"), a line plot, a scatter plot, and an empty subplot.

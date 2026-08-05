@@ -314,40 +314,40 @@
    "judged_at": "2026-08-05T17:43:56+00:00"
   },
   "gallery/matplotlib_adapter": {
-   "output_hash": "c398a46601bb1d4d",
+   "output_hash": "c4da842535ad5d89",
    "scores": {
-    "accuracy": 4,
-    "informativeness": 2,
+    "accuracy": 5,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.0,
-   "critique": "visual_elements already knows plot_types=['line'], num_lines=1, and the axis limits, yet the summary only says '1 subplots' \u2014 it misses the chart type entirely, which is the single most useful fact about a figure. Also '1 subplots' is a grammar/pluralization slip.",
-   "judged_at": "2026-08-05T17:44:02+00:00"
+   "overall": 5.0,
+   "critique": "Now names the chart type (line plot) alongside subplot count and fixes the pluralization slip; uses the plot_types/num_lines metadata that was previously discarded.",
+   "judged_at": "2026-08-05T18:46:52+00:00"
   },
   "gallery/matplotlib_axes_image_hist": {
-   "output_hash": "5402ace913829833",
+   "output_hash": "fe585e3fa7fe4ff7",
    "scores": {
     "accuracy": 5,
-    "informativeness": 1,
-    "conciseness": 4,
+    "informativeness": 4,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 3.75,
-   "critique": "'A matplotlib axes with plotted elements' is technically true and totally vacuous. Metadata knows plot_types=['bar','image'], 1 image, 10 patches \u2014 the summary should say 'axes combining an image and a histogram/bar plot'. Same generic string as the scatter+bar case, proving it ignores content.",
-   "judged_at": "2026-08-05T17:44:08+00:00"
+   "overall": 4.75,
+   "critique": "Correctly names both plot types (bar/histogram, image) instead of the old vacuous boilerplate; slight ambiguity remains between 'bar' and 'histogram' since matplotlib doesn't distinguish them at the patches level.",
+   "judged_at": "2026-08-05T18:46:52+00:00"
   },
   "gallery/matplotlib_axes_inference": {
-   "output_hash": "5402ace913829833",
+   "output_hash": "87f02a83c7d4e009",
    "scores": {
     "accuracy": 5,
-    "informativeness": 1,
-    "conciseness": 4,
+    "informativeness": 4,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 3.75,
-   "critique": "Identical boilerplate to the image+hist case despite metadata identifying plot_types=['scatter','bar'] with a collection and patches. The whole point of axes inference is to name the chart types; the summary conveys nothing beyond 'it is an axes'.",
-   "judged_at": "2026-08-05T17:44:17+00:00"
+   "overall": 4.75,
+   "critique": "Correctly names both scatter and bar/histogram plot types, no longer identical to the image+hist case; same bar/histogram ambiguity caveat as the sibling case.",
+   "judged_at": "2026-08-05T18:46:52+00:00"
   },
   "gallery/networkx_adapter_nl": {
    "output_hash": "58b5fd993c1bbe6a",
@@ -710,16 +710,16 @@
    "judged_at": "2026-08-05T17:47:34+00:00"
   },
   "live/mpl_subplots": {
-   "output_hash": "137188dc4e78fe34",
+   "output_hash": "7fb1c6f48268a572",
    "scores": {
-    "accuracy": 4,
-    "informativeness": 2,
+    "accuracy": 5,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.0,
-   "critique": "Four subplots is correct but that is all it says; meta only captured one axes (plot_types [bar], title hist) so the line/scatter/empty panels are invisible. Collect per-axes chart types and titles so the summary can describe the grid contents.",
-   "judged_at": "2026-08-05T17:45:12+00:00"
+   "overall": 5.0,
+   "critique": "Now walks every subplot (not just the first) and names each one's chart type plus its title, exactly matching the case notes about describing the grid contents.",
+   "judged_at": "2026-08-05T18:46:52+00:00"
   },
   "live/networkx_karate": {
    "output_hash": "f6859a8b5b046437",

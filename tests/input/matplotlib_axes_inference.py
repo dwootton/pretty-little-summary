@@ -3,7 +3,7 @@ TITLE = "Matplotlib axes (scatter + bar)"
 TAGS = ["matplotlib", "chart"]
 REQUIRES = ['matplotlib']
 DISPLAY_INPUT = "ax.scatter(...); ax.bar(...)"
-EXPECTED = "A matplotlib axes with plotted elements."
+EXPECTED = "A matplotlib axes showing a scatter plot and a bar/histogram plot."
 
 
 def build():

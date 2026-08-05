@@ -14,5 +14,4 @@ def build():
 
 
 def expected(meta):
-    count = meta.get("metadata", {}).get("num_subplots") or "unknown"
-    return f"A matplotlib figure with {count} subplots."
+    return 'A matplotlib figure with 1 subplot, showing a line plot.'

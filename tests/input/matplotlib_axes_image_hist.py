@@ -3,7 +3,7 @@ TITLE = "Matplotlib axes (image + hist)"
 TAGS = ["matplotlib", "chart"]
 REQUIRES = ['matplotlib']
 DISPLAY_INPUT = "ax.imshow(...); ax.hist(...)"
-EXPECTED = "A matplotlib axes with plotted elements."
+EXPECTED = "A matplotlib axes showing a bar/histogram plot and an image."
 
 
 def build():
