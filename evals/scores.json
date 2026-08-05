@@ -1093,6 +1093,18 @@
    "critique": "Correct and doesn't crash or wrongly merge the two shapes, but a real dataset with this alternating pattern would list every file individually with zero collapsing, which is exactly the noisy-listing problem this feature exists to fix. Known limitation: grouping only merges immediately-adjacent identical-shape entries, so alternating shapes never form a run of 4+ (tag: wontfix, tracked separately).",
    "judged_at": "2026-08-05T20:15:46+00:00"
   },
+  "synth/dir_many_subfolders": {
+   "output_hash": "8e37e0b372837617",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Correctly caps subdirectory display at 20 stations, each recursed into and described; emits an accurate '... (130 more folders in this folder)' truncation line; and the top-level manifest.json sibling is not starved despite the 150 subfolders, fixing the folder-scale analog of the earlier file sibling-starvation bug.",
+   "judged_at": "2026-08-05T20:55:05+00:00"
+  },
   "synth/dir_two_distinct_families": {
    "output_hash": "9f002d0343ad0cea",
    "scores": {

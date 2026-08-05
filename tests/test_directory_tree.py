@@ -12,7 +12,10 @@ from pretty_little_summary.adapters._directory_grouping import (
     format_family_line,
     group_filename_families,
 )
-from pretty_little_summary.adapters.pathlib_adapter import DEFAULT_MAX_FILES_PER_FOLDER
+from pretty_little_summary.adapters.pathlib_adapter import (
+    DEFAULT_MAX_DIRS_PER_FOLDER,
+    DEFAULT_MAX_FILES_PER_FOLDER,
+)
 
 # --- per-folder truncation ----------------------------------------------------
 
@@ -32,6 +35,33 @@ def test_sibling_not_starved_by_large_family(tmp_path: Path) -> None:
     big.mkdir()
     for i in range(DEFAULT_MAX_FILES_PER_FOLDER * 3):
         (big / f"seq_{i:04d}.txt").write_text("same content")
+    (tmp_path / "sibling.txt").write_text("hi")
+
+    content = pls.describe(tmp_path, deep=True).content
+    assert "sibling.txt" in content
+
+
+def test_per_folder_cap_truncates_subdirectories(tmp_path: Path) -> None:
+    n = DEFAULT_MAX_DIRS_PER_FOLDER + 30
+    for i in range(n):
+        d = tmp_path / f"station_{i:04d}"
+        d.mkdir()
+        (d / "readings.csv").write_text("id,val\n1,2\n")
+    content = pls.describe(tmp_path, deep=True).content
+    shown_dir_lines = [line for line in content.splitlines() if "station_" in line and line.rstrip().endswith("/")]
+    assert len(shown_dir_lines) == DEFAULT_MAX_DIRS_PER_FOLDER
+    hidden_count = n - DEFAULT_MAX_DIRS_PER_FOLDER
+    assert f"({hidden_count} more folders in this folder)" in content
+    # Hidden subdirectories must not be recursed into — readings.csv should
+    # only be described for the shown stations, not for all of them.
+    assert content.count("readings.csv") == DEFAULT_MAX_DIRS_PER_FOLDER
+
+
+def test_sibling_not_starved_by_many_subdirectories(tmp_path: Path) -> None:
+    for i in range(DEFAULT_MAX_DIRS_PER_FOLDER * 3):
+        d = tmp_path / f"station_{i:04d}"
+        d.mkdir()
+        (d / "readings.csv").write_text("id,val\n1,2\n")
     (tmp_path / "sibling.txt").write_text("hi")
 
     content = pls.describe(tmp_path, deep=True).content

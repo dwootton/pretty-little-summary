@@ -14,18 +14,24 @@ from pretty_little_summary.adapters._directory_grouping import (
 from pretty_little_summary.core import MetaDescription
 from pretty_little_summary.descriptor_utils import format_bytes
 
-# Default configuration for directory scanning. Three independent limits:
+# Default configuration for directory scanning. Four independent limits:
 #  - DEFAULT_MAX_DEPTH: how many levels deep to recurse.
 #  - DEFAULT_MAX_FILES_PER_FOLDER: how many file/family lines ONE directory's
 #    own listing may show. A folder with thousands of files (e.g. a sensor
 #    archive) can only ever contribute this many lines, so it can never
 #    starve sibling files or directories of the global budget below.
+#  - DEFAULT_MAX_DIRS_PER_FOLDER: how many subdirectory lines ONE directory's
+#    own listing may show. A folder with hundreds of subdirectories (e.g.
+#    one per station/site) can only ever contribute this many lines — and,
+#    unlike files, a hidden subdirectory is never recursed into either, so
+#    this also bounds the actual walk cost, not just the display.
 #  - DEFAULT_MAX_TOTAL_FILES: a global cap on files actually content-sniffed
 #    across the whole walk. Once spent, remaining files are still listed by
 #    name (structure stays visible) with a placeholder instead of a real
 #    description.
 DEFAULT_MAX_DEPTH = 3
 DEFAULT_MAX_FILES_PER_FOLDER = 20
+DEFAULT_MAX_DIRS_PER_FOLDER = 20
 DEFAULT_MAX_TOTAL_FILES = 150
 
 
@@ -74,6 +80,7 @@ class PathlibAdapter:
                             obj,
                             max_depth=DEFAULT_MAX_DEPTH,
                             max_files_per_folder=DEFAULT_MAX_FILES_PER_FOLDER,
+                            max_dirs_per_folder=DEFAULT_MAX_DIRS_PER_FOLDER,
                             max_total_files=DEFAULT_MAX_TOTAL_FILES,
                         )
                         metadata["tree"] = tree_result["tree"]
@@ -103,6 +110,7 @@ def describe_directory(root_path: Path, deep: bool = False) -> MetaDescription:
         root_path,
         max_depth=DEFAULT_MAX_DEPTH,
         max_files_per_folder=DEFAULT_MAX_FILES_PER_FOLDER,
+        max_dirs_per_folder=DEFAULT_MAX_DIRS_PER_FOLDER,
         max_total_files=DEFAULT_MAX_TOTAL_FILES,
         deep=deep,
     )
@@ -129,6 +137,7 @@ def _describe_directory_tree(
     root_path: Path,
     max_depth: int = DEFAULT_MAX_DEPTH,
     max_files_per_folder: int = DEFAULT_MAX_FILES_PER_FOLDER,
+    max_dirs_per_folder: int = DEFAULT_MAX_DIRS_PER_FOLDER,
     max_total_files: int = DEFAULT_MAX_TOTAL_FILES,
     deep: bool = False,
 ) -> dict[str, Any]:
@@ -142,6 +151,11 @@ def _describe_directory_tree(
             directory's own listing may show. Bounding this per folder (not
             globally) means a folder with thousands of files can never
             starve sibling files or folders of display space.
+        max_dirs_per_folder: Maximum number of subdirectory lines ONE
+            directory's own listing may show. Hidden subdirectories beyond
+            this cap are neither displayed nor recursed into, so a folder
+            with hundreds of subdirectories can't blow up tree size or walk
+            time the way an uncapped listing would.
         max_total_files: Global cap on files actually content-described
             (sniffed) across the whole walk. Once spent, further files are
             still listed by name — just without a real description.
@@ -199,6 +213,9 @@ def _describe_directory_tree(
         file_count += len(file_entries)
         dir_count += len(dir_entries)
 
+        shown_dirs = dir_entries[:max_dirs_per_folder]
+        hidden_dir_count = len(dir_entries) - len(shown_dirs)
+
         units = group_filename_families(file_entries, _describe_for_grouping)
         shown_units = units[:max_files_per_folder]
         hidden_units = units[max_files_per_folder:]
@@ -207,10 +224,12 @@ def _describe_directory_tree(
         )
 
         # Build one combined display list so tree connectors (last-item vs.
-        # not) are computed over what's actually shown: subdirectories are
-        # never truncated here (a folder is one cheap line regardless of
-        # what it contains), only this folder's own file-level units are.
-        display_items: list[tuple[str, Any]] = [("dir", d) for d in dir_entries]
+        # not) are computed over what's actually shown. Subdirectories beyond
+        # max_dirs_per_folder are neither shown nor recursed into — that's
+        # what actually bounds the walk's cost, not just its output length.
+        display_items: list[tuple[str, Any]] = [("dir", d) for d in shown_dirs]
+        if hidden_dir_count:
+            display_items.append(("truncated_dirs", hidden_dir_count))
         display_items += [
             ("family", u) if isinstance(u, FilenameFamily) else ("file", u)
             for u in shown_units
@@ -232,6 +251,10 @@ def _describe_directory_tree(
                 elif kind == "file":
                     description = _describe_or_placeholder(payload)
                     tree_lines.append(f"{prefix}{connector}{payload.name} - {description}")
+                elif kind == "truncated_dirs":
+                    tree_lines.append(
+                        f"{prefix}... ({payload} more folders in this folder)"
+                    )
                 else:  # truncated
                     tree_lines.append(
                         f"{prefix}... ({payload} more files in this folder)"

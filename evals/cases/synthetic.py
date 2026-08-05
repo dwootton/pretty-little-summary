@@ -502,3 +502,26 @@ def dir_interleaved_shapes_do_not_collapse(ctx: CaseCtx):
         (d / f"m_{i:03d}_alpha.txt").write_text("sensor value")
         (d / f"m_{i:03d}_beta.txt").write_text("sensor value")
     return d
+
+
+@case(
+    "synth/dir_many_subfolders",
+    tags=("pathlib", "directory", "edge", "scale"),
+    describe_kwargs={"deep": True},
+    display_input="directory with 150 subfolders (one per station), each holding one small CSV, plus a top-level sibling file",
+    notes=(
+        "Subdirectories are capped per folder (DEFAULT_MAX_DIRS_PER_FOLDER) "
+        "just like files: only the first 20 stations should be shown and "
+        "recursed into, a '... (130 more folders in this folder)' line "
+        "should appear, and the top-level sibling file must not be starved."
+    ),
+)
+def dir_many_subfolders(ctx: CaseCtx):
+    d = ctx.tmp / "dir_many_subfolders"
+    d.mkdir()
+    for i in range(150):
+        station = d / f"station_{i:04d}"
+        station.mkdir()
+        (station / "readings.csv").write_text("id,val\n1,2\n")
+    (d / "manifest.json").write_text('{"version": 1}')
+    return d
