@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pls — Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #eeeeee;
+      --paper-deep: #e2e2e0;
+      --ink: #2a2a26;
+      --ink-soft: #5f5c52;
+      --accent: #5f8f84;
+      --card: #f6f6f4;
+      --accent-on-dark: #8ec4b9;
+      --code-bg: #23282c;
+      --code-text: #eee7d5;
+      --rule: #cbcac4;
+      --ok: #4a6b3a;
+      --ok-bg: #e4ead9;
+      --bad: #9a5142;
+      --bad-bg: #f3ddd7;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Source Sans 3', -apple-system, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+      font-size: 17px;
+    }
+
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 4rem;
+    }
+
+    section { margin-bottom: 2.25rem; }
+
+    .playground-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 760px) {
+      .playground-layout { grid-template-columns: 1fr; }
+    }
+
+    .file-sidebar h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .file-panel { padding: 1rem; }
+
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      max-height: 55vh;
+      overflow-y: auto;
+    }
+
+    .file-item {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      padding: 0.4rem 0.55rem;
+      cursor: pointer;
+      background: var(--paper-deep);
+      border: 1px solid var(--rule);
+      word-break: break-all;
+      color: var(--ink);
+      text-align: left;
+      width: 100%;
+    }
+    .file-item:hover { border-color: var(--accent); color: var(--accent); }
+
+    .file-empty {
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+    }
+
+    .file-note {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--ink-soft);
+      margin-top: 0.75rem;
+    }
+
+    .loader-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      padding: 0.55rem 0.85rem;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      margin-bottom: 1rem;
+    }
+    .loader-strip .tier-row { margin-bottom: 0; gap: 0.4rem; }
+    .loader-strip .tier-btn { font-size: 0.72rem; padding: 0.35rem 0.65rem; }
+    .loader-strip #status-line { margin-left: auto; }
+
+    .secondary-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .upload-inline {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+    }
+
+    h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .panel {
+      background: var(--card);
+      padding: 1.25rem;
+      border: 1px solid var(--rule);
+    }
+
+    .tier-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .tier-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 0.5rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      cursor: pointer;
+      color: var(--ink-soft);
+    }
+
+    .tier-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tier-btn.active { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+    .tier-btn:disabled { opacity: 0.5; cursor: default; }
+
+    .example-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .example-btn {
+      font-family: 'Source Sans 3', sans-serif;
+      text-align: left;
+      background: var(--paper-deep);
+      border: 1px solid var(--rule);
+      padding: 0.5rem 0.65rem;
+      cursor: pointer;
+      color: var(--ink);
+    }
+    .example-btn:hover { border-color: var(--accent); }
+    .example-btn:disabled { opacity: 0.5; cursor: default; }
+    .example-btn.active { border-color: var(--accent); background: var(--card); }
+    .example-btn .ex-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+    .example-btn .ex-desc {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--ink-soft);
+      display: block;
+    }
+
+    details.gallery-browse summary {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      cursor: pointer;
+      margin-bottom: 0.6rem;
+    }
+
+    .gallery-search {
+      width: 100%;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--rule);
+      margin-bottom: 0.6rem;
+    }
+
+    .gallery-list {
+      max-height: 260px;
+      overflow-y: auto;
+      border: 1px solid var(--rule);
+    }
+
+    .gallery-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.45rem 0.7rem;
+      border-bottom: 1px solid var(--rule);
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .gallery-item:last-child { border-bottom: none; }
+    .gallery-item:hover { background: var(--paper-deep); }
+    .gallery-item.disabled { cursor: default; opacity: 0.55; }
+    .gallery-item .gi-tags {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--ink-soft);
+      white-space: nowrap;
+    }
+
+    .see-more {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-top: 0.6rem;
+    }
+
+    #status-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      min-height: 1.2em;
+    }
+
+    #status-line.busy::before {
+      content: '⏳ ';
+    }
+    #status-line.ready { color: var(--ok); }
+    #status-line.ready::before { content: '✓ '; }
+    #status-line.error { color: var(--bad); }
+    #status-line.error::before { content: '✗ '; }
+
+    input[type=file] {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    #uploaded-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      background: var(--card);
+      color: var(--accent);
+      padding: 0.2rem 0.5rem;
+      display: none;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 60vh;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      background: var(--code-bg);
+      color: var(--code-text);
+      border: none;
+      padding: 1rem 1.1rem;
+      resize: vertical;
+    }
+
+    .run-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .run-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.6rem 1.4rem;
+      background: var(--accent);
+      color: var(--paper);
+      border: none;
+      cursor: pointer;
+    }
+
+    .run-btn:hover { background: var(--ink); }
+    .run-btn:disabled { opacity: 0.5; cursor: default; }
+
+    .output-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      margin-top: 1.25rem;
+    }
+
+    pre#output {
+      background: var(--paper-deep);
+      color: var(--ink);
+      padding: 1rem 1.1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 3em;
+    }
+
+    pre#output.error {
+      background: var(--bad-bg);
+      color: var(--bad);
+      border: 1px solid rgba(179, 38, 30, 0.25);
+    }
+
+    a.back-link {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+    a.back-link:hover { color: var(--accent); }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      color: var(--ink-soft);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <a class="back-link" href="index.html">&larr; back to docs</a>
+    </section>
+
+    <div class="playground-layout">
+      <div class="file-sidebar">
+        <h3>Files</h3>
+        <div class="panel file-panel">
+          <div class="file-list" id="file-list">
+            <div class="file-empty">No files yet — upload one or run an example that creates one.</div>
+          </div>
+          <div class="file-note">In-browser only; cleared on reload.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="loader-strip">
+          <div class="tier-row" id="tier-row">
+            <button class="tier-btn" data-tier="core">core only</button>
+            <button class="tier-btn" data-tier="data">+ pandas / numpy</button>
+            <button class="tier-btn" data-tier="viz">+ matplotlib / pillow</button>
+            <button class="tier-btn" data-tier="full">+ scientific stack</button>
+          </div>
+          <div id="status-line">Loading the core runtime...</div>
+        </div>
+
+        <div class="secondary-controls">
+          <div class="example-grid" id="example-grid"></div>
+          <details class="gallery-browse">
+            <summary>Browse the full test gallery for more examples ▾</summary>
+            <input class="gallery-search" id="gallery-search" type="search" placeholder="Search 68 examples by name or tag...">
+            <div class="gallery-list" id="gallery-list"></div>
+          </details>
+          <div class="upload-inline">
+            <label for="file-input">Upload a file:</label>
+            <input type="file" id="file-input" disabled>
+            <span id="uploaded-path"></span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <textarea id="code-input" spellcheck="false"></textarea>
+          <div class="run-row">
+            <button class="run-btn" id="run-btn" disabled>Run ▸</button>
+            <span id="run-status" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--ink-soft);"></span>
+          </div>
+          <div class="output-label">Output</div>
+          <pre id="output">(loading an example...)</pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <a href="https://pypi.org/project/pretty-little-summary/">PyPI</a> ·
+    <a href="https://github.com/dwootton/pretty-little-summary">GitHub</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/pyodide/v314.0.4/full/pyodide.js"></script>
+  <script>
+    const TIERS = {
+      core: [],
+      data: ['pandas', 'numpy', 'pyarrow'],
+      viz: ['pandas', 'numpy', 'pyarrow', 'matplotlib', 'pillow'],
+      full: ['pandas', 'numpy', 'pyarrow', 'matplotlib', 'pillow', 'scipy',
+             'scikit-learn', 'networkx', 'pydantic', 'xarray', 'statsmodels'],
+    };
+
+    // Import name -> installable package name, for cases where they differ.
+    const IMPORT_TO_PACKAGE = {
+      PIL: 'pillow', sklearn: 'scikit-learn', yaml: 'pyyaml',
+      cv2: 'opencv-python', bs4: 'beautifulsoup4', attr: 'attrs',
+      IPython: 'ipython', t: 'torch',
+    };
+
+    const CURATED_EXAMPLES = [
+      {
+        id: 'csv_file',
+        title: 'CSV file',
+        desc: 'pandas',
+        code: `import pandas as pd
+
+df = pd.DataFrame({
+    "id": range(5),
+    "value": [1.5, 2.5, None, 4.5, 5.5],
+    "label": list("abcde"),
+})
+df.to_csv("data.csv", index=False)
+
+import pretty_little_summary as pls
+result = pls.describe("data.csv")
+print(result.content)`,
+      },
+      {
+        id: 'parquet_file',
+        title: 'Parquet file',
+        desc: 'pandas + pyarrow',
+        code: `import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
+
+df = pd.DataFrame({
+    "id": range(5),
+    "value": [1.5, 2.5, None, 4.5, 5.5],
+    "label": list("abcde"),
+})
+pq.write_table(pa.Table.from_pandas(df), "data.parquet")
+
+import pretty_little_summary as pls
+result = pls.describe("data.parquet")
+print(result.content)`,
+      },
+      {
+        id: 'folder_of_images',
+        title: 'Folder of images',
+        desc: 'pillow',
+        code: `import os
+from PIL import Image
+
+os.makedirs("photos/vacation", exist_ok=True)
+os.makedirs("photos/family", exist_ok=True)
+for i in range(3):
+    Image.new("RGB", (32, 32), (i * 40, 100, 200)).save(f"photos/vacation/img_{i}.png")
+for i in range(2):
+    Image.new("RGB", (32, 32), (200, i * 40, 100)).save(f"photos/family/img_{i}.png")
+
+import pretty_little_summary as pls
+result = pls.describe("photos")
+print(result.content)`,
+      },
+      {
+        id: 'json_file',
+        title: 'JSON file',
+        desc: 'core',
+        code: `import json
+
+records = [
+    {"id": 1, "name": "north", "value": 10.5},
+    {"id": 2, "name": "south", "value": 22.1},
+    {"id": 3, "name": "east", "value": 7.8},
+]
+with open("records.json", "w") as f:
+    json.dump(records, f)
+
+import pretty_little_summary as pls
+result = pls.describe("records.json")
+print(result.content)`,
+      },
+      {
+        id: 'matplotlib_figure',
+        title: 'Matplotlib figure',
+        desc: 'matplotlib',
+        code: `import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3], [3, 2, 1], label="series")
+
+import pretty_little_summary as pls
+result = pls.describe(fig)
+print(result.content)`,
+      },
+      {
+        id: 'sklearn_pipeline',
+        title: 'sklearn Pipeline',
+        desc: 'scikit-learn',
+        code: `from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+pipe = Pipeline([
+    ("imputer", SimpleImputer()),
+    ("scaler", StandardScaler()),
+])
+
+import pretty_little_summary as pls
+result = pls.describe(pipe)
+print(result.content)`,
+      },
+    ];
+
+    const statusEl = document.getElementById('status-line');
+    const runBtn = document.getElementById('run-btn');
+    const runStatusEl = document.getElementById('run-status');
+    const fileInput = document.getElementById('file-input');
+    const uploadedPathEl = document.getElementById('uploaded-path');
+    const outputEl = document.getElementById('output');
+    const codeInput = document.getElementById('code-input');
+    const fileListEl = document.getElementById('file-list');
+    const tierButtons = [...document.querySelectorAll('.tier-btn')];
+    const exampleGrid = document.getElementById('example-grid');
+    const galleryBrowse = document.querySelector('.gallery-browse');
+    const gallerySearch = document.getElementById('gallery-search');
+    const galleryList = document.getElementById('gallery-list');
+
+    let pyodideReadyPromise = null;
+    let pyodide = null;
+    let loadedTier = null;
+    let readyPromise = null;
+    // Snapshot of the run cwd's contents right after the runtime boots, so
+    // refreshFileList() can show only what user code (or an upload) created,
+    // without walking Pyodide's system directories (/lib, /proc, etc.).
+    let baselineCwd = null;
+    let baselineEntries = new Set();
+    let baselineCaptured = false;
+
+    function setStatus(text, cls) {
+      statusEl.textContent = text;
+      statusEl.className = cls || '';
+    }
+
+    async function getPyodide() {
+      if (!pyodideReadyPromise) {
+        pyodideReadyPromise = loadPyodide();
+      }
+      pyodide = await pyodideReadyPromise;
+      return pyodide;
+    }
+
+    // Records what's already in the run cwd before any user code executes,
+    // so refreshFileList() can show only files/dirs that were created since
+    // (uploads, or files an example wrote), not Pyodide's own scaffolding.
+    async function captureBaselineOnce() {
+      if (baselineCaptured) return;
+      baselineCaptured = true;
+      try {
+        baselineCwd = pyodide.FS.cwd();
+        baselineEntries = new Set(
+          pyodide.FS.readdir(baselineCwd).filter(n => n !== '.' && n !== '..')
+        );
+      } catch (e) {
+        baselineEntries = new Set();
+      }
+    }
+
+    function renderFileList(items) {
+      if (!items.length) {
+        fileListEl.innerHTML = '<div class="file-empty">No files yet — upload one or run an example that creates one.</div>';
+        return;
+      }
+      fileListEl.innerHTML = '';
+      items.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'file-item';
+        btn.textContent = item.isDir ? `${item.display}/` : item.display;
+        btn.addEventListener('click', () => {
+          const code = `import pretty_little_summary as pls\n\n` +
+            `result = pls.describe(${JSON.stringify(item.path)})\n` +
+            `print(result.content)`;
+          codeInput.value = code;
+          runCode(code);
+        });
+        fileListEl.appendChild(btn);
+      });
+    }
+
+    // Shows files/dirs created in the run cwd since baseline, plus anything
+    // uploaded (always written under /uploads/). Re-run after every code
+    // execution and after each upload so the list stays current — there's no
+    // persistence beyond this session, matching Pyodide's in-memory FS.
+    async function refreshFileList() {
+      if (!pyodide) return;
+      const items = [];
+      try {
+        const cwd = baselineCwd || pyodide.FS.cwd();
+        const entries = pyodide.FS.readdir(cwd).filter(n => n !== '.' && n !== '..');
+        for (const name of entries) {
+          if (baselineEntries.has(name)) continue;
+          const full = cwd.endsWith('/') ? `${cwd}${name}` : `${cwd}/${name}`;
+          let isDir = false;
+          try { isDir = pyodide.FS.isDir(pyodide.FS.stat(full).mode); } catch (e) {}
+          items.push({ path: name, display: name, isDir });
+        }
+      } catch (e) {}
+      try {
+        const uploads = pyodide.FS.readdir('/uploads').filter(n => n !== '.' && n !== '..');
+        for (const name of uploads) {
+          items.push({ path: `/uploads/${name}`, display: `/uploads/${name}`, isDir: false });
+        }
+      } catch (e) {}
+      renderFileList(items);
+    }
+
+    async function loadTier(tier) {
+      tierButtons.forEach(b => b.disabled = true);
+      setStatus(`loading pyodide runtime...`, 'busy');
+      try {
+        await getPyodide();
+        await captureBaselineOnce();
+        const wasmPackages = TIERS[tier];
+        if (wasmPackages.length) {
+          setStatus(`loading ${wasmPackages.join(', ')}...`, 'busy');
+          await pyodide.loadPackage(wasmPackages);
+        }
+        setStatus('loading micropip...', 'busy');
+        await pyodide.loadPackage('micropip');
+        const micropip = pyodide.pyimport('micropip');
+        setStatus('installing pretty-little-summary...', 'busy');
+        try {
+          // Prefer the wheel built from this commit's src/ (CI-generated,
+          // see .github/workflows/pages.yml) so the playground always
+          // matches main instead of a possibly-stale PyPI release.
+          await micropip.install('./dist/pretty_little_summary-0.2.0-py3-none-any.whl');
+        } catch (e) {
+          await micropip.install('pretty-little-summary'); // local dev fallback
+        }
+        loadedTier = tier;
+        tierButtons.forEach(b => {
+          b.classList.toggle('active', b.dataset.tier === tier);
+          b.disabled = false;
+        });
+        fileInput.disabled = false;
+        runBtn.disabled = false;
+        setStatus(`ready (tier: ${tier})`, 'ready');
+      } catch (err) {
+        tierButtons.forEach(b => b.disabled = false);
+        setStatus(`failed to load: ${err}`, 'error');
+        console.error(err);
+      }
+    }
+
+    tierButtons.forEach(btn => {
+      btn.addEventListener('click', () => { readyPromise = loadTier(btn.dataset.tier); });
+    });
+
+    // Load the core tier automatically so the runtime is warm by the time
+    // someone picks an example or starts typing, instead of waiting on a click.
+    readyPromise = loadTier('core');
+
+    function pypiNameFor(importName) {
+      return IMPORT_TO_PACKAGE[importName] || importName;
+    }
+
+    function extractTopLevelImports(code) {
+      const names = new Set();
+      const re = /^\s*(?:import|from)\s+([a-zA-Z_][a-zA-Z0-9_]*)/gm;
+      let m;
+      while ((m = re.exec(code))) {
+        if (m[1] !== 'pretty_little_summary') names.add(m[1]);
+      }
+      return [...names];
+    }
+
+    // Ask the running interpreter which of these module names actually fail
+    // to import right now — covers stdlib (always importable, no package
+    // needed), previously-loaded wasm packages, and previously-installed
+    // micropip wheels alike, rather than guessing from loadedPackages alone.
+    async function findMissingImports(names) {
+      if (!names.length) return [];
+      const probe = `
+import importlib
+_missing = []
+for _n in ${JSON.stringify(names)}:
+    try:
+        importlib.import_module(_n)
+    except Exception:
+        _missing.append(_n)
+_missing
+`;
+      try {
+        const result = await pyodide.runPythonAsync(probe);
+        return result && typeof result.toJs === 'function' ? result.toJs() : (result || []);
+      } catch (e) {
+        return names;
+      }
+    }
+
+    // Scan code for import statements and load/install whatever isn't
+    // already available yet, via pyodide's prebuilt wasm packages first,
+    // falling back to micropip (PyPI) for anything not prebuilt.
+    async function ensureImports(code) {
+      if (readyPromise) await readyPromise;
+      if (!pyodide) return;
+      const candidates = extractTopLevelImports(code);
+      let missing = await findMissingImports(candidates);
+      // Pyodide's pyarrow wasm build mis-registers pandas' arrow extension
+      // type if pandas gets imported/used before pyarrow is ever loaded, so
+      // always pull pyarrow in alongside a fresh pandas load (even when the
+      // code doesn't import it directly) rather than letting it load later.
+      if (missing.includes('pandas') && !missing.includes('pyarrow')) {
+        const pyarrowMissing = await findMissingImports(['pyarrow']);
+        if (pyarrowMissing.length) missing = [...missing, 'pyarrow'];
+      }
+      if (!missing.length) return;
+      setStatus(`loading ${missing.join(', ')}...`, 'busy');
+      for (const name of missing) {
+        const pkg = pypiNameFor(name);
+        try {
+          await pyodide.loadPackage(pkg);
+        } catch (e) {
+          try {
+            const micropip = pyodide.pyimport('micropip');
+            await micropip.install(pkg);
+          } catch (e2) {
+            console.warn(`could not auto-load "${name}":`, e2);
+          }
+        }
+      }
+      setStatus(`ready (tier: ${loadedTier})`, 'ready');
+    }
+
+    // Runs the code currently in the editor, mirroring the Run button's own
+    // handler. Shared so picking an example runs it immediately instead of
+    // requiring a separate manual click.
+    async function runCode(code) {
+      if (!pyodide) return;
+      runBtn.disabled = true;
+      runStatusEl.textContent = 'checking imports...';
+      await ensureImports(code);
+      // pretty_little_summary's optional adapters (matplotlib, PIL, sklearn,
+      // etc.) check "is this library importable" once, at import time, and
+      // only register themselves then. Since pyodide keeps one interpreter
+      // across every example click, an adapter whose library wasn't loaded
+      // yet the first time pls got imported would stay unregistered for the
+      // rest of the session even after ensureImports() loads that library
+      // later — so drop it from sys.modules before every run to force a
+      // fresh import (and a fresh adapter-availability check) each time.
+      await pyodide.runPythonAsync(`
+import sys
+for _mod in [m for m in sys.modules if m == "pretty_little_summary" or m.startswith("pretty_little_summary.")]:
+    del sys.modules[_mod]
+`);
+      runStatusEl.textContent = 'running...';
+      outputEl.classList.remove('error');
+      outputEl.textContent = '';
+      let stdoutBuf = [];
+      let stderrBuf = [];
+      pyodide.setStdout({ batched: (s) => stdoutBuf.push(s) });
+      pyodide.setStderr({ batched: (s) => stderrBuf.push(s) });
+      try {
+        await pyodide.runPythonAsync(code);
+        outputEl.textContent = stdoutBuf.join('\n') || '(no output — did you print() something?)';
+      } catch (err) {
+        outputEl.classList.add('error');
+        const stderrText = stderrBuf.join('\n');
+        outputEl.textContent = (stdoutBuf.length ? stdoutBuf.join('\n') + '\n\n' : '') +
+          (stderrText || String(err));
+      } finally {
+        pyodide.setStdout({});
+        pyodide.setStderr({});
+        runBtn.disabled = false;
+        runStatusEl.textContent = '';
+        await refreshFileList();
+      }
+    }
+
+    function setActiveExampleButton(btn) {
+      exampleGrid.querySelectorAll('.example-btn').forEach(b => b.classList.toggle('active', b === btn));
+    }
+
+    // Reflects the current example in the address bar (via replaceState, so
+    // browsing examples doesn't spam browser history) so the URL can be
+    // copied and shared to reopen this exact example.
+    function updateUrlExample(id) {
+      const url = new URL(location.href);
+      if (id) {
+        url.searchParams.set('example', id);
+      } else {
+        url.searchParams.delete('example');
+      }
+      history.replaceState(null, '', url.pathname + url.search + url.hash);
+    }
+
+    // Loads an example into the editor and immediately runs it — picking a
+    // new example should need no separate "Run" click.
+    async function loadAndRun(code, btn, id) {
+      codeInput.value = code;
+      setActiveExampleButton(btn);
+      updateUrlExample(id);
+      if (readyPromise) await readyPromise;
+      await runCode(code);
+    }
+
+    let exampleButtons = [];
+    CURATED_EXAMPLES.forEach((ex, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'example-btn';
+      btn.innerHTML = `<span class="ex-title">${ex.title}</span><span class="ex-desc">${ex.desc}</span>`;
+      btn.addEventListener('click', () => loadAndRun(ex.code, btn, ex.id));
+      exampleGrid.appendChild(btn);
+      exampleButtons.push(btn);
+    });
+
+    // If the URL names a curated example, load that one; otherwise fall back
+    // to the first curated example so a result is on screen as soon as the
+    // runtime finishes loading, with no clicks required. A gallery-only id
+    // (not among CURATED_EXAMPLES) is resolved once the gallery loads, below.
+    const requestedExampleId = new URLSearchParams(location.search).get('example');
+    const requestedCuratedIndex = CURATED_EXAMPLES.findIndex(ex => ex.id === requestedExampleId);
+    if (requestedCuratedIndex >= 0) {
+      loadAndRun(CURATED_EXAMPLES[requestedCuratedIndex].code, exampleButtons[requestedCuratedIndex], CURATED_EXAMPLES[requestedCuratedIndex].id);
+    } else {
+      loadAndRun(CURATED_EXAMPLES[0].code, exampleButtons[0], CURATED_EXAMPLES[0].id);
+    }
+
+    let galleryLoaded = false;
+    let galleryExamples = [];
+
+    async function fetchText(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
+      return res.text();
+    }
+
+    async function loadGalleryOnce() {
+      if (galleryLoaded) return;
+      galleryLoaded = true;
+      galleryList.innerHTML = '<div class="gallery-item">loading...</div>';
+      try {
+        const indexText = await fetchText('examples/index.txt');
+        const ids = indexText.split('\n').map(s => s.trim()).filter(Boolean);
+        galleryExamples = (await Promise.all(ids.map(async id => {
+          const [metaText, code] = await Promise.all([
+            fetchText(`examples/${id}.meta.txt`),
+            fetchText(`examples/${id}.code.txt`),
+          ]);
+          const meta = { title: id, tags: [] };
+          metaText.trim().split('\n').forEach(line => {
+            if (line.startsWith('Title:')) meta.title = line.slice('Title:'.length).trim();
+            if (line.startsWith('Tags:')) {
+              meta.tags = line.slice('Tags:'.length).trim().split(',').map(t => t.trim()).filter(Boolean);
+            }
+          });
+          return { id, title: meta.title, tags: meta.tags, code: code.trim() };
+        }))).filter(ex => ex.code);
+        renderGallery();
+        // If the page loaded with a ?example=<id> that isn't one of the
+        // curated buttons, it must be a gallery-only example — resolve it
+        // now that the gallery has finished loading.
+        if (requestedExampleId && requestedCuratedIndex < 0) {
+          const ex = galleryExamples.find(e => e.id === requestedExampleId);
+          if (ex) {
+            galleryBrowse.open = true;
+            gallerySearch.value = ex.title;
+            renderGallery();
+            loadAndRun(ex.code, null, ex.id);
+          }
+        }
+      } catch (err) {
+        const hint = location.protocol === 'file:'
+          ? ' (opening this file directly won\'t work — serve it over http:// instead)'
+          : '';
+        galleryList.innerHTML = `<div class="gallery-item">Failed to load examples${hint}.</div>`;
+        console.error(err);
+      }
+    }
+
+    function renderGallery() {
+      const q = gallerySearch.value.toLowerCase();
+      const filtered = galleryExamples.filter(ex =>
+        !q || ex.title.toLowerCase().includes(q) || ex.tags.join(' ').toLowerCase().includes(q)
+      );
+      galleryList.innerHTML = filtered.map(ex => `
+        <div class="gallery-item" data-id="${ex.id}">
+          <span>${ex.title}</span>
+          <span class="gi-tags">${ex.tags.join(', ')}</span>
+        </div>
+      `).join('') || '<div class="gallery-item">No matches.</div>';
+      galleryList.querySelectorAll('.gallery-item[data-id]').forEach(el => {
+        el.addEventListener('click', () => {
+          const ex = galleryExamples.find(e => e.id === el.dataset.id);
+          if (ex) loadAndRun(ex.code, null, ex.id);
+        });
+      });
+    }
+
+    galleryBrowse.addEventListener('toggle', () => {
+      if (galleryBrowse.open) loadGalleryOnce();
+    });
+    gallerySearch.addEventListener('input', renderGallery);
+
+    // A shared link naming a gallery-only example needs the gallery loaded
+    // even though its <details> panel starts collapsed.
+    if (requestedExampleId && requestedCuratedIndex < 0) {
+      loadGalleryOnce();
+    }
+
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if (!file || !pyodide) return;
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      try {
+        pyodide.FS.mkdir('/uploads');
+      } catch (e) {
+        // already exists
+      }
+      const path = `/uploads/${file.name}`;
+      pyodide.FS.writeFile(path, bytes);
+      uploadedPathEl.textContent = path;
+      uploadedPathEl.style.display = 'inline-block';
+      await refreshFileList();
+      const code =
+        `import pretty_little_summary as pls\n\n` +
+        `result = pls.describe("${path}")\n` +
+        `print(result.content)`;
+      await loadAndRun(code, null);
+    });
+
+    runBtn.addEventListener('click', () => runCode(codeInput.value));
+  </script>
+</body>
+</html>
