@@ -3,7 +3,7 @@ TITLE = "Statsmodels results"
 TAGS = ["statsmodels", "model"]
 REQUIRES = ['statsmodels', 'numpy']
 DISPLAY_INPUT = "sm.OLS(y, sm.add_constant(x)).fit()"
-EXPECTED = "A statsmodels results object RegressionResultsWrapper."
+EXPECTED = "A statsmodels RegressionResultsWrapper with 2 params, R²=1."
 
 
 def build():

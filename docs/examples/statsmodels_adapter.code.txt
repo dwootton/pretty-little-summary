@@ -1,0 +1,11 @@
+import numpy as np
+import statsmodels.api as sm
+
+x = np.arange(10)
+y = x * 2
+x = sm.add_constant(x)
+obj = sm.OLS(y, x).fit()
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

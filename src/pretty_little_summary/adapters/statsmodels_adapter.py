@@ -42,4 +42,12 @@ AdapterRegistry.register(StatsmodelsAdapter)
 
 
 def _build_nl_summary(metadata: dict[str, Any]) -> str:
-    return f"A statsmodels results object {metadata.get('model_type')}."
+    model_type = metadata.get("model_type")
+    details = []
+    if "param_count" in metadata:
+        details.append(f"{metadata['param_count']} params")
+    if "rsquared" in metadata:
+        details.append(f"R²={metadata['rsquared']:.3g}")
+    if details:
+        return f"A statsmodels {model_type} with {', '.join(details)}."
+    return f"A statsmodels results object {model_type}."

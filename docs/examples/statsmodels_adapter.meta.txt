@@ -1,2 +1,3 @@
 Title: Statsmodels results
 Tags: statsmodels, model
+Requires: statsmodels, numpy

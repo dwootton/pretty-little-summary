@@ -1,1 +1,1 @@
-A statsmodels results object RegressionResultsWrapper.
+A statsmodels RegressionResultsWrapper with 2 params, R²=1.
