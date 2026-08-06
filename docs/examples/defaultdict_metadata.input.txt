@@ -1,1 +1,1 @@
-defaultdict(list, {'a': [1]})
+defaultdict(list) grouping groceries by category

@@ -1,2 +1,2 @@
-A JSON Lines file (~20+ records sampled) (2.6 KB).
-Tip: pass deep=True to load and fully profile this file.
+A JSON Lines file (60 lines sampled, 20 parsed) (2.6 KB). Records do not all share the same keys.
+Tip: drop shallow=True to load and fully profile this file.

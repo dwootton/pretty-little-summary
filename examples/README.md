@@ -1,79 +1,30 @@
 # Pretty Little Summary Examples
 
-This directory contains runnable examples for pretty_little_summary.
+Runnable scripts demonstrating `pretty_little_summary`. For install steps,
+API basics, and troubleshooting, see the main [README](../README.md).
 
-## Quick Start
+## Scripts
 
-1. Install pretty_little_summary (from repo root):
-   ```bash
-   cd /path/to/pretty_little_summary
-   pip install -e .
-   ```
-
-2. Install optional dependencies as needed:
-   ```bash
-   pip install numpy pandas matplotlib
-   ```
-
-## Available Examples
-
-### `complete_demo.py` - Standalone demo
-- Run directly from command line
-- Demonstrates built-ins, NumPy, Pandas, and Matplotlib
-- Usage:
+- **`complete_demo.py`** — built-ins, NumPy, Pandas, and Matplotlib in one run
   ```bash
   python examples/complete_demo.py
   ```
-
-### `basic_demo.py` - Simple examples
-- Built-in types (dict, list, custom classes)
-- Usage:
+- **`basic_demo.py`** — built-in types only (dict, list, custom classes)
   ```bash
   python examples/basic_demo.py
   ```
-
-### `pandas_demo.py` - Pandas-specific
-- Focuses on DataFrame summaries
-- Requires pandas
-- Usage:
+- **`pandas_demo.py`** — DataFrame summaries (requires pandas)
   ```bash
   pip install pandas
   python examples/pandas_demo.py
   ```
-
-### `verify_installation.py` - Environment check
-- Verifies install and available optional adapters
-- Usage:
+- **`showcase.py`** — broader tour across adapters
+- **`verify_installation.py`** — checks install and lists available optional adapters
   ```bash
   python examples/verify_installation.py
   ```
 
 ## Notes
 
-- History tracking works in IPython/Jupyter environments.
-- Optional adapters are auto-enabled when their libraries are installed.
-
-## Troubleshooting
-
-### `ModuleNotFoundError: No module named 'pretty_little_summary'`
-
-1. Make sure you installed: `pip install -e .` (from repo root)
-2. Restart your Python kernel/interpreter
-3. Try importing again: `import pretty_little_summary as pls`
-
-### Import errors for optional libraries
-
-If you see errors like `ModuleNotFoundError: No module named 'pandas'`:
-
-```bash
-# Install individual libraries
-pip install pandas numpy matplotlib
-
-# Or install all at once
-pip install -e ".[all]"
-```
-
-## Next Steps
-
-1. Read the main README: `README.md`
-2. Explore adapters: `src/pretty_little_summary/adapters/`
+- History tracking (`result.history`) only works in IPython/Jupyter.
+- Optional adapters activate automatically when their libraries are installed.

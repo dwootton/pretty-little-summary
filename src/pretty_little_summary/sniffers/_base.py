@@ -99,14 +99,15 @@ def sniff_path(path: Path) -> MetaDescription | None:
     return None
 
 
-def describe_path(path: Path, deep: bool = False, full: bool = False) -> MetaDescription:
+def describe_path(path: Path, deep: bool = True, full: bool = False) -> MetaDescription:
     """Describe a filesystem path.
 
-    By default this uses only the zero-dependency sniffer tier. When
-    ``deep=True`` and a suitable library is installed, a *file* is additionally
-    loaded into a rich object (e.g. a DataFrame) and described by the adapter
-    system, and a *directory* is walked with each dataset deep-profiled; if deep
-    loading fails or is unavailable, the sniffed result stands.
+    By default (``deep=True``) a *file* is loaded into a rich object (e.g. a
+    DataFrame) and described by the adapter system when a suitable library is
+    installed, and a *directory* is walked with each dataset deep-profiled; if
+    deep loading fails or is unavailable, the sniffed (zero-dependency,
+    head-bytes-only) result stands. Pass ``deep=False`` to use only the
+    zero-dependency sniffer tier.
 
     Args:
         path: File or directory to describe.
@@ -114,12 +115,12 @@ def describe_path(path: Path, deep: bool = False, full: bool = False) -> MetaDes
         full: When deep-loading a row-oriented file, read every row instead of
             a bounded sample.
     """
-    # Directories: hand off to the directory walker, which sniffs each file
-    # (shallow) or deep-profiles each dataset (deep).
-    if deep and path.is_dir():
+    # Directories: hand off to the directory walker regardless of deep, which
+    # sniffs each file (shallow) or deep-profiles each dataset (deep).
+    if path.is_dir():
         from pretty_little_summary.adapters.pathlib_adapter import describe_directory
 
-        return describe_directory(path, deep=True)
+        return describe_directory(path, deep=deep)
 
     meta = sniff_path(path)
     if meta is None:
@@ -140,12 +141,25 @@ def describe_path(path: Path, deep: bool = False, full: bool = False) -> MetaDes
 
 def _try_deep_load(path: Path, full: bool = False) -> MetaDescription | None:
     """Best-effort rich load via installed libraries; None if unavailable."""
+    import warnings
+
     from pretty_little_summary.adapters import dispatch_adapter
     from pretty_little_summary.file_loader import load_file_sampled
 
     try:
         obj, was_sampled, sampled_rows = load_file_sampled(path, full=full)
-    except Exception:
+    except Exception as exc:
+        # Deep loading is best-effort: any failure here (missing optional
+        # dependency, a malformed file, a library bug) falls back to the
+        # zero-dependency sniffed result rather than raising. Surface it as a
+        # warning so a real bug isn't mistaken for "library not installed" —
+        # this doesn't affect describe()'s returned content, only stderr.
+        warnings.warn(
+            f"deep load of {path} failed, falling back to sniffed result: "
+            f"{exc!r}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
         return None
     if isinstance(obj, (str, bytes)):
         # load_file fell back to raw text/bytes: the sniffer already does better.

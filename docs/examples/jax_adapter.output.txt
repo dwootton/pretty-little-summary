@@ -1,1 +1,1 @@
-A JAX array with shape (3,).
+A JAX array with shape (12,) and dtype float32.

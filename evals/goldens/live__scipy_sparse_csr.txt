@@ -1,0 +1,1 @@
+A csr sparse matrix with shape (1000, 1000), 10000 non-zero values (1.0% density).

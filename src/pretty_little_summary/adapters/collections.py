@@ -86,7 +86,8 @@ def _describe_list(values: list[Any], config) -> dict[str, Any]:
         metadata["element_types"] = element_types
 
     if values and all(isinstance(v, int) and not isinstance(v, bool) for v in samples):
-        stats = compute_numeric_stats([int(v) for v in samples if isinstance(v, int)])
+        stats_pool = values[:10000] if len(values) > config.sample_size else samples
+        stats = compute_numeric_stats([int(v) for v in stats_pool if isinstance(v, int)])
         if stats:
             metadata["stats"] = stats.to_prose()
         metadata["list_type"] = "ints"
@@ -345,23 +346,53 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
                 "consistent fields."
             )
         if list_type == "ints":
-            return f"A list of {length} integers."
+            stats = metadata.get("stats")
+            stats_str = f" Stats: {stats}." if stats else ""
+            return f"A list of {length} integers.{stats_str}"
         if list_type == "list_of_lists":
             return f"A 2D list with {metadata.get('rows')} rows."
         return f"A list of {length} items."
     if ctype == "tuple":
-        return f"A tuple of {metadata.get('length')} elements."
+        length = metadata.get("length")
+        element_types = metadata.get("element_types") or []
+        sample_items = metadata.get("sample_items") or []
+        types_str = ", ".join(element_types)
+        sample_str = ", ".join(sample_items)
+        return f"A tuple of {length} elements ({types_str}): ({sample_str})."
     if ctype in {"set", "frozenset"}:
         return f"A {ctype} of {metadata.get('length')} unique items."
-    if ctype in {"dict", "ordered_dict", "defaultdict"}:
-        return f"A {ctype} with {metadata.get('length')} keys."
+    if ctype in {"ordered_dict", "defaultdict", "dict"}:
+        length = metadata.get("length")
+        key_types = ", ".join(metadata.get("key_types") or [])
+        value_types = ", ".join(metadata.get("value_types") or [])
+        types_str = f" ({key_types} -> {value_types})" if key_types and value_types else ""
+        stats = metadata.get("stats")
+        stats_str = f" Stats: {stats}." if stats else ""
+        keys = metadata.get("keys") or []
+        keys_str = f" Keys: {', '.join(keys)}." if keys and length == len(keys) else ""
+        if ctype == "ordered_dict":
+            return f"An OrderedDict with {length} keys{types_str}.{keys_str}{stats_str}"
+        if ctype == "defaultdict":
+            default_factory = metadata.get("default_factory")
+            factory_str = f"(default_factory={default_factory}) " if default_factory else ""
+            return f"A defaultdict{factory_str}with {length} keys{types_str}.{keys_str}{stats_str}"
+        return f"A dict with {length} keys{types_str}.{keys_str}{stats_str}"
     if ctype == "counter":
+        most_common = metadata.get("most_common") or []
+        breakdown = ", ".join(f"{item!r}: {count}" for item, count in most_common[:3])
         return (
             f"A Counter with {metadata.get('length')} unique elements totaling "
-            f"{metadata.get('total_count')} observations."
+            f"{metadata.get('total_count')} observations. Most common: {breakdown}."
         )
     if ctype == "deque":
-        return f"A deque of {metadata.get('length')} items."
+        front = metadata.get("front_sample") or []
+        back = metadata.get("back_sample") or []
+        front_str = ", ".join(front)
+        back_str = ", ".join(back)
+        return (
+            f"A deque of {metadata.get('length')} items, front: [{front_str}], "
+            f"back: [{back_str}]."
+        )
     if ctype == "range":
         return (
             f"A range from {metadata.get('start')} to {metadata.get('stop')} "

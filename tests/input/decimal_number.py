@@ -1,11 +1,11 @@
 ID = "decimal_number"
 TITLE = "Decimal"
 TAGS = ["primitives", "decimal"]
-DISPLAY_INPUT = "Decimal('12.34')"
-EXPECTED = "A Decimal value 12.34 with 4 digits of precision."
+DISPLAY_INPUT = "Decimal('48219.7563')"
+EXPECTED = "A Decimal value 48219.7563 with 9 digits of precision."
 
 
 def build():
     from decimal import Decimal
 
-    return Decimal("12.34")
+    return Decimal("48219.7563")

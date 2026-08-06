@@ -1,0 +1,11 @@
+import pandas as pd
+
+obj = pd.Categorical(
+    ["gold"] * 2 + ["silver"] * 5 + ["bronze"] * 9 + ["unranked"] * 20,
+    categories=["unranked", "bronze", "silver", "gold"],
+    ordered=True,
+)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

@@ -1,2 +1,3 @@
 Title: HDF5 dataset
 Tags: h5py, dataset
+Requires: h5py

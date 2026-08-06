@@ -1,1 +1,1 @@
-UUID('fd2559fe-4d56-4dd3-893c-2650a015551c')
+uuid.uuid5(uuid.NAMESPACE_DNS, 'anthropic.com')

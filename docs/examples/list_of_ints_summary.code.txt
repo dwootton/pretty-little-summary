@@ -1,0 +1,5 @@
+obj = list(range(2, 60, 2))
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

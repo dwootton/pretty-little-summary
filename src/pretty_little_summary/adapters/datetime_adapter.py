@@ -82,10 +82,14 @@ def _describe_time(value: time) -> dict[str, Any]:
 
 def _describe_timedelta(value: timedelta) -> dict[str, Any]:
     total_seconds = int(value.total_seconds())
+    remainder = total_seconds - value.days * 86400
     metadata: dict[str, Any] = {
         "type": "timedelta",
         "total_seconds": total_seconds,
         "days": value.days,
+        "hours": remainder // 3600,
+        "minutes": (remainder % 3600) // 60,
+        "seconds": remainder % 60,
     }
     return metadata
 
@@ -126,10 +130,24 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
     if dtype == "timedelta":
         total_seconds = metadata.get("total_seconds")
         days = metadata.get("days")
+        hours = metadata.get("hours")
+        minutes = metadata.get("minutes")
+        seconds = metadata.get("seconds")
         if total_seconds is not None:
+            parts = []
             if days:
-                return f"A duration of {days} days ({total_seconds} seconds)."
-            return f"A duration of {total_seconds} seconds."
+                parts.append(f"{days} days")
+            if hours:
+                parts.append(f"{hours} hours")
+            if minutes:
+                parts.append(f"{minutes} minutes")
+            if seconds and not days:
+                parts.append(f"{seconds} seconds")
+            if not parts:
+                return f"A duration of {total_seconds} seconds."
+            if parts == [f"{total_seconds} seconds"]:
+                return f"A duration of {total_seconds} seconds."
+            return f"A duration of {', '.join(parts)} ({total_seconds} seconds)."
         return "A duration."
     return "A datetime-related value."
 

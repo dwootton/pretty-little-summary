@@ -1,0 +1,1 @@
+A pandas Index 'user_id' with 15 entries, dtype str. Sample: ['user_000', 'user_001', 'user_002', 'user_003', 'user_004'].

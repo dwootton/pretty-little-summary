@@ -1,0 +1,13 @@
+from enum import Enum
+
+class Status(Enum):
+    PENDING = 1
+    ACTIVE = 2
+    SUSPENDED = 3
+    CLOSED = 4
+
+obj = Status.ACTIVE
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

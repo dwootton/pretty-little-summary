@@ -1,1 +1,1 @@
-A Counter with 2 unique elements totaling 3 observations.
+A Counter with 10 unique elements totaling 21 observations. Most common: 'i': 6, 's': 5, 'p': 2.

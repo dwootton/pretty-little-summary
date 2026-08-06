@@ -12,7 +12,8 @@ def build():
 
 
 def expected(meta):
-    from pretty_little_summary.descriptor_utils import format_bytes
+    from pretty_little_summary.adapters.pandas import _select_featured_columns
+    from pretty_little_summary.descriptor_utils import format_bytes, truncate_row_keys
 
     parts = [
         f"A pandas DataFrame with {meta['metadata']['rows']} rows and {meta['metadata']['columns']} columns."
@@ -26,15 +27,18 @@ def expected(meta):
     col_analysis = meta["metadata"].get("column_analysis") or []
     if col_analysis:
         cols = []
-        for col in col_analysis[:3]:
+        for col in _select_featured_columns(col_analysis):
             name = col.get("name")
             dtype = col.get("dtype")
             col_nulls = col.get("null_count")
             stats = col.get("stats")
             cardinality = col.get("cardinality")
+            mixed_types = col.get("mixed_types")
             details = []
             if dtype:
                 details.append(dtype)
+            if mixed_types:
+                details.append(f"mixed types: {', '.join(mixed_types)}")
             if col_nulls:
                 details.append(f"{col_nulls} nulls")
             if stats:
@@ -46,7 +50,5 @@ def expected(meta):
             parts.append(f"Columns: {', '.join(cols)}.")
     sample_rows = meta["metadata"].get("sample_rows")
     if sample_rows:
-        parts.append(f"Sample row: {sample_rows[0]}.")
-    elif meta["metadata"].get("sample_rows_omitted"):
-        parts.append("Sample rows omitted for size/perf.")
+        parts.append(f"Sample row: {truncate_row_keys(sample_rows[0])}.")
     return " ".join(parts)

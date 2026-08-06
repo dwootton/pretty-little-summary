@@ -1,1 +1,1 @@
-A markdown document string (570 chars).
+A markdown document string (1974 chars, 85 lines, 252 words).

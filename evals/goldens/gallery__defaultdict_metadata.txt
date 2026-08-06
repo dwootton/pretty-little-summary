@@ -1,0 +1,1 @@
+A defaultdict(default_factory=list) with 3 keys (str -> list). Keys: 'fruit', 'veg', 'grain'.

@@ -556,6 +556,21 @@ def truncate_list(items: list[str], max_items: int = 5, total: int | None = None
     return f"{', '.join(shown)}, and {remaining} more"
 
 
+def truncate_row_keys(row: dict[str, str], max_keys: int = 25) -> dict[str, str]:
+    """Cap the number of keys shown in a formatted sample-row dict.
+
+    A sample row from a table with hundreds of columns would otherwise dump
+    every key/value pair into one unreadable line; this mirrors the
+    "first N, then (M total)" truncation already used for column-name and
+    header listings.
+    """
+    if len(row) <= max_keys:
+        return row
+    shown = dict(list(row.items())[:max_keys])
+    shown["..."] = f"({len(row)} total keys)"
+    return shown
+
+
 # =============================================================================
 # AFFORDANCE AND VIEW SUGGESTIONS
 # =============================================================================

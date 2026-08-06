@@ -1,1 +1,1 @@
-A list of 3 PIL images.
+A list of 5 PIL images, 32x32, 40x40, 48x48, 56x56, 64x64, mode(s): RGB.

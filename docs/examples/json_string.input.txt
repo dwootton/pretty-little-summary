@@ -1,1 +1,1 @@
-{"name": "alice", "age": 30}
+{"user": {"name": "alice", ...}, "active": true, "last_login": "..."}

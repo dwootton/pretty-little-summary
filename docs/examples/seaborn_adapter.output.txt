@@ -1,1 +1,1 @@
-Output unavailable (missing dependency: seaborn).
+A seaborn FacetGrid with 2 axes.

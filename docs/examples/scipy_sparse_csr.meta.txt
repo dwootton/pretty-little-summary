@@ -1,2 +1,3 @@
 Title: SciPy CSR matrix
 Tags: scipy, sparse
+Requires: scipy

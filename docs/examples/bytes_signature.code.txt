@@ -1,0 +1,8 @@
+signature = b"\x89PNG\r\n\x1a\n"
+ihdr_data = (1920).to_bytes(4, "big") + (1080).to_bytes(4, "big") + b"\x08\x06\x00\x00\x00"
+ihdr_chunk = len(ihdr_data).to_bytes(4, "big") + b"IHDR" + ihdr_data
+obj = signature + ihdr_chunk + bytes(range(40))
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

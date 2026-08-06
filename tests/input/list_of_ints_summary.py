@@ -1,9 +1,9 @@
 ID = "list_of_ints_summary"
 TITLE = "List of integers"
 TAGS = ["collections", "list", "ints"]
-DISPLAY_INPUT = "[1, 2, 3, 4, 5]"
-EXPECTED = "A list of 5 integers."
+DISPLAY_INPUT = "list(range(2, 60, 2))  # even numbers"
+EXPECTED = "A list of 29 integers. Stats: range 2 to 58, mean 30, std 17."
 
 
 def build():
-    return [1, 2, 3, 4, 5]
+    return list(range(2, 60, 2))

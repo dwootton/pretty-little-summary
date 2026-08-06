@@ -1,0 +1,7 @@
+import uuid
+
+obj = uuid.uuid5(uuid.NAMESPACE_DNS, "anthropic.com")
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

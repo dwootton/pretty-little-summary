@@ -1,0 +1,10 @@
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax.imshow([[0, 1], [1, 0]])
+ax.hist([1, 2, 2, 3, 3, 3])
+obj = ax
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

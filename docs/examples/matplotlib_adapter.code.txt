@@ -1,0 +1,9 @@
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3], [3, 2, 1], label="series")
+obj = fig
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

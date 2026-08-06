@@ -1,9 +1,16 @@
 ID = "json_string"
 TITLE = "JSON string"
 TAGS = ["text", "json"]
-DISPLAY_INPUT = "{\"name\": \"alice\", \"age\": 30}"
-EXPECTED = "A valid JSON string containing an object with keys: name, age."
+DISPLAY_INPUT = '{"user": {"name": "alice", ...}, "active": true, "last_login": "..."}'
+EXPECTED = "A valid JSON string containing an object with keys: user, active, last_login."
 
 
 def build():
-    return '{"name": "alice", "age": 30}'
+    import json
+
+    payload = {
+        "user": {"name": "alice", "age": 30, "roles": ["admin", "editor"]},
+        "active": True,
+        "last_login": "2026-07-30T12:00:00Z",
+    }
+    return json.dumps(payload)

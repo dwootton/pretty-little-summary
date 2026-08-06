@@ -1,1 +1,1 @@
-pd.Categorical(['a', 'b', 'a'])
+pd.Categorical(['gold']*2 + ['silver']*5 + ['bronze']*9 + ['unranked']*20, ...)

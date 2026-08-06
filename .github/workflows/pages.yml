@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - "docs/**"
+      - "src/**"
+      - "evals/**"
+      - "pyproject.toml"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -26,6 +29,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install eval dependencies
+        continue-on-error: true
+        run: pip install -e ".[dev,evals-ci]"
+      - name: Fetch eval datasets
+        continue-on-error: true
+        run: python -m evals.runner fetch
+      - name: Run eval corpus
+        continue-on-error: true
+        run: python -m evals.runner run
+      - name: Build eval report
+        continue-on-error: true
+        run: python -m evals.viewer --out docs/eval-report.html
+      - name: Build wheel for playground
+        run: |
+          pip install build
+          python -m build --wheel -o docs/dist
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

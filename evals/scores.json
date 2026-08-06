@@ -2,67 +2,7 @@
  "rubric_version": 1,
  "cases": {
   "gallery/attrs_adapter": {
-   "output_hash": "fd2e949939f4a7bf",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 3,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.5,
-   "critique": "Correct class name and attribute count, but omits the field names (name, age) and values ('alice', 30) that are right there in meta; 'Person(name='alice', age=30)' would be strictly better.",
-   "judged_at": "2026-08-05T17:44:54+00:00"
-  },
-  "gallery/bytes_signature": {
-   "output_hash": "e6f2ed3517a54c09",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 4,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.75,
-   "critique": "Correctly identifies PNG magic bytes and length; could add that it is only a signature/header (low entropy, mostly null padding) but format+size is the key info.",
-   "judged_at": "2026-08-05T17:44:54+00:00"
-  },
-  "gallery/complex_number": {
-   "output_hash": "f02b24c9fe0bd596",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 4,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.75,
-   "critique": "Value stated correctly; meta also has magnitude 5.0 and phase 53.13 deg which would enrich the one-liner at no cost.",
-   "judged_at": "2026-08-05T17:44:54+00:00"
-  },
-  "gallery/counter_metadata": {
-   "output_hash": "21b9da8ac51b1f3c",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 4,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.75,
-   "critique": "Unique-element count and total are correct and well phrased; omits the most_common breakdown ('a': 2, 'b': 1) which is the most useful Counter detail and is in meta.",
-   "judged_at": "2026-08-05T17:45:06+00:00"
-  },
-  "gallery/csv_string": {
-   "output_hash": "0770c3d5f9ad08f5",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 5,
-    "conciseness": 4,
-    "hallucination_free": 5
-   },
-   "overall": 4.75,
-   "critique": "smoke test entry",
-   "judged_at": "2026-08-05T17:39:04+00:00"
-  },
-  "gallery/dataclass_adapter": {
-   "output_hash": "b89c3691ed1d4d12",
+   "output_hash": "54eba7608aafd471",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -70,8 +10,68 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Now names the class and lists field=value pairs (x=1, y=2), matching the rich metadata already extracted; concise and fully accurate.",
-   "judged_at": "2026-08-05T18:01:29+00:00"
+   "critique": "Surfaces class name and all field values (name, role, salary, department, years) directly from meta; concise and fully accurate.",
+   "judged_at": "2026-08-06T04:37:18+00:00"
+  },
+  "gallery/bytes_signature": {
+   "output_hash": "85c7364217e7b340",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 3,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.5,
+   "critique": "Correctly names PNG format and exact byte length; misses that this is just a signature/header (low-content, mostly header bytes) rather than full image data.",
+   "judged_at": "2026-08-06T03:55:45+00:00"
+  },
+  "gallery/complex_number": {
+   "output_hash": "bc94cfee0f4e2baf",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 3,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.5,
+   "critique": "Real/imag values correct; meta also has magnitude (90.14) and phase (56.31 deg) that would make this far more informative for an impedance value.",
+   "judged_at": "2026-08-06T03:55:59+00:00"
+  },
+  "gallery/counter_metadata": {
+   "output_hash": "9d453435a2a6ea8b",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Now shows the most_common breakdown (i:6, s:5, p:2) alongside count/total, the single most useful Counter fact, concisely.",
+   "judged_at": "2026-08-06T04:37:18+00:00"
+  },
+  "gallery/csv_string": {
+   "output_hash": "852c817d1ed58c02",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 4,
+    "hallucination_free": 5
+   },
+   "overall": 4.75,
+   "critique": "Accurate and covers row/column counts, delimiter, header, sample row, and column types -- exactly what a data-savvy user wants from a CSV string.",
+   "judged_at": "2026-08-06T03:55:50+00:00"
+  },
+  "gallery/dataclass_adapter": {
+   "output_hash": "81f2559025296b3e",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Names the class and lists every field=value pair exactly as extracted in meta; nothing missing, nothing invented.",
+   "judged_at": "2026-08-06T03:55:47+00:00"
   },
   "gallery/date_adapter": {
    "output_hash": "099072f0a444f6ea",
@@ -98,7 +98,7 @@
    "judged_at": "2026-08-05T17:45:18+00:00"
   },
   "gallery/decimal_number": {
-   "output_hash": "31dc94aef609aa45",
+   "output_hash": "5d18ed08fa3f3978",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -106,35 +106,11 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Value and precision both correct (12.34 has 4 significant digits); a near-ideal one-liner for a Decimal.",
-   "judged_at": "2026-08-05T17:45:18+00:00"
+   "critique": "Value and 9-digit precision both correct and match meta exactly; nothing else in meta (sign, exponent) is essential to add.",
+   "judged_at": "2026-08-06T03:56:03+00:00"
   },
   "gallery/defaultdict_metadata": {
-   "output_hash": "b30ffb4c58e0d798",
-   "scores": {
-    "accuracy": 4,
-    "informativeness": 2,
-    "conciseness": 4,
-    "hallucination_free": 5
-   },
-   "overall": 3.75,
-   "critique": "Omits the defining feature of a defaultdict \u2014 its default_factory (list) \u2014 plus key/value types (str -> list), all present in meta. Also grammar: '1 keys'.",
-   "judged_at": "2026-08-05T17:45:18+00:00"
-  },
-  "gallery/deque_metadata": {
-   "output_hash": "3dbea391a68fd2e2",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 3,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.5,
-   "critique": "Count is right but omits element info (ints 1..4 visible in front/back samples) and maxlen=None (unbounded), both in meta; 'A deque of 4 ints [1, 2, 3, 4], unbounded' would be better.",
-   "judged_at": "2026-08-05T17:47:34+00:00"
-  },
-  "gallery/enum_adapter": {
-   "output_hash": "b440fb0290473280",
+   "output_hash": "51658ea93d60e531",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -142,23 +118,47 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Now names the enum class, current member, and lists sibling members with a count; concise and accurate.",
-   "judged_at": "2026-08-05T18:01:30+00:00"
+   "critique": "Surfaces default_factory, key/value types, and the actual key names since all 3 keys fit within the sample; a complete picture.",
+   "judged_at": "2026-08-06T04:37:50+00:00"
+  },
+  "gallery/deque_metadata": {
+   "output_hash": "94d975f657b21833",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Front/back samples now shown, giving a real sense of contents; count alone would have been vacuous.",
+   "judged_at": "2026-08-06T04:37:18+00:00"
+  },
+  "gallery/enum_adapter": {
+   "output_hash": "c2dd4f1b78bfd574",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Names enum class, active member, and sibling members with count; concise and fully matches meta.",
+   "judged_at": "2026-08-06T03:55:48+00:00"
   },
   "gallery/float_probability_pattern": {
-   "output_hash": "a33f2c67c68e742d",
+   "output_hash": "908a55524a0b8e7b",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "States value and hedges the probability inference appropriately ('likely'); the pattern guess is aggressive for a bare 0.5 but matches the adapter's detected pattern in meta.",
-   "judged_at": "2026-08-05T17:47:34+00:00"
+   "overall": 5.0,
+   "critique": "Surfaces the probability pattern classification, the single most interesting fact about this value.",
+   "judged_at": "2026-08-06T04:37:18+00:00"
   },
   "gallery/fraction_number": {
-   "output_hash": "4c02eb83a7936c5a",
+   "output_hash": "95330940b93c434c",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -166,20 +166,20 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Correct and crisp; adding the float approximation (~0.333) from meta would help users who think in decimals.",
-   "judged_at": "2026-08-05T17:47:54+00:00"
+   "critique": "Correct and crisp; omits the float approximation (~3.14159) from meta which would help decimal-minded readers, but the fraction itself is the primary fact and is stated clearly.",
+   "judged_at": "2026-08-06T03:56:01+00:00"
   },
   "gallery/function_adapter": {
-   "output_hash": "1594aad01ecbdb01",
+   "output_hash": "2d01077ee905709b",
    "scores": {
     "accuracy": 5,
-    "informativeness": 3,
+    "informativeness": 5,
     "conciseness": 4,
     "hallucination_free": 5
    },
-   "overall": 4.25,
-   "critique": "Names the function but omits the signature '(x: int) -> int' sitting in meta \u2014 the single most useful fact about a function; 'callable function' is also redundant.",
-   "judged_at": "2026-08-05T17:47:55+00:00"
+   "overall": 4.75,
+   "critique": "Now shows full signature with type hints and the docstring, the two most useful facts about a callable; slightly verbose with both 'callable function' and the docstring quoted in full but still clear.",
+   "judged_at": "2026-08-06T04:38:03+00:00"
   },
   "gallery/generic_adapter_nl": {
    "output_hash": "4c1cfb10a63a7047",
@@ -194,7 +194,7 @@
    "judged_at": "2026-08-05T17:47:55+00:00"
   },
   "gallery/h5py_dataset": {
-   "output_hash": "b35c0545b61c9aeb",
+   "output_hash": "0f1849af7c1abfa5",
    "scores": {
     "accuracy": 4,
     "informativeness": 1,
@@ -202,8 +202,8 @@
     "hallucination_free": 5
    },
    "overall": 3.5,
-   "critique": "The object fell through to CollectionsAdapter and is described as 'a tuple of 2 elements' even though sample_items clearly show an HDF5 dataset (shape (3,), dtype <i8) and file; the summary misses the entire point of the input. An h5py adapter (or tuple element drill-down) should surface the dataset shape/dtype.",
-   "judged_at": "2026-08-05T17:43:07+00:00"
+   "critique": "wontfix (this session): falls through to CollectionsAdapter, showing 'a tuple of 2 elements' instead of the HDF5 dataset shape/dtype visible in sample_items. Needs a dedicated h5py adapter, out of scope for targeted nl_summary fixes; unchanged from prior judging.",
+   "judged_at": "2026-08-06T04:38:57+00:00"
   },
   "gallery/html_string": {
    "output_hash": "c56d4b4b0702cad8",
@@ -218,7 +218,7 @@
    "judged_at": "2026-08-05T17:43:13+00:00"
   },
   "gallery/int_special_year": {
-   "output_hash": "e23cf5e81f77c143",
+   "output_hash": "537771631e78a56d",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -226,32 +226,32 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Exactly what you want for a bare int: states the value and the useful inference (year), hedged appropriately with 'likely'. Hard to improve for a scalar.",
-   "judged_at": "2026-08-05T17:43:18+00:00"
+   "critique": "Surfaces the year classification instead of a bare int value.",
+   "judged_at": "2026-08-06T04:37:18+00:00"
   },
   "gallery/io_bytesio_adapter": {
-   "output_hash": "cd1bfd9c7cb47d28",
+   "output_hash": "f1e440f727dbcb86",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 3,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "Accurate and crisp: type and size are the key facts. Could add stream position (0, i.e. at start) or a content hint (e.g. looks like ASCII text) for a perfect score.",
-   "judged_at": "2026-08-05T17:43:23+00:00"
+   "overall": 4.5,
+   "critique": "Type and size are correct and the core facts; stream position (0) is free to add and a content hint would help since size alone is thin for a buffer.",
+   "judged_at": "2026-08-06T03:56:12+00:00"
   },
   "gallery/io_stringio_adapter": {
-   "output_hash": "e0498ba9510fdc17",
+   "output_hash": "a3c37f8abbd84f0d",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 3,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "Correct type and length in one clean sentence. A short content preview ('hello') or the cursor position would make it perfect; metadata has position but no preview.",
-   "judged_at": "2026-08-05T17:43:29+00:00"
+   "overall": 4.5,
+   "critique": "Correct type and length in one clean sentence; cursor position (0) from meta is omitted and a short content preview would add value but isn't available in meta.",
+   "judged_at": "2026-08-06T03:56:02+00:00"
   },
   "gallery/ipython_display_adapter": {
    "output_hash": "54a47da9fa2c68c2",
@@ -265,8 +265,8 @@
    "critique": "Accurate but describes the wrapper, not the content: for HTML('<h1>Hi</h1>') a user wants 'an IPython HTML display object' plus a content hint/length. Listing the raw method name '_repr_html_' is implementation-speak; the object_type (IPython.core.display.HTML) already says it more plainly.",
    "judged_at": "2026-08-05T17:43:35+00:00"
   },
-  "gallery/json_string": {
-   "output_hash": "ac7409ab2d64f96d",
+  "gallery/jax_adapter": {
+   "output_hash": "e8017b77699639be",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -274,44 +274,56 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Says it validates as JSON, that the top level is an object, and names the keys \u2014 precisely what a user wants from a short JSON string. Excellent one-liner.",
-   "judged_at": "2026-08-05T17:43:40+00:00"
+   "critique": "Adds dtype alongside shape, the standard pairing for array summaries.",
+   "judged_at": "2026-08-06T04:38:03+00:00"
+  },
+  "gallery/json_string": {
+   "output_hash": "fcc7c3d40a719025",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "States valid JSON, top-level object type, and names all keys \u2014 exactly what's needed for a short JSON string, nothing extraneous.",
+   "judged_at": "2026-08-06T03:55:51+00:00"
   },
   "gallery/list_of_dicts_schema": {
-   "output_hash": "fb199fc08dcc5286",
+   "output_hash": "7759300ad9f5e2d0",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 3,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "Recognizing the records-with-consistent-schema pattern is the right call. It has the schema ({a: int, b: str}) in metadata but doesn't name the fields or their types \u2014 'fields a (int), b (str)' would make it a 5.",
-   "judged_at": "2026-08-05T17:43:46+00:00"
+   "overall": 4.5,
+   "critique": "Correctly identifies record count and consistent-schema pattern, but meta has the exact schema (city:str, id:int, population:int) and doesn't name a single field or type.",
+   "judged_at": "2026-08-06T03:56:16+00:00"
   },
   "gallery/list_of_ints_summary": {
-   "output_hash": "997036b23c14492d",
+   "output_hash": "e7b81c64619fa790",
    "scores": {
     "accuracy": 5,
-    "informativeness": 3,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.5,
-   "critique": "Correct but leaves computed stats on the table: metadata already has 'range 1 to 5, mean 3, std 1.6' and full sample items. For a numeric list, the range (and that it is consecutive 1..5) is what a data user wants.",
-   "judged_at": "2026-08-05T17:43:51+00:00"
+   "overall": 5.0,
+   "critique": "Now includes accurate range/mean/std stats computed over the full 29-item list (fixed a prior sampling bug that would have understated the range).",
+   "judged_at": "2026-08-06T04:37:28+00:00"
   },
   "gallery/long_string_markdown_document": {
-   "output_hash": "35fc830cd82a9091",
+   "output_hash": "0eaf9f6e4e7a073f",
    "scores": {
     "accuracy": 5,
-    "informativeness": 3,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.5,
-   "critique": "Correctly types it as markdown with length, but omits available structure: 71 lines, 90 words, headings, and fenced python code blocks visible in the preview. 'Markdown doc, 570 chars / 71 lines, with headings and python code blocks' would be far more useful.",
-   "judged_at": "2026-08-05T17:43:56+00:00"
+   "overall": 5.0,
+   "critique": "Adds line and word counts alongside char count and correctly identifies the markdown document type; concise one-liner.",
+   "judged_at": "2026-08-06T04:37:28+00:00"
   },
   "gallery/matplotlib_adapter": {
    "output_hash": "c4da842535ad5d89",
@@ -362,28 +374,28 @@
    "judged_at": "2026-08-05T17:44:23+00:00"
   },
   "gallery/numpy_1d_array": {
-   "output_hash": "e622e2d94b9dcd46",
+   "output_hash": "fac3bc518e5c31a1",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
-    "conciseness": 4,
-    "hallucination_free": 5
-   },
-   "overall": 4.5,
-   "critique": "Shape, dtype, and a head/tail sample \u2014 good. Stats (range 0 to 9, mean 4.5) are computed but omitted; for a 10-element array the full sample already shows values so stats matter less, but the 'Sample: [0..4 ... 5..9]' ellipsis is odd when the sample covers the whole array.",
-   "judged_at": "2026-08-05T17:44:29+00:00"
-  },
-  "gallery/numpy_2d_array": {
-   "output_hash": "da2947dae2223137",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "Shape, dtype, and corner sample are exactly right and well chosen. Meta already has stats (range 0 to 11, mean 5.5) -- appending that one clause would make it a perfect one-liner.",
-   "judged_at": "2026-08-05T17:43:19+00:00"
+   "overall": 5.0,
+   "critique": "Shape, dtype, head/tail sample, and now stats (range/mean/std) are all present; a complete picture of the array in one line.",
+   "judged_at": "2026-08-06T04:37:28+00:00"
+  },
+  "gallery/numpy_2d_array": {
+   "output_hash": "67dd141f85ba3fec",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Corner sample plus stats now appended, exactly the improvement the prior critique asked for.",
+   "judged_at": "2026-08-06T04:37:28+00:00"
   },
   "gallery/numpy_scalar": {
    "output_hash": "eae5f065f988a579",
@@ -398,28 +410,28 @@
    "judged_at": "2026-08-05T17:43:20+00:00"
   },
   "gallery/ordered_dict_metadata": {
-   "output_hash": "ace910f7adf88c9e",
-   "scores": {
-    "accuracy": 4,
-    "informativeness": 2,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.0,
-   "critique": "Grammatically off ('A ordered_dict') and raw type name instead of 'An OrderedDict'. Vacuous given the meta: str->int mapping, keys 'a','b', and value stats are all available and none are surfaced.",
-   "judged_at": "2026-08-05T17:43:41+00:00"
-  },
-  "gallery/pandas_categorical": {
-   "output_hash": "d10088aa93db1a07",
+   "output_hash": "cd8adad6359ca6f4",
    "scores": {
     "accuracy": 5,
-    "informativeness": 3,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.5,
-   "critique": "Correct but thin: omits length 3, ordered=False, the category labels, and the counts {a:2, b:1} -- all in meta. 'Length 3, 2 unordered categories (a:2, b:1)' would be the ideal one-liner.",
-   "judged_at": "2026-08-05T17:43:43+00:00"
+   "overall": 5.0,
+   "critique": "Fixes the prior grammar bug ('A ordered_dict') and now surfaces the str->int mapping and value stats (range 0-25, mean 9.2); correctly omits the key list since 6 keys exceeds the 5-item sample.",
+   "judged_at": "2026-08-06T04:37:50+00:00"
+  },
+  "gallery/pandas_categorical": {
+   "output_hash": "63194fd428425ca9",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Surfaces ordered=True (via 'ordered categories'), category labels, and the skewed per-category counts, the real story of this Categorical.",
+   "judged_at": "2026-08-06T04:37:28+00:00"
   },
   "gallery/pandas_dataframe_metadata": {
    "output_hash": "1363944eb3c1e50c",
@@ -434,16 +446,16 @@
    "judged_at": "2026-08-05T17:43:45+00:00"
   },
   "gallery/pandas_index_types": {
-   "output_hash": "057e99ebb2913df3",
+   "output_hash": "0e9db8f6e866f2fe",
    "scores": {
     "accuracy": 5,
-    "informativeness": 2,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.25,
-   "critique": "Correct but generic: meta has dtype int64, name 'ids', uniqueness, and sample values -- none surfaced. Should read like \"A unique int64 Index 'ids' with 3 entries: [1, 2, 3].\"",
-   "judged_at": "2026-08-05T17:43:47+00:00"
+   "overall": 5.0,
+   "critique": "Surfaces name, dtype, and sample values instead of a bare entry count; a data-savvy user gets what they need in one line.",
+   "judged_at": "2026-08-06T04:38:03+00:00"
   },
   "gallery/pandas_series_metadata": {
    "output_hash": "ace9e666485e39d0",
@@ -458,16 +470,16 @@
    "judged_at": "2026-08-05T17:43:53+00:00"
   },
   "gallery/pathlib_adapter": {
-   "output_hash": "fde120bd91f13776",
+   "output_hash": "628b5a9002c3d657",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 3,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "Correctly sniffs content (text, 1 line, 5 B) and the deep=True tip is genuinely useful. Omits the filename 'sample.txt' and the tiny preview 'hello', both in meta and both cheap to include.",
-   "judged_at": "2026-08-05T17:43:56+00:00"
+   "overall": 4.5,
+   "critique": "Correctly identifies a 1-line, 5 B text file with no invented details, but omits the cheap, available filename and content preview ('hello') that meta already has.",
+   "judged_at": "2026-08-05T21:41:17+00:00"
   },
   "gallery/pil_image_adapter": {
    "output_hash": "c898ebc619253b28",
@@ -482,16 +494,16 @@
    "judged_at": "2026-08-05T17:43:58+00:00"
   },
   "gallery/pil_image_list_adapter": {
-   "output_hash": "884420bc5138d917",
+   "output_hash": "178800679c1bf6c3",
    "scores": {
     "accuracy": 5,
-    "informativeness": 3,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.5,
-   "critique": "Count is right but drops the best facts in meta: uniform 32x32 size and RGB mode. 'A list of 3 PIL images, all 32x32 RGB' costs five words and doubles the value.",
-   "judged_at": "2026-08-05T17:43:59+00:00"
+   "overall": 5.0,
+   "critique": "Now shows the per-image sizes and mode, surfacing the varying-size story (uniform_size false) that mattered most.",
+   "judged_at": "2026-08-06T04:37:50+00:00"
   },
   "gallery/polars_adapter_nl": {
    "output_hash": "ea0cc5a175e849f0",
@@ -530,19 +542,31 @@
    "judged_at": "2026-08-05T17:44:10+00:00"
   },
   "gallery/pydantic_adapter_nl": {
-   "output_hash": "ff2c124015f9a3ec",
+   "output_hash": "bf0be380c7bfd781",
    "scores": {
     "accuracy": 5,
-    "informativeness": 1,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.0,
-   "critique": "Vacuous: only restates the class name. Meta has the full schema (name: str, age: int, both required) and the actual values -- the summary should list fields with types, e.g. \"A Pydantic model User with fields name (str) and age (int).\"",
-   "judged_at": "2026-08-05T17:44:12+00:00"
+   "overall": 5.0,
+   "critique": "Lists field names with actual values (name, role, salary, years, skills) instead of only the class name, matching the earlier attrs fix.",
+   "judged_at": "2026-08-06T04:38:03+00:00"
+  },
+  "gallery/pytorch_adapter_nl": {
+   "output_hash": "6b9f2d67f26be19f",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Adds dtype and device to the shape, giving the standard tensor-summary trio.",
+   "judged_at": "2026-08-06T04:38:03+00:00"
   },
   "gallery/range_metadata": {
-   "output_hash": "6bcffc6636e9b457",
+   "output_hash": "64b39a28d2150a7f",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -550,11 +574,11 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Start/stop/step fully specify the object and are stated plainly. Adding the length ('5 values') would save the reader the mental arithmetic; meta has it.",
-   "judged_at": "2026-08-05T17:44:22+00:00"
+   "critique": "Start/stop/step fully specify the range and are stated plainly; omitting the length (20, in meta) leaves a small bit of mental arithmetic to the reader.",
+   "judged_at": "2026-08-06T03:56:09+00:00"
   },
   "gallery/regex_match_adapter": {
-   "output_hash": "73a7a56fb3041f9f",
+   "output_hash": "978abc2599e6364e",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -562,20 +586,20 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Accurate: match text '123' and span 3:6 both correct. Could also name the pattern searched or note there are no capture groups, but as a one-liner it covers the essentials.",
-   "judged_at": "2026-08-05T17:43:38+00:00"
+   "critique": "Accurate match text and span; could mention the two capture groups (48213, 2026-07-30) present in meta but the one-liner still covers the essentials.",
+   "judged_at": "2026-08-06T03:55:56+00:00"
   },
   "gallery/regex_pattern_adapter": {
-   "output_hash": "5c5b4d5bfe919828",
+   "output_hash": "81ce62fb7b19b6a2",
    "scores": {
-    "accuracy": 3,
+    "accuracy": 5,
     "informativeness": 4,
     "conciseness": 5,
-    "hallucination_free": 4
+    "hallucination_free": 5
    },
-   "overall": 4.0,
-   "critique": "Displays the pattern as /\\\\w+/ with a doubled backslash while the input was \\w+ \u2014 an escaping bug that misrepresents the pattern. Could also note 0 capture groups and no flags.",
-   "judged_at": "2026-08-05T17:44:56+00:00"
+   "overall": 4.75,
+   "critique": "Pattern text and group count (3) both match meta exactly with no escaping bugs this time; could optionally name the capture groups (year, month, day) which are in groupindex.",
+   "judged_at": "2026-08-06T03:56:27+00:00"
   },
   "gallery/requests_adapter_nl": {
    "output_hash": "fc4b6ae6c0ff369a",
@@ -590,28 +614,40 @@
    "judged_at": "2026-08-05T17:44:57+00:00"
   },
   "gallery/scipy_sparse_csr": {
-   "output_hash": "58c4c4edfed7c56d",
+   "output_hash": "dc7208b7e90d3b5d",
    "scores": {
     "accuracy": 5,
-    "informativeness": 3,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.5,
-   "critique": "Format and shape are right, but for a sparse matrix the defining stats are nnz and density (both in meta: nnz=2, density=0.5) and they are omitted. Add 'with 2 stored values (50% dense)'.",
-   "judged_at": "2026-08-05T17:44:57+00:00"
+   "overall": 5.0,
+   "critique": "nnz and density were already present and correct; format/shape/nnz/density together fully describe a sparse matrix concisely.",
+   "judged_at": "2026-08-06T04:37:50+00:00"
   },
   "gallery/short_string_url_pattern": {
-   "output_hash": "95b5f92f6b5fea59",
+   "output_hash": "9d06de6218866079",
    "scores": {
-    "accuracy": 5,
-    "informativeness": 4,
+    "accuracy": 4,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Correctly flags the URL pattern and shows the full value, which is ideal for a 23-char string. Minor: the string IS a URL, not merely 'containing' one; length could be stated.",
-   "judged_at": "2026-08-05T17:44:57+00:00"
+   "critique": "Correctly flags the URL pattern and shows the full value, ideal for a short string; minor imprecision saying the string 'contains' a URL when it IS one.",
+   "judged_at": "2026-08-06T03:56:13+00:00"
+  },
+  "gallery/tensorflow_adapter": {
+   "output_hash": "930334ce07a2474f",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Adds dtype (now cleanly formatted as 'float32' instead of the old repr) and the small sample values array for a 6-element tensor.",
+   "judged_at": "2026-08-06T04:38:12+00:00"
   },
   "gallery/time_adapter": {
    "output_hash": "39a90446c76e7dc0",
@@ -626,16 +662,16 @@
    "judged_at": "2026-08-05T17:45:11+00:00"
   },
   "gallery/timedelta_adapter": {
-   "output_hash": "e1985f8d5168afcc",
+   "output_hash": "2919f49d6a303c78",
    "scores": {
-    "accuracy": 3,
-    "informativeness": 4,
+    "accuracy": 5,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.25,
-   "critique": "'2 days' drops the 3-hour component \u2014 the duration is 2 days 3 hours, and saying '2 days (183600 seconds)' is internally inconsistent (183600s = 2d3h). Render as '2 days, 3:00:00' or '2 days 3 hours'.",
-   "judged_at": "2026-08-05T17:45:11+00:00"
+   "overall": 5.0,
+   "critique": "Fixed the internal-inconsistency bug: now correctly reports the 5.5-hour remainder (5 hours 30 minutes) matching total_seconds=1488600.",
+   "judged_at": "2026-08-06T04:38:12+00:00"
   },
   "gallery/traceback_adapter": {
    "output_hash": "69dc339093b20036",
@@ -650,19 +686,7 @@
    "judged_at": "2026-08-05T17:45:11+00:00"
   },
   "gallery/tuple_metadata": {
-   "output_hash": "73b85f4fea0ff02f",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 2,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.25,
-   "critique": "True but vacuous: meta has element_types [int, str, float] and sample items (1, 'x', 3.0), yet the summary only says 'a tuple of 3 elements'. For a 3-tuple, just show the contents or at least the types.",
-   "judged_at": "2026-08-05T17:45:11+00:00"
-  },
-  "gallery/uuid_adapter": {
-   "output_hash": "191a4879d5975c87",
+   "output_hash": "a643597467544135",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -670,11 +694,23 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Version 4 and the full value are exactly what a user wants from a UUID; nothing missing, nothing extra.",
-   "judged_at": "2026-08-05T17:47:33+00:00"
+   "critique": "Shows element types and actual sample values for a small 5-tuple instead of a bare count; exactly what the prior critique asked for.",
+   "judged_at": "2026-08-06T04:37:51+00:00"
+  },
+  "gallery/uuid_adapter": {
+   "output_hash": "3fc852fd6218fbf0",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Version and full value are exactly what a user wants from a UUID; nothing missing, nothing extraneous.",
+   "judged_at": "2026-08-06T03:56:16+00:00"
   },
   "gallery/xml_string": {
-   "output_hash": "912f608ae494acc4",
+   "output_hash": "22de05ba7c424ad1",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -682,11 +718,11 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Correctly identifies valid XML and the root tag. For a 33-char doc it could mention the single <child> element or the length, but root tag is the right headline fact.",
-   "judged_at": "2026-08-05T17:47:33+00:00"
+   "critique": "Correctly identifies valid XML and names the root tag, the right headline fact for a short document; length omitted but not critical.",
+   "judged_at": "2026-08-06T03:55:59+00:00"
   },
   "gallery/yaml_string": {
-   "output_hash": "e2576a71b3ff3aa0",
+   "output_hash": "5051bc8e55792460",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -694,8 +730,8 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Valid YAML plus the key names is the right summary; noting it parses to a dict (in meta) or showing the tiny values would make it perfect.",
-   "judged_at": "2026-08-05T17:47:33+00:00"
+   "critique": "Correctly validates YAML and lists all four keys accurately; noting it parses to a dict (in meta) would be a small additional signal.",
+   "judged_at": "2026-08-06T03:56:36+00:00"
   },
   "live/generator_object": {
    "output_hash": "8b482e537683f0c8",
@@ -758,31 +794,31 @@
    "judged_at": "2026-08-05T18:01:30+00:00"
   },
   "live/pydantic_model_instance": {
-   "output_hash": "ff2c124015f9a3ec",
+   "output_hash": "a7a1985c5706e65f",
    "scores": {
     "accuracy": 5,
-    "informativeness": 1,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.0,
-   "critique": "Technically true but vacuous: meta has the full schema (name, age, tags, nested Address) and the values, yet the summary only names the class. List field names/types at minimum, e.g. User(name: str, age: int, address: Address, tags: list[str]).",
-   "judged_at": "2026-08-05T17:45:12+00:00"
+   "overall": 5.0,
+   "critique": "Lists field names with values including the nested Address dict and tags list, exactly what NOTES asked for.",
+   "judged_at": "2026-08-06T04:38:12+00:00"
   },
   "live/scipy_sparse_csr": {
-   "output_hash": "3b35676b294397d9",
+   "output_hash": "7f20c3829883ad63",
    "scores": {
     "accuracy": 5,
-    "informativeness": 2,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.25,
-   "critique": "Format and shape are right, but nnz=10000 and density=0.01 are the whole point of a sparse matrix and are sitting unused in meta. Append e.g. 10,000 stored values (1% dense).",
-   "judged_at": "2026-08-05T17:47:34+00:00"
+   "overall": 5.0,
+   "critique": "nnz=10000 and density=1.0% were already surfaced correctly; format/shape/nnz/density fully describes the sparse matrix without densifying.",
+   "judged_at": "2026-08-06T04:38:12+00:00"
   },
   "real/flights_json": {
-   "output_hash": "c4fabaf520857134",
+   "output_hash": "cfbde52c4a50dd07",
    "scores": {
     "accuracy": 3,
     "informativeness": 1,
@@ -790,11 +826,23 @@
     "hallucination_free": 5
    },
    "overall": 3.25,
-   "critique": "The sniffer fell back to plain text on a 9.4 MB single-line .json, so the summary says nothing a user needs: no JSON detection, no record structure (delay/distance/time visible right in the preview), no record count estimate. Also 'A text file with 1 line' is misleading for minified JSON. Large single-line JSON needs to route to the JSON sniffer via a size-tolerant parse of the head.",
-   "judged_at": "2026-08-05T17:44:07+00:00"
+   "critique": "The sniffer fell back to plain text on a 9.4 MB single-line .json, so the summary says nothing a user needs: no JSON detection, no record structure (delay/distance/time visible right in the preview), no record count estimate, and 'A text file with 1 line' is misleading for minified JSON.",
+   "judged_at": "2026-08-05T21:41:49+00:00"
+  },
+  "real/flights_json_deep": {
+   "output_hash": "358f247f567c286e",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 3,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.5,
+   "critique": "Accurate and appropriately terse for a list-of-dicts routed through CollectionsAdapter (200000 records, 3 consistent fields), but omits the field names/types (delay, distance, time) that are readily available in the schema metadata and would make this genuinely useful rather than just structurally correct.",
+   "judged_at": "2026-08-05T21:41:58+00:00"
   },
   "real/local_archive": {
-   "output_hash": "25218cdfee1e7c7a",
+   "output_hash": "0cdb4644b627c1c5",
    "scores": {
     "accuracy": 5,
     "informativeness": 3,
@@ -802,23 +850,23 @@
     "hallucination_free": 5
    },
    "overall": 4.5,
-   "critique": "Accurate and crisp, but with exactly 1 entry the metadata already has its name (NLSY.dta) \u2014 naming it (and ideally its uncompressed size) is the single most useful fact and costs a few words: 'containing NLSY.dta'.",
-   "judged_at": "2026-08-05T17:44:48+00:00"
+   "critique": "Accurate and crisp, but with only 1 entry the metadata already names it (NLSY.dta); naming that single entry in the sentence would be far more informative for essentially no added length, still unchanged from before this behavior change.",
+   "judged_at": "2026-08-05T21:41:42+00:00"
   },
   "real/local_g10010_sibt1850_v2_0": {
-   "output_hash": "1198dd0b7ac165ad",
+   "output_hash": "ed29d0991284dc2c",
    "scores": {
-    "accuracy": 4,
-    "informativeness": 2,
-    "conciseness": 4,
+    "accuracy": 3,
+    "informativeness": 3,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 3.75,
-   "critique": "Detecting the HDF5 container and giving an actionable next step is decent, but the .nc extension screams NetCDF-4 (a sea-ice dataset) and the summary never says NetCDF, so the user is pointed at h5py when xarray/netCDF4 is the right tool. Use the extension plus HDF5 magic to say 'a NetCDF-4 file' and suggest the right reader.",
-   "judged_at": "2026-08-05T17:44:42+00:00"
+   "overall": 4.0,
+   "critique": "Detecting the HDF5 container and giving an actionable next step is decent, but the .nc extension and sea-ice dataset context strongly indicate NetCDF-4, and the summary never says NetCDF, so the user is pointed at h5py when xarray/netCDF4 is the more natural tool.",
+   "judged_at": "2026-08-05T21:41:56+00:00"
   },
   "real/local_nlsy": {
-   "output_hash": "287825a098709c1a",
+   "output_hash": "c982c75ba2dc8bcb",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -826,11 +874,23 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "With the cap raised to 50, all 14 Stata variable names now fit without truncation.",
-   "judged_at": "2026-08-05T18:18:16+00:00"
+   "critique": "Correctly identifies the Stata format, observation/variable counts, and lists all 14 variable names from a header-only sniff without loading the file; unchanged in substance from before this behavior change.",
+   "judged_at": "2026-08-05T21:41:40+00:00"
+  },
+  "real/local_nlsy_deep": {
+   "output_hash": "c0aa8554d79b5e96",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 4,
+    "hallucination_free": 5
+   },
+   "overall": 4.75,
+   "critique": "Now surfaces the three highest-null columns (age 14976, self_emp 5883, afqt 5542) instead of arbitrary early columns, giving a much clearer picture of where this dataset's 31875 nulls concentrate.",
+   "judged_at": "2026-08-05T22:49:13+00:00"
   },
   "real/local_population_a_mcp": {
-   "output_hash": "00d79a7340d1c360",
+   "output_hash": "3a0b4f4959e6c176",
    "scores": {
     "accuracy": 4,
     "informativeness": 2,
@@ -838,11 +898,23 @@
     "hallucination_free": 5
    },
    "overall": 3.75,
-   "critique": "Identifies JSONL and size, but '~6+ records sampled' is nearly useless for an 89.7 MB file (real count is likely millions) and no record keys/schema are reported despite having parsed 6 records. Surface the sampled records' keys and an estimated total from bytes-per-line; the '~6+' phrasing also reads like the file has few records.",
-   "judged_at": "2026-08-05T17:44:26+00:00"
+   "critique": "Identifies JSONL and size correctly, but '~6+ records sampled' is nearly useless for an 89.7 MB file (real count is likely tens of thousands) and no record keys/schema are surfaced despite having parsed sample records.",
+   "judged_at": "2026-08-05T21:41:54+00:00"
+  },
+  "real/local_population_a_mcp_deep": {
+   "output_hash": "2f14b967016b656a",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 3,
+    "conciseness": 3,
+    "hallucination_free": 5
+   },
+   "overall": 4.0,
+   "critique": "Correctly reports 16044x35 shape and zero nulls, and usefully flags tool_id as an identifier and population_id/population_name as constant, but the sample row dump of all 35 raw field values (including a truncated nested 'fields' blob) is noisy compared to the top-3 column-analysis prose, and the top-3-column cutoff again hides the dataset's more interesting variable columns beyond the constants.",
+   "judged_at": "2026-08-05T21:42:03+00:00"
   },
   "real/local_raw_soccer_data": {
-   "output_hash": "605dfed254f3df19",
+   "output_hash": "e9a2109d4a6a4f36",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -850,23 +922,35 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "With the cap raised to 50, all 27 columns now fit and are listed in full \u2014 more informative than the prior 10-name truncation, still a single concise sentence.",
-   "judged_at": "2026-08-05T18:18:16+00:00"
+   "critique": "Shallow sniff correctly lists all 27 columns with inferred types from the header/sample row for a messy real-world CSV, and the tip correctly points to the shallow flag; output substance is unchanged from before this behavior change.",
+   "judged_at": "2026-08-05T21:41:39+00:00"
+  },
+  "real/local_raw_soccer_data_deep": {
+   "output_hash": "56f2cd0c7a0858fa",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Now surfaces the actual null-carrying columns (photoID, rater1, rater2, all 13903 nulls) instead of arbitrary early columns with zero nulls, directly answering which columns carry the file's 56042 nulls; sample row remains truncated at 25 keys.",
+   "judged_at": "2026-08-05T22:49:13+00:00"
   },
   "real/local_sibt1850_dir": {
-   "output_hash": "a8f5b6df876232ed",
+   "output_hash": "f83d668627c3ffd5",
    "scores": {
     "accuracy": 5,
-    "informativeness": 2,
-    "conciseness": 5,
+    "informativeness": 5,
+    "conciseness": 4,
     "hallucination_free": 5
    },
-   "overall": 4.25,
-   "critique": "Shallow describe() of a directory doesn't build a tree at all (pre-existing behavior: sniff_path only handles files, so the sniffer falls through to a bare 'could not read' warning) and just tips the user toward deep=True. Accurate and not misleading, but uninformative \u2014 this gap is pre-existing and out of scope for the truncation/collapsing fix (tag: wontfix, tracked separately from this iteration's focus).",
-   "judged_at": "2026-08-05T19:26:47+00:00"
+   "overall": 4.75,
+   "critique": "With the shallow directory bug fixed, this now builds a real tree: shows source_montages/ and top-level CSV/cpt/nc files alongside sibt1850_browse/, collapses the 2016-file sibt_ext_ease2 PNG run into one line via per-file sniffing, and correctly labels the .nc as HDF5 with an actionable install hint -- a complete, well-organized picture of a 2000+ file directory with only minor per-file line verbosity in source_montages/.",
+   "judged_at": "2026-08-05T21:41:52+00:00"
   },
   "real/local_sibt1850_dir_deep": {
-   "output_hash": "b6de15b44849a2ea",
+   "output_hash": "32ba51bedaaea530",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -874,23 +958,23 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "The core motivating case: the 2016-file sibt1850_browse/ PNG family collapses to a single line instead of dominating the entire output, and every top-level sibling (source_montages/, the .nc file, .cpt files, both CSVs) is visible \u2014 the sibling-starvation bug is fixed and the family-collapsing feature works as intended on the real dataset.",
-   "judged_at": "2026-08-05T19:26:39+00:00"
+   "critique": "The 2016-file sibt_ext_ease2_* PNG family correctly collapses to a single summarized line instead of flooding the output, while every top-level sibling (source_montages/, the .nc file, both .cpt files, both CSVs with their own deep profiles) remains visible -- exactly the intended fix for sibling starvation plus family collapsing on a large real dataset.",
+   "judged_at": "2026-08-05T21:41:37+00:00"
   },
   "real/penguins_deep": {
-   "output_hash": "bf0003be06ad300f",
+   "output_hash": "85de1229edd2e389",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 5,
     "conciseness": 4,
     "hallucination_free": 5
    },
-   "overall": 4.5,
-   "critique": "Correct shape, null total, and the key categorical species/island columns with their levels \u2014 exactly what NOTES ask for. Truncating at 3 columns hides sex (11 nulls, the biggest NA source) and all four measurement columns; a brief 'plus 4 float measurement cols, 2 nulls each' would complete it.",
-   "judged_at": "2026-08-05T17:43:55+00:00"
+   "overall": 4.75,
+   "critique": "Shape, total null count, and now the sex column (11 nulls, the largest NA source) surfaced first with bill_length_mm/bill_depth_mm, directly addressing the earlier gap where the null-heaviest column was omitted from the prose; species/island categorical detail no longer fits in the 3-column cap but remains visible in the sample row.",
+   "judged_at": "2026-08-05T22:49:12+00:00"
   },
   "real/titanic_deep": {
-   "output_hash": "79c7ef601b1a3466",
+   "output_hash": "9be83a554cd25973",
    "scores": {
     "accuracy": 5,
     "informativeness": 3,
@@ -898,11 +982,11 @@
     "hallucination_free": 5
    },
    "overall": 4.25,
-   "critique": "Row/col/null totals and top-3 column profiles are accurate, but the column detail cuts off after survived/pclass/sex, hiding the dataset's defining nulls (age: 177, deck: ~688) that drive the 869 total; prioritize columns with nulls or high info instead of the first three.",
-   "judged_at": "2026-08-05T17:43:49+00:00"
+   "critique": "Row/col/null totals and top-3 column profiles (survived, pclass, sex) are accurate, but the column detail cuts off before showing the dataset's defining nulls (age: 177, deck: ~688) that drive the 869 total; should prioritize columns with nulls or high info over the first three.",
+   "judged_at": "2026-08-05T21:41:47+00:00"
   },
   "real/titanic_shallow": {
-   "output_hash": "36fb9666b17e0cc3",
+   "output_hash": "e49dbc9d9244ed06",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -910,23 +994,11 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "With the cap raised to 50, all 15 columns now fit and are listed in full with no truncation needed \u2014 maximally informative and still concise for a table this narrow.",
-   "judged_at": "2026-08-05T18:18:16+00:00"
+   "critique": "All 15 columns and inferred types are correctly listed from the header/sample line alone, with a clear tip on how to get the deep profile; concise single-sentence shallow summary for a real messy CSV.",
+   "judged_at": "2026-08-05T21:41:33+00:00"
   },
   "synth/binary_as_txt": {
-   "output_hash": "b958d330e1d7e70c",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 4,
-    "conciseness": 4,
-    "hallucination_free": 5
-   },
-   "overall": 4.5,
-   "critique": "Correctly sniffs PNG content and dimensions despite the .txt name \u2014 the key behavior the notes demand. Would be perfect if it explicitly flagged the extension mismatch ('despite .txt extension'); the deep=True tip adds little for a 61-byte image.",
-   "judged_at": "2026-08-05T17:47:55+00:00"
-  },
-  "synth/csv_latin1": {
-   "output_hash": "223c7e21794b80c2",
+   "output_hash": "40da86e8aa28c3c6",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -934,11 +1006,11 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Correctly survives non-UTF8 bytes and reports CSV structure with header and column count. Missing: row count (meta has 4) and a note that the encoding is latin-1/non-UTF8, which a user loading the file would need.",
-   "judged_at": "2026-08-05T17:44:54+00:00"
+   "critique": "Correctly detects PNG content despite the .txt extension and includes the shallow=True tip, but never explicitly flags the extension mismatch that makes this case notable.",
+   "judged_at": "2026-08-05T21:41:19+00:00"
   },
-  "synth/csv_semicolon": {
-   "output_hash": "414ce9f6404a7480",
+  "synth/csv_latin1": {
+   "output_hash": "6e98d8ffcd41d404",
    "scores": {
     "accuracy": 5,
     "informativeness": 3,
@@ -946,11 +1018,23 @@
     "hallucination_free": 5
    },
    "overall": 4.5,
-   "critique": "Delimiter detection clearly worked (4 columns parsed, meta shows ';'), but the summary never states the semicolon delimiter \u2014 the one dialect fact a user needs before pd.read_csv. Also omits row count (~50).",
-   "judged_at": "2026-08-05T17:44:55+00:00"
+   "critique": "Survives non-UTF8 bytes and reports header/columns correctly with the shallow tip, but omits the row count (4, in meta) and any note about the latin-1 encoding a user would need before reading the file.",
+   "judged_at": "2026-08-05T21:41:25+00:00"
+  },
+  "synth/csv_semicolon": {
+   "output_hash": "bd1c23a53ce4e846",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 3,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.5,
+   "critique": "Delimiter detection clearly worked (4 columns parsed correctly) but the summary never states the semicolon delimiter itself, the one dialect fact needed before pd.read_csv, and omits the ~50 row count.",
+   "judged_at": "2026-08-05T21:41:27+00:00"
   },
   "synth/csv_utf16_bom": {
-   "output_hash": "7350d9a1b546d1eb",
+   "output_hash": "078c2060f47ab00e",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -958,11 +1042,11 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Now decodes the UTF-16LE BOM and correctly reports it as a 3-column, 101-row CSV with header a,b,c. Minor: doesn't mention the encoding itself was non-UTF8, which could be a nice-to-have detail.",
-   "judged_at": "2026-08-05T18:03:45+00:00"
+   "critique": "Correctly decodes the UTF-16LE BOM and reports 3 columns/header accurately with the shallow tip present, but never mentions the non-UTF8 encoding itself, a fact worth surfacing.",
+   "judged_at": "2026-08-05T21:41:21+00:00"
   },
   "synth/csv_utf16be_bom": {
-   "output_hash": "7350d9a1b546d1eb",
+   "output_hash": "078c2060f47ab00e",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -970,11 +1054,11 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Correctly decodes UTF-16BE with BOM as a 3-column, 101-row CSV; header is clean.",
-   "judged_at": "2026-08-05T18:04:12+00:00"
+   "critique": "Correctly decodes UTF-16BE with BOM into a clean 3-column CSV header with the shallow tip present; same encoding-mention gap as the LE case.",
+   "judged_at": "2026-08-05T21:41:22+00:00"
   },
   "synth/csv_utf8_bom": {
-   "output_hash": "a643369cb0608352",
+   "output_hash": "2a8a75a3032c190f",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -982,8 +1066,8 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Correctly strips the UTF-8 BOM; header 'a' has no leaked BOM character, and CSV structure is reported accurately.",
-   "judged_at": "2026-08-05T18:04:13+00:00"
+   "critique": "BOM is cleanly stripped from the header ('a' not leaked), CSV structure and tip are correct and concise.",
+   "judged_at": "2026-08-05T21:41:23+00:00"
   },
   "synth/deep_nested_dict": {
    "output_hash": "5a8409c372e3b462",
@@ -998,7 +1082,7 @@
    "judged_at": "2026-08-05T17:47:55+00:00"
   },
   "synth/df_500_columns": {
-   "output_hash": "cd1da192c1880017",
+   "output_hash": "696ea138fdbbb86c",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -1006,95 +1090,11 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "Correctly reports 20x500 without dumping names and shows three example columns, but never says the per-column list is truncated (e.g. showing 3 of 500) or that all 500 are float64, which would summarize the frame better than three arbitrary columns.",
-   "judged_at": "2026-08-05T17:44:55+00:00"
+   "critique": "Shape (20x500), memory, and example columns with stats remain accurate and useful; the sample row now truncates at 25 keys with a clear '(500 total keys)' marker matching the existing column-listing truncation idiom, fixing the previous wall-of-text conciseness problem.",
+   "judged_at": "2026-08-05T22:39:20+00:00"
   },
   "synth/df_all_null_column": {
-   "output_hash": "ffaf9e0e738e48fc",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 4,
-    "conciseness": 4,
-    "hallucination_free": 5
-   },
-   "overall": 4.5,
-   "critique": "Facts all correct and c (float64, 100 nulls) against 100 rows does surface the problem column, but the reader must do the math; say entirely null explicitly. Sample rows omitted for size/perf line is filler for a 100x3 frame.",
-   "judged_at": "2026-08-05T17:44:55+00:00"
-  },
-  "synth/df_datetime_index": {
-   "output_hash": "b14656ae7940f975",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 2,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.25,
-   "critique": "Stats are correct but the defining feature is missed entirely: meta shows a DatetimeIndex with hourly timestamps from 2024-01-01, yet the summary never mentions the time index or its range. Add index type and min-max timestamps for datetime-indexed frames.",
-   "judged_at": "2026-08-05T17:44:55+00:00"
-  },
-  "synth/df_mixed_dtype_column": {
-   "output_hash": "c9e2a42578fd3ce2",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 3,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.5,
-   "critique": "Accurate shape/null counts, but the NOTES ask for the mixed-type flag: the column mixes ints, strings and None (sample values show 1, two, 4.5) yet it is described as plain object with categories. Detect and state heterogeneous value types in object columns.",
-   "judged_at": "2026-08-05T17:44:55+00:00"
-  },
-  "synth/dict_10k_keys": {
-   "output_hash": "f572052dd2d782b2",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 3,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.5,
-   "critique": "Correctly gives the count without enumerating keys, but drops the str->int mapping type and value stats that are sitting in the metadata; 'A dict with 10000 str keys mapping to ints' would satisfy NOTES fully.",
-   "judged_at": "2026-08-05T17:47:55+00:00"
-  },
-  "synth/dir_filename_family": {
-   "output_hash": "33e99ca249f8a958",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 4,
-    "conciseness": 5,
-    "hallucination_free": 5
-   },
-   "overall": 4.75,
-   "critique": "Correctly collapses the 30-file numbered family into one line and keeps both unrelated siblings (README.txt, manifest.json) visible \u2014 exactly the sibling-preservation and collapsing behavior this feature targets. Slightly generic per-family description (just 'text file, 1 line') but that's accurate for the fixture.",
-   "judged_at": "2026-08-05T19:26:33+00:00"
-  },
-  "synth/dir_filename_family_with_gap": {
-   "output_hash": "a71a60689ee1c40c",
-   "scores": {
-    "accuracy": 4,
-    "informativeness": 3,
-    "conciseness": 5,
-    "hallucination_free": 4
-   },
-   "overall": 4.0,
-   "critique": "File count (49) is correct, but the {1850..1899} range implies full year coverage when 1892 is actually missing -- a user skimming the line would assume continuity. Known limitation, tracked rather than fixed this iteration (tag: wontfix); grouping only checks prefix/suffix/width, not that every intermediate number is present.",
-   "judged_at": "2026-08-05T20:15:46+00:00"
-  },
-  "synth/dir_interleaved_shapes_do_not_collapse": {
-   "output_hash": "406ff72b1a54a07b",
-   "scores": {
-    "accuracy": 5,
-    "informativeness": 3,
-    "conciseness": 3,
-    "hallucination_free": 5
-   },
-   "overall": 4.0,
-   "critique": "Correct and doesn't crash or wrongly merge the two shapes, but a real dataset with this alternating pattern would list every file individually with zero collapsing, which is exactly the noisy-listing problem this feature exists to fix. Known limitation: grouping only merges immediately-adjacent identical-shape entries, so alternating shapes never form a run of 4+ (tag: wontfix, tracked separately).",
-   "judged_at": "2026-08-05T20:15:46+00:00"
-  },
-  "synth/dir_many_subfolders": {
-   "output_hash": "8e37e0b372837617",
+   "output_hash": "250582a8030a6c5e",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -1102,11 +1102,95 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Correctly caps subdirectory display at 20 stations, each recursed into and described; emits an accurate '... (130 more folders in this folder)' truncation line; and the top-level manifest.json sibling is not starved despite the 150 subfolders, fixing the folder-scale analog of the earlier file sibling-starvation bug.",
-   "judged_at": "2026-08-05T20:55:05+00:00"
+   "critique": "The fully-null column 'c' (100/100 nulls) is now surfaced first in the column list instead of being pushed out by columns with no nulls, correctly highlighting the case's defining feature.",
+   "judged_at": "2026-08-05T22:49:13+00:00"
+  },
+  "synth/df_datetime_index": {
+   "output_hash": "a82f13eb7a0ef1e0",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 2,
+    "conciseness": 4,
+    "hallucination_free": 5
+   },
+   "overall": 4.0,
+   "critique": "Column stats (temp, load) are accurate, but the defining feature of this frame -- an hourly DatetimeIndex spanning 30 days from 2024-01-01 -- is never mentioned even though it's right there in the meta's index_type/index_sample; should report index type and its min-max range for datetime-indexed frames.",
+   "judged_at": "2026-08-05T21:41:52+00:00"
+  },
+  "synth/df_mixed_dtype_column": {
+   "output_hash": "765e1f507622b343",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "The mixed int/str/float column is now explicitly flagged as 'mixed types: float, int, str' instead of being labeled plain 'object', directly surfacing the heterogeneity the NOTES ask for.",
+   "judged_at": "2026-08-05T22:49:00+00:00"
+  },
+  "synth/dict_10k_keys": {
+   "output_hash": "ba26f8a91c4b03e1",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Adds the str->int mapping type and value stats while still avoiding key enumeration for 10k keys, satisfying NOTES.",
+   "judged_at": "2026-08-06T04:38:12+00:00"
+  },
+  "synth/dir_filename_family": {
+   "output_hash": "1ab973d09f2246c0",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 4,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.75,
+   "critique": "The 30 numbered reading_{000..029}.txt files correctly collapse into a single family line while both unrelated siblings (README.txt, manifest.json) stay individually visible, exactly matching the collapsing + sibling-preservation behavior the NOTES require; the collapsed family's description is a bit generic ('text file, 1 line') but that's accurate for the fixture.",
+   "judged_at": "2026-08-05T21:41:54+00:00"
+  },
+  "synth/dir_filename_family_with_gap": {
+   "output_hash": "c5f8c4b12fe6924b",
+   "scores": {
+    "accuracy": 4,
+    "informativeness": 4,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 4.5,
+   "critique": "File count and family collapsing are correct and concise, but the {1850..1899} range implies full year coverage when 1892 is actually missing, silently absorbing a gap a user would assume is continuous.",
+   "judged_at": "2026-08-05T21:41:40+00:00"
+  },
+  "synth/dir_interleaved_shapes_do_not_collapse": {
+   "output_hash": "9bcfb398e97ff97b",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 3,
+    "conciseness": 3,
+    "hallucination_free": 5
+   },
+   "overall": 4.0,
+   "critique": "Correct and doesn't crash or wrongly merge the two shapes, but lists every one of the 20 files individually with zero collapsing, exactly the noisy-listing problem the grouping feature exists to prevent (known limitation: only merges immediately-adjacent identical shapes).",
+   "judged_at": "2026-08-05T21:41:43+00:00"
+  },
+  "synth/dir_many_subfolders": {
+   "output_hash": "906194a0380cf0a3",
+   "scores": {
+    "accuracy": 5,
+    "informativeness": 5,
+    "conciseness": 5,
+    "hallucination_free": 5
+   },
+   "overall": 5.0,
+   "critique": "Correctly caps subdirectory display at 20 stations, each recursed into and described; emits an accurate '... (130 more folders in this folder)' truncation line; and the top-level manifest.json sibling is not starved despite the 150 subfolders.",
+   "judged_at": "2026-08-05T21:41:45+00:00"
   },
   "synth/dir_two_distinct_families": {
-   "output_hash": "9f002d0343ad0cea",
+   "output_hash": "4a7291060f4db65a",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -1115,7 +1199,7 @@
    },
    "overall": 5.0,
    "critique": "Both unrelated numbered families (photo_*.jpg, report_*.csv) collapse independently into their own {000..019} lines without interfering with each other, exactly as intended for non-interleaving shapes.",
-   "judged_at": "2026-08-05T20:15:46+00:00"
+   "judged_at": "2026-08-05T21:41:41+00:00"
   },
   "synth/empty_containers": {
    "output_hash": "b6a4f8a05c5b9e9a",
@@ -1130,28 +1214,28 @@
    "judged_at": "2026-08-05T17:47:56+00:00"
   },
   "synth/empty_csv": {
-   "output_hash": "dc0c7a63f14341e4",
+   "output_hash": "ca230e8103c43623",
    "scores": {
-    "accuracy": 5,
-    "informativeness": 3,
-    "conciseness": 4,
-    "hallucination_free": 5
-   },
-   "overall": 4.25,
-   "critique": "Doesn't crash or invent columns, and '0 lines (0.0 B)' implies emptiness \u2014 but it never says 'empty' outright and treats a .csv as generic text. The 'deep=True' tip is pointless for a 0-byte file. Say 'An empty file (0 bytes) named data.csv'.",
-   "judged_at": "2026-08-05T17:47:55+00:00"
-  },
-  "synth/header_only_csv": {
-   "output_hash": "7ff234e5250715cd",
-   "scores": {
-    "accuracy": 5,
+    "accuracy": 4,
     "informativeness": 2,
     "conciseness": 4,
     "hallucination_free": 5
    },
-   "overall": 4.0,
-   "critique": "Misses both required facts from the notes: it never identifies the file as CSV with columns id,name,score (visible in the preview) nor that there are 0 data rows. 'A text file with 1 line' is technically true but vacuous; the deep=True tip is filler.",
-   "judged_at": "2026-08-05T17:47:55+00:00"
+   "overall": 3.75,
+   "critique": "Doesn't crash or invent columns, and '0 lines (0.0 B)' implies emptiness, but never says 'empty' outright, treats the .csv as generic text with no column info, and the shallow tip is pointless for a 0-byte file.",
+   "judged_at": "2026-08-05T21:41:44+00:00"
+  },
+  "synth/header_only_csv": {
+   "output_hash": "30713576a80c22b7",
+   "scores": {
+    "accuracy": 4,
+    "informativeness": 2,
+    "conciseness": 4,
+    "hallucination_free": 5
+   },
+   "overall": 3.75,
+   "critique": "Misses both facts the NOTES require: it never identifies this as a CSV with columns id,name,score (visible right in the preview) nor that there are 0 data rows -- 'a text file with 1 line' is technically true but vacuous, and the shallow tip is filler here.",
+   "judged_at": "2026-08-05T21:41:46+00:00"
   },
   "synth/heterogeneous_list": {
    "output_hash": "5a8f294800d12e0c",
@@ -1166,43 +1250,43 @@
    "judged_at": "2026-08-05T17:47:55+00:00"
   },
   "synth/json_deep_nesting": {
-   "output_hash": "1e6579afe84b6c5a",
+   "output_hash": "c0f825018ecff726",
    "scores": {
-    "accuracy": 5,
+    "accuracy": 4,
     "informativeness": 2,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.25,
-   "critique": "Avoids dumping the structure, but 'an object with keys: child' hides the defining feature: 40 levels of nesting. The sniffer should report max depth (or at least 'deeply nested') for JSON like this.",
-   "judged_at": "2026-08-05T17:47:34+00:00"
+   "overall": 4.0,
+   "critique": "Correctly avoids recursing into or dumping the 40-level-deep structure, but 'an object with keys: child' hides the defining feature entirely -- the sniffer should surface the nesting depth (or at least call it out as deeply nested) instead of looking like an ordinary shallow dict.",
+   "judged_at": "2026-08-05T21:41:50+00:00"
   },
   "synth/json_nan_inf": {
-   "output_hash": "1d4c1dc22aced30c",
+   "output_hash": "f8ae5bae316b6ef5",
    "scores": {
     "accuracy": 5,
-    "informativeness": 4,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.75,
-   "critique": "Parses without crashing and reports the object keys and size correctly. Missing the case's defining quirk: the file contains non-standard NaN/Infinity literals that strict JSON parsers will reject \u2014 worth a warning.",
-   "judged_at": "2026-08-05T17:47:33+00:00"
+   "overall": 5.0,
+   "critique": "Now explicitly flags the non-standard NaN/Infinity literals in addition to reporting object keys and size, directly addressing the case's defining quirk.",
+   "judged_at": "2026-08-05T22:49:00+00:00"
   },
   "synth/jsonl_mixed_schemas": {
-   "output_hash": "1f05546248beb21c",
+   "output_hash": "c6a7c74fb005677e",
    "scores": {
     "accuracy": 5,
-    "informativeness": 3,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.5,
-   "critique": "Correctly identifies JSONL with size and sampled record count, but says nothing about record structure \u2014 no keys, and no hint that each line has a different schema, which NOTES flag as the story. '~20+ records sampled' is also vague when 60 lines were read.",
-   "judged_at": "2026-08-05T17:47:34+00:00"
+   "overall": 5.0,
+   "critique": "Now reports exact sampled/parsed line counts instead of a vague '~20+' and explicitly notes that records do not share the same keys, surfacing the mixed-schema structure that is the point of this case.",
+   "judged_at": "2026-08-05T22:49:00+00:00"
   },
   "synth/long_csv_200k_rows": {
-   "output_hash": "e302ab4e67b51329",
+   "output_hash": "1c20e57e5d4b9497",
    "scores": {
     "accuracy": 5,
     "informativeness": 3,
@@ -1210,11 +1294,11 @@
     "hallucination_free": 5
    },
    "overall": 4.5,
-   "critique": "Fast shallow sniff with correct columns and size, but NOTES ask for an estimated row count and none is given \u2014 with 2.4 MB and a 6129-line sample an estimate (~200k) is cheap to compute and is the number users want.",
-   "judged_at": "2026-08-05T17:47:33+00:00"
+   "critique": "Fast shallow sniff correctly reports columns, header, and size with the tip present, but never estimates the ~200k row count despite having enough sampled data (6129 lines) and file size to do so cheaply.",
+   "judged_at": "2026-08-05T21:41:32+00:00"
   },
   "synth/long_csv_200k_rows_deep": {
-   "output_hash": "11fa7f17deaf8ba8",
+   "output_hash": "d001cabd755abd52",
    "scores": {
     "accuracy": 4,
     "informativeness": 5,
@@ -1222,8 +1306,8 @@
     "hallucination_free": 5
    },
    "overall": 4.5,
-   "critique": "Sampling is clearly disclosed ('profiled from a sample of the first 100,000 rows; pass full=True') with per-column dtypes and stats \u2014 exactly what NOTES ask. Minor: leading '100000 rows' reads like the file's row count until the trailing disclaimer, and 'id range 6 to 1e+05' is a sampled-stat artifact (true min is 0).",
-   "judged_at": "2026-08-05T17:47:33+00:00"
+   "critique": "New deep-default profile now includes the Sample row: {'id': '0', 'value': '0', 'flag': '0'} plus per-column dtypes/stats and clearly discloses sampling ('profiled from a sample of the first 100,000 rows; pass full=True'); minor readability issue is the leading '100000 rows' reading like the true file row count until the trailing disclaimer, and the id range 6-1e+05 is a sampled-stat artifact (true min is 0).",
+   "judged_at": "2026-08-05T21:41:35+00:00"
   },
   "synth/np_nan_inf": {
    "output_hash": "0f815ba0a946010e",
@@ -1262,7 +1346,7 @@
    "judged_at": "2026-08-05T17:47:55+00:00"
   },
   "synth/stata_dta_v118": {
-   "output_hash": "8381fb6d8d14dc7a",
+   "output_hash": "23baedee54e42615",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -1270,20 +1354,20 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Correctly parses the format-118 XML header to report 3 observations, 3 variables, and their names without needing pandas installed at read time.",
-   "judged_at": "2026-08-05T18:11:57+00:00"
+   "critique": "Parses the format-118 XML header correctly to report observation/variable counts and names without pandas, with a sensible shallow tip; nothing missing.",
+   "judged_at": "2026-08-05T21:41:29+00:00"
   },
   "synth/truncated_json": {
-   "output_hash": "43c87e4a0c2f7c85",
+   "output_hash": "d6877f2e65f4ae96",
    "scores": {
-    "accuracy": 4,
+    "accuracy": 3,
     "informativeness": 2,
-    "conciseness": 5,
+    "conciseness": 4,
     "hallucination_free": 5
    },
-   "overall": 4.0,
-   "critique": "Falls back to generic 'text file with 1 line' and never mentions JSON despite the .json name and preview; the whole point (invalid/truncated JSON) is missed. Should say the file looks like JSON but fails to parse (truncated mid-array).",
-   "judged_at": "2026-08-05T17:44:54+00:00"
+   "overall": 3.5,
+   "critique": "Falls back to a generic 'text file with 1 line' and never mentions JSON at all despite the .json extension and a preview that clearly shows truncated JSON -- the entire point of this case (flagging invalid/truncated JSON) is missed.",
+   "judged_at": "2026-08-05T21:41:47+00:00"
   },
   "synth/unicode_string_emoji": {
    "output_hash": "b17819e59b7f5ea0",
@@ -1298,16 +1382,16 @@
    "judged_at": "2026-08-05T17:44:55+00:00"
   },
   "synth/wide_csv_500_cols": {
-   "output_hash": "7f26483e10b2601d",
+   "output_hash": "cb245b5ef6df9497",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
-    "conciseness": 4,
+    "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 4.5,
-   "critique": "Cap raised to 50 (from 10) per user request for wide tabular data; a 500-col file still truncates cleanly with a total count, just showing more names before the ellipsis.",
-   "judged_at": "2026-08-05T18:18:16+00:00"
+   "overall": 4.75,
+   "critique": "Correctly reports 500 columns; the truncated preview now shows 10 names before the ellipsis instead of 50, reading as a quick sample rather than a wall of text, matching the same 'first N, then (M total)' idiom used elsewhere.",
+   "judged_at": "2026-08-05T22:49:00+00:00"
   }
  }
 }

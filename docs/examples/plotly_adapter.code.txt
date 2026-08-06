@@ -1,0 +1,7 @@
+from plotly import graph_objs as go
+
+obj = go.Figure(data=[go.Scatter(y=[1, 2, 3])])
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

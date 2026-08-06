@@ -1,2 +1,3 @@
 Title: StringIO
 Tags: stdlib, io
+Requires: 

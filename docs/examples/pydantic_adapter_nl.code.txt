@@ -1,0 +1,20 @@
+from pydantic import BaseModel
+
+class Employee(BaseModel):
+    name: str
+    role: str
+    salary: float
+    years: int
+    skills: list[str]
+
+obj = Employee(
+    name="Priya Sharma",
+    role="Senior Engineer",
+    salary=142500.0,
+    years=6,
+    skills=["python", "rust"],
+)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

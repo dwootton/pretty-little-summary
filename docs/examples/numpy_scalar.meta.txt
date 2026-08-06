@@ -1,2 +1,3 @@
 Title: NumPy scalar
 Tags: numpy, scalar
+Requires: numpy

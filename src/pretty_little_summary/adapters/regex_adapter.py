@@ -42,7 +42,7 @@ def _describe_pattern(pattern: re.Pattern) -> dict[str, Any]:
         "pattern": pattern.pattern,
         "flags": flags,
         "groups": pattern.groups,
-        "groupindex": pattern.groupindex,
+        "groupindex": dict(pattern.groupindex),
     }
 
 

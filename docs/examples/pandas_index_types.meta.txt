@@ -1,2 +1,3 @@
 Title: Pandas Index
 Tags: pandas, index
+Requires: pandas

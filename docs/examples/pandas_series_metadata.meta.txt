@@ -1,2 +1,3 @@
 Title: Pandas Series
 Tags: pandas, series
+Requires: pandas

@@ -1,0 +1,12 @@
+import io
+
+log = (
+    "INFO startup complete\n"
+    "WARN cache miss on key user:1234\n"
+    "ERROR retrying connection to db\n"
+)
+obj = io.StringIO(log)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

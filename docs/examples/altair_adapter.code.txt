@@ -1,0 +1,10 @@
+import altair
+import pandas as pd
+
+obj = altair.Chart(pd.DataFrame({"x": [1, 2], "y": [3, 4]})).mark_line().encode(
+    x="x", y="y"
+)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

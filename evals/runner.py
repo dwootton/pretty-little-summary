@@ -15,6 +15,7 @@ need attention). Errors are findings, not fatal.
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import io
 import json
@@ -115,6 +116,51 @@ def git_sha() -> str:
         return "unknown"
 
 
+def capture_thumbnail(obj: Any) -> str | None:
+    """Best-effort PNG data-URI thumbnail for visual result objects.
+
+    Never raises: returns None for non-visual objects or on any rendering
+    failure, since this is a diagnostic nice-to-have, not part of describe().
+    """
+    try:
+        fig = None
+        try:
+            from matplotlib.axes import Axes
+            from matplotlib.figure import Figure
+
+            if isinstance(obj, Figure):
+                fig = obj
+            elif isinstance(obj, Axes):
+                fig = obj.figure
+        except ImportError:
+            pass
+
+        if fig is not None:
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png", dpi=90, bbox_inches="tight")
+            return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
+
+        try:
+            from PIL.Image import Image
+
+            img = None
+            if isinstance(obj, Image):
+                img = obj
+            elif isinstance(obj, list) and obj and isinstance(obj[0], Image):
+                img = obj[0]
+            if img is not None:
+                img = img.copy()
+                img.thumbnail((320, 320))
+                buf = io.BytesIO()
+                img.save(buf, format="PNG")
+                return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
+        except ImportError:
+            pass
+    except Exception:
+        return None
+    return None
+
+
 # ---------------------------------------------------------------------------
 # run
 
@@ -126,6 +172,7 @@ def run_case(case_obj: Case, ctx: CaseCtx) -> dict[str, Any]:
         "display_input": case_obj.display_input,
         "notes": case_obj.notes,
         "describe_kwargs": case_obj.describe_kwargs,
+        "source_url": case_obj.source_url,
     }
     skip_reason = case_obj.missing_requirement()
     if skip_reason:
@@ -145,6 +192,7 @@ def run_case(case_obj: Case, ctx: CaseCtx) -> dict[str, Any]:
         # Silence chatty libraries so runner output stays a clean report.
         with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             result = pls.describe(obj, **case_obj.describe_kwargs)
+        thumbnail = capture_thumbnail(obj)
     except Exception:
         record.update(
             status="error",
@@ -164,6 +212,7 @@ def run_case(case_obj: Case, ctx: CaseCtx) -> dict[str, Any]:
         output_hash=output_hash(result.content),
         meta_excerpt=meta_excerpt(result.meta),
         duration_ms=round((time.perf_counter() - start) * 1000, 2),
+        thumbnail=thumbnail,
     )
     return record
 

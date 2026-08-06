@@ -31,6 +31,10 @@ _TEXT_CONTROL_ALLOWED = {0x09, 0x0A, 0x0D, 0x0C}  # tab, LF, CR, form-feed
 # column names before summarizing the rest as a count.
 _MAX_LISTED_COLUMNS = 50
 
+# When the header exceeds _MAX_LISTED_COLUMNS, showing a shorter preview reads
+# better than dumping names up to the cap before the "(N total)" ellipsis.
+_TRUNCATED_COLUMN_PREVIEW = 10
+
 # tomllib is stdlib on Python 3.11+. When it is missing we can still recognise
 # a .toml file by suffix, we just can't parse it for its keys.
 try:
@@ -225,10 +229,13 @@ def _detect_jsonl(text: str) -> dict[str, Any] | None:
     # A single JSON object/array spanning lines is JSON, not JSONL.
     candidates = lines[:20]
     parseable = 0
+    key_sets: list[frozenset] = []
     for i, line in enumerate(candidates):
         try:
-            json.loads(line)
+            record = json.loads(line)
             parseable += 1
+            if isinstance(record, dict):
+                key_sets.append(frozenset(record.keys()))
         except ValueError:
             # Tolerate only the trailing sampled line being unparseable; a
             # mid-file failure means this is not newline-delimited JSON.
@@ -237,31 +244,39 @@ def _detect_jsonl(text: str) -> dict[str, Any] | None:
             return None
     if parseable < 2:
         return None
-    return {"format": "jsonl", "sampled_records": parseable}
+    result: dict[str, Any] = {"format": "jsonl", "sampled_records": parseable}
+    if len(set(key_sets)) > 1:
+        result["mixed_schemas"] = True
+    return result
 
 
 def _structured_summary(md: dict[str, Any]) -> str:
     fmt = md.get("format")
     size = md.get("size", "unknown size")
     if fmt == "jsonl":
+        line_count = md.get("sampled_line_count")
+        schema_note = " Records do not all share the same keys." if md.get("mixed_schemas") else ""
         return (
-            f"A JSON Lines file (~{md.get('sampled_records', '?')}+ records sampled) "
-            f"({size})."
+            f"A JSON Lines file ({line_count} lines sampled, "
+            f"{md.get('sampled_records', '?')} parsed) ({size}).{schema_note}"
         )
     if fmt == "json":
         keys = md.get("keys")
+        suffix = " Contains non-standard NaN/Infinity literals." if md.get("has_non_finite") else ""
         if keys:
-            return f"A JSON file containing an object with keys: {', '.join(keys)} ({size})."
-        return f"A JSON file ({size})."
+            return f"A JSON file containing an object with keys: {', '.join(keys)} ({size}).{suffix}"
+        return f"A JSON file ({size}).{suffix}"
     if fmt == "csv":
         cols = md.get("columns")
         header = md.get("header", [])
         head_str = ""
         if header:
-            shown = header[:_MAX_LISTED_COLUMNS]
-            suffix = (
-                f", ... ({len(header)} total)" if len(header) > _MAX_LISTED_COLUMNS else ""
-            )
+            if len(header) > _MAX_LISTED_COLUMNS:
+                shown = header[:_TRUNCATED_COLUMN_PREVIEW]
+                suffix = f", ... ({len(header)} total)"
+            else:
+                shown = header
+                suffix = ""
             head_str = f" Header: {', '.join(shown)}{suffix}."
         return f"A CSV file with {cols} columns ({size}).{head_str}"
     if fmt == "yaml":

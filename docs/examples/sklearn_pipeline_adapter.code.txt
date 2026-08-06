@@ -1,0 +1,14 @@
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+obj = Pipeline(
+    [
+        ("imputer", SimpleImputer()),
+        ("scaler", StandardScaler()),
+    ]
+)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

@@ -1,0 +1,7 @@
+import pandas as pd
+
+obj = pd.Series([1, 2, 3, None], name="price")
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

@@ -1,2 +1,3 @@
 Title: BytesIO
 Tags: stdlib, io
+Requires: 

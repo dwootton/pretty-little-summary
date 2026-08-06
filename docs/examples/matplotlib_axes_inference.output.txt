@@ -1,1 +1,1 @@
-A matplotlib axes with plotted elements.
+A matplotlib axes showing a scatter plot and a bar/histogram plot.

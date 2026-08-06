@@ -1,1 +1,1 @@
-A ordered_dict with 2 keys.
+An OrderedDict with 6 keys (str -> int). Stats: range 0 to 25, mean 9.2, std 9.7.

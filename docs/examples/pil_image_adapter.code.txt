@@ -1,0 +1,7 @@
+from PIL import Image
+
+obj = Image.new("RGB", (64, 32))
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

@@ -1,1 +1,1 @@
-Output unavailable (missing dependency: bokeh).
+A Bokeh figure with 1 renderers.

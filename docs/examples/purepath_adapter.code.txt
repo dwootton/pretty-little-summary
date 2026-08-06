@@ -1,0 +1,7 @@
+from pathlib import PurePath
+
+obj = PurePath("foo/bar.txt")
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

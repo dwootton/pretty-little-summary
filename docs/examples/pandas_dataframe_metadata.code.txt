@@ -1,0 +1,7 @@
+import pandas as pd
+
+obj = pd.DataFrame({"a": [1, 2, None], "b": ["x", "y", "z"]})
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

@@ -1,11 +1,11 @@
 ID = "fraction_number"
 TITLE = "Fraction"
 TAGS = ["primitives", "fraction"]
-DISPLAY_INPUT = "Fraction(1, 3)"
-EXPECTED = "A Fraction 1/3."
+DISPLAY_INPUT = "Fraction(355, 113)  # pi approximation"
+EXPECTED = "A Fraction 355/113."
 
 
 def build():
     from fractions import Fraction
 
-    return Fraction(1, 3)
+    return Fraction(355, 113)

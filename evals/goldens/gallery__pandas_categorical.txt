@@ -1,1 +1,1 @@
-A pandas Categorical with 2 categories.
+A pandas Categorical with 4 ordered categories ('unranked', 'bronze', 'silver', 'gold') over 36 values. Counts: unranked: 20, bronze: 9, silver: 5, gold: 2.

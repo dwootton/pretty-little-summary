@@ -1,15 +1,17 @@
 ID = "enum_adapter"
 TITLE = "Enum"
 TAGS = ["stdlib", "enum"]
-DISPLAY_INPUT = "Color.RED"
-EXPECTED = "An enum Color: RED (one of 2 members: RED, BLUE)."
+DISPLAY_INPUT = "Status.ACTIVE"
+EXPECTED = "An enum Status: ACTIVE (one of 4 members: PENDING, ACTIVE, SUSPENDED, CLOSED)."
 
 
 def build():
     from enum import Enum
 
-    class Color(Enum):
-        RED = 1
-        BLUE = 2
+    class Status(Enum):
+        PENDING = 1
+        ACTIVE = 2
+        SUSPENDED = 3
+        CLOSED = 4
 
-    return Color.RED
+    return Status.ACTIVE

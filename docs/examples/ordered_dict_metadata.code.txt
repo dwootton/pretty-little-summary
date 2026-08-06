@@ -1,0 +1,7 @@
+from collections import OrderedDict
+
+obj = OrderedDict((chr(97 + i), i * i) for i in range(6))
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

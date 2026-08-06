@@ -24,7 +24,7 @@ def test_per_folder_cap_truncates_non_matching_files(tmp_path: Path) -> None:
     n = DEFAULT_MAX_FILES_PER_FOLDER + 10
     for i in range(n):
         (tmp_path / f"distinct_item_{i}_zzz.bin").write_bytes(bytes([i % 256]) * (i + 1))
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     shown = content.count(" - A ") + content.count(" - (error")
     assert shown <= DEFAULT_MAX_FILES_PER_FOLDER
     assert "more files in this folder" in content
@@ -37,7 +37,7 @@ def test_sibling_not_starved_by_large_family(tmp_path: Path) -> None:
         (big / f"seq_{i:04d}.txt").write_text("same content")
     (tmp_path / "sibling.txt").write_text("hi")
 
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     assert "sibling.txt" in content
 
 
@@ -47,7 +47,7 @@ def test_per_folder_cap_truncates_subdirectories(tmp_path: Path) -> None:
         d = tmp_path / f"station_{i:04d}"
         d.mkdir()
         (d / "readings.csv").write_text("id,val\n1,2\n")
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     shown_dir_lines = [line for line in content.splitlines() if "station_" in line and line.rstrip().endswith("/")]
     assert len(shown_dir_lines) == DEFAULT_MAX_DIRS_PER_FOLDER
     hidden_count = n - DEFAULT_MAX_DIRS_PER_FOLDER
@@ -64,7 +64,7 @@ def test_sibling_not_starved_by_many_subdirectories(tmp_path: Path) -> None:
         (d / "readings.csv").write_text("id,val\n1,2\n")
     (tmp_path / "sibling.txt").write_text("hi")
 
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     assert "sibling.txt" in content
 
 
@@ -75,7 +75,7 @@ def test_basic_family_collapses(tmp_path: Path) -> None:
     n = MIN_FAMILY_SIZE + 2
     for i in range(n):
         (tmp_path / f"item_{i:03d}.txt").write_text("hello")
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     assert f"item_{{000..{n - 1:03d}}}.txt ({n} files)" in content
     # No per-file lines for the collapsed members remain.
     assert "item_000.txt -" not in content
@@ -85,10 +85,9 @@ def test_family_with_varying_size_still_collapses(tmp_path: Path) -> None:
     n = MIN_FAMILY_SIZE + 2
     for i in range(n):
         (tmp_path / f"pic_{i:03d}.txt").write_text("x" * (i + 1))
-    # deep=True is what actually walks a directory's tree; a shallow describe
-    # of a directory only head-sniffs (which fails for a directory) and
-    # never reaches the tree walker.
-    content = pls.describe(tmp_path, deep=True).content
+    # describe() defaults to deep, which loads and fully profiles each file
+    # in the tree rather than only head-sniffing it.
+    content = pls.describe(tmp_path).content
     assert f"pic_{{000..{n - 1:03d}}}.txt ({n} files)" in content
     # The collapsed description must not carry a stray per-file byte size.
     assert "KB)" not in content and " B)" not in content
@@ -98,7 +97,7 @@ def test_below_min_family_size_does_not_collapse(tmp_path: Path) -> None:
     n = MIN_FAMILY_SIZE - 1
     for i in range(n):
         (tmp_path / f"solo_{i:03d}.txt").write_text("hello")
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     assert "{" not in content
     for i in range(n):
         assert f"solo_{i:03d}.txt" in content
@@ -107,7 +106,7 @@ def test_below_min_family_size_does_not_collapse(tmp_path: Path) -> None:
 def test_width_change_breaks_family(tmp_path: Path) -> None:
     for i in range(1, 12):
         (tmp_path / f"file_{i}.txt").write_text("hello")
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     # Sorted order is file_1, file_10, file_11, file_2, ..., file_9 (lexical),
     # so the width-2 pair breaks the run immediately; 2..9 (width 1) then
     # form their own contiguous, collapsible family.
@@ -121,7 +120,7 @@ def test_non_conforming_member_breaks_run(tmp_path: Path) -> None:
     for i in range(1, 19):
         (tmp_path / f"montage_{i:02d}_x.png").write_text("hello")
     (tmp_path / "montage_legend.png").write_text("hello")
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     assert "montage_{01..18}_x.png (18 files)" in content
     assert "montage_legend.png" in content
 
@@ -133,7 +132,7 @@ def test_non_conforming_member_mid_run_splits_into_two_families(tmp_path: Path) 
     for i in range(1, 11):
         (tmp_path / f"scan_{i:03d}.tif").write_text("hello")
     (tmp_path / "scan_005b_extra.tif").write_text("hello")  # sorts after scan_005
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     assert "scan_{001..005}.tif (5 files)" in content
     assert "scan_005b_extra.tif" in content
     assert "scan_{006..010}.tif (5 files)" in content
@@ -147,7 +146,7 @@ def test_two_distinct_families_in_one_folder_both_collapse(tmp_path: Path) -> No
         (tmp_path / f"photo_{i:03d}.jpg").write_text("hello")
     for i in range(20):
         (tmp_path / f"report_{i:03d}.csv").write_text("id,val\n1,2")
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     assert "photo_{000..019}.jpg (20 files)" in content
     assert "report_{000..019}.csv (20 files)" in content
 
@@ -162,7 +161,7 @@ def test_interleaved_families_do_not_collapse(tmp_path: Path) -> None:
     for i in range(10):
         (tmp_path / f"m_{i:03d}_alpha.txt").write_text("hello")
         (tmp_path / f"m_{i:03d}_beta.txt").write_text("hello")
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     assert "{" not in content
     assert "m_000_alpha.txt" in content
     assert "m_000_beta.txt" in content
@@ -179,7 +178,7 @@ def test_gap_in_numeric_run_still_collapses_silently(tmp_path: Path) -> None:
     years = [y for y in range(1850, 1900) if y != 1892]
     for y in years:
         (tmp_path / f"sibt_ext_ease2_{y}01.png").write_text("hello")
-    content = pls.describe(tmp_path, deep=True).content
+    content = pls.describe(tmp_path).content
     assert f"sibt_ext_ease2_{{185001..189901}}.png ({len(years)} files)" in content
     assert "1892" not in content
 
@@ -188,8 +187,8 @@ def test_directory_describe_is_deterministic(tmp_path: Path) -> None:
     for i in range(10):
         (tmp_path / f"item_{i:02d}.txt").write_text("hello")
     (tmp_path / "notes.txt").write_text("hi")
-    first = pls.describe(tmp_path, deep=True).content
-    second = pls.describe(tmp_path, deep=True).content
+    first = pls.describe(tmp_path).content
+    second = pls.describe(tmp_path).content
     assert first == second
 
 

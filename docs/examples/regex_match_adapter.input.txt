@@ -1,1 +1,1 @@
-re.search(r'\d+', 'abc123')
+re.search(r'order #(\d+) shipped on (...)', 'Your order #48213 shipped on 2026-07-30 via express')

@@ -94,5 +94,17 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
             f"in {metadata.get('mode')} mode."
         )
     if metadata.get("type") == "pil_image_list":
-        return f"A list of {metadata.get('count')} PIL images."
+        count = metadata.get("count")
+        modes = metadata.get("modes") or []
+        modes_str = ", ".join(modes)
+        sizes = metadata.get("sample_sizes") or []
+        if metadata.get("uniform_size") and sizes:
+            size_str = f"all {sizes[0][0]}x{sizes[0][1]}"
+        elif sizes:
+            size_str = ", ".join(f"{w}x{h}" for w, h in sizes)
+        else:
+            size_str = "unknown size"
+        return (
+            f"A list of {count} PIL images, {size_str}, mode(s): {modes_str}."
+        )
     return "A PIL image object."

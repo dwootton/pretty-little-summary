@@ -1,1 +1,1 @@
-A Decimal value 12.34 with 4 digits of precision.
+A Decimal value 48219.7563 with 9 digits of precision.

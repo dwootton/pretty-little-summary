@@ -1,11 +1,14 @@
 ID = "counter_metadata"
 TITLE = "Counter"
 TAGS = ["collections", "counter"]
-DISPLAY_INPUT = "Counter({'a': 2, 'b': 1})"
-EXPECTED = "A Counter with 2 unique elements totaling 3 observations."
+DISPLAY_INPUT = "Counter(letters of 'mississippiriverbasin')"
+EXPECTED = (
+    "A Counter with 10 unique elements totaling 21 observations. "
+    "Most common: 'i': 6, 's': 5, 'p': 2."
+)
 
 
 def build():
     from collections import Counter
 
-    return Counter({"a": 2, "b": 1})
+    return Counter("mississippi river basin".replace(" ", ""))

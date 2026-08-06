@@ -663,7 +663,7 @@ print(result.content)`,
           // Prefer the wheel built from this commit's src/ (CI-generated,
           // see .github/workflows/pages.yml) so the playground always
           // matches main instead of a possibly-stale PyPI release.
-          await micropip.install('./dist/pretty_little_summary-0.2.0-py3-none-any.whl');
+          await micropip.install('./dist/pretty_little_summary-0.3.0-py3-none-any.whl');
         } catch (e) {
           await micropip.install('pretty-little-summary'); // local dev fallback
         }

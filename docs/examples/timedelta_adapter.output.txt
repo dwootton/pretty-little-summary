@@ -1,1 +1,1 @@
-A duration of 2 days (183600 seconds).
+A duration of 17 days, 5 hours, 30 minutes (1488600 seconds).

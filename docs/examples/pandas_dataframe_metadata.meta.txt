@@ -1,2 +1,3 @@
 Title: Pandas DataFrame
 Tags: pandas, dataframe
+Requires: pandas

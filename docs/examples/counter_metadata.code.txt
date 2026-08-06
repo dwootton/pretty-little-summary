@@ -1,0 +1,7 @@
+from collections import Counter
+
+obj = Counter("mississippi river basin".replace(" ", ""))
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

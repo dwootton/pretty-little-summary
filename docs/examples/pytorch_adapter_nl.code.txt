@@ -1,0 +1,7 @@
+import torch as t
+
+obj = t.arange(12, dtype=t.float32).reshape(3, 4)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

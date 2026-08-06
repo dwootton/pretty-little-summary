@@ -1,2 +1,3 @@
 Title: Pandas Categorical
 Tags: pandas, categorical
+Requires: pandas

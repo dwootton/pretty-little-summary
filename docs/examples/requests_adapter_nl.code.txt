@@ -1,0 +1,10 @@
+import requests as rq
+
+resp = rq.Response()
+resp.status_code = 200
+resp.url = "https://example.com"
+obj = resp
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

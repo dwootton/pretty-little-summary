@@ -1,2 +1,3 @@
 Title: Plotly figure
 Tags: plotly, chart
+Requires: plotly

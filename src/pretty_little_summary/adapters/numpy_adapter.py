@@ -125,6 +125,9 @@ def _build_nl_summary(metadata: dict[str, Any], shape: Any) -> str:
                 parts.append(f"Sample: [{', '.join(sample_start)} ... {', '.join(sample_end)}].")
             else:
                 parts.append(f"Sample: [{', '.join(sample_start)}].")
+        stats = metadata.get("stats")
+        if stats:
+            parts.append(f"Stats: {stats}.")
         return " ".join(parts)
     if metadata.get("type") == "numpy_scalar":
         return (

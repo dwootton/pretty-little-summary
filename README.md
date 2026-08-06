@@ -10,6 +10,8 @@ pip install pretty-little-summary
 
 Optional adapters are enabled automatically when their libraries are installed.
 
+No install? Try it in the browser: **[live playground](https://dwootton.github.io/pretty-little-summary/playground.html)** (runs via Pyodide, nothing uploaded).
+
 ## Features
 
 - Single function API: `pls.describe(obj)`
@@ -90,6 +92,42 @@ df_clean = df.dropna()
 result = pls.describe(df_clean)
 print(result.history)
 ```
+
+## Docs site
+
+The docs (`docs/index.html`, `docs/playground.html`, `docs/eval-report.html`)
+are a static site with no build step. To run it locally:
+
+```bash
+cd docs && python3 -m http.server 8000
+```
+
+Then open http://localhost:8000. Notes:
+
+- `playground.html` loads [Pyodide](https://pyodide.org) from a CDN, so it
+  needs internet access even when served locally.
+- `playground.html` installs `pretty-little-summary` from `docs/dist/*.whl`
+  so it always matches this commit's `src/` instead of a possibly-stale PyPI
+  release. That wheel isn't committed — CI builds it on every docs deploy via
+  `python -m build --wheel -o docs/dist`. Build it yourself before serving
+  locally, or the playground falls back to installing from PyPI:
+  ```bash
+  .venv/bin/python -m build --wheel -o docs/dist
+  ```
+- `eval-report.html` isn't committed — generate it first with:
+  ```bash
+  .venv/bin/python -m evals.runner fetch
+  .venv/bin/python -m evals.runner run
+  .venv/bin/python -m evals.viewer --out docs/eval-report.html
+  ```
+  (CI does this automatically on every docs deploy.) Its markup lives in the
+  committed `docs/eval-report-template.html`; `evals/viewer.py` only injects
+  run data into it.
+- The playground's curated/gallery example code comes from
+  `docs/examples/*.txt`, regenerated via:
+  ```bash
+  .venv/bin/python scripts/export_examples.py
+  ```
 
 ## Troubleshooting
 

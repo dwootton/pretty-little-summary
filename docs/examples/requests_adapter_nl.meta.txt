@@ -1,2 +1,3 @@
 Title: Requests response
 Tags: requests, http
+Requires: requests

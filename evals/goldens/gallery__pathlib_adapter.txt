@@ -1,2 +1,1 @@
 A text file with 1 line (5.0 B).
-Tip: pass deep=True to load and fully profile this file.

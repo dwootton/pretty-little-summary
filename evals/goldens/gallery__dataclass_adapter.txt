@@ -1,1 +1,1 @@
-A dataclass Point with fields: x=1, y=2.
+A dataclass Employee with fields: name='Priya Sharma', role='Senior Engineer', salary=142500.0, years=6, remote=True.

@@ -47,8 +47,11 @@ class AltairAdapter:
                 spec_stripped = AltairAdapter._strip_data(spec)
                 meta["spec"] = spec_stripped
 
-                # Extract key fields
-                meta["chart_type"] = spec_stripped.get("mark")
+                # Extract key fields. Vega-Lite allows "mark" to be either a
+                # bare string ("line") or a dict with extra properties
+                # ({"type": "line", "point": True}) — normalize to the string.
+                mark = spec_stripped.get("mark")
+                meta["chart_type"] = mark.get("type") if isinstance(mark, dict) else mark
                 meta["metadata"] = meta.get("metadata", {})
                 if "encoding" in spec_stripped:
                     meta["metadata"]["encoding"] = spec_stripped["encoding"]

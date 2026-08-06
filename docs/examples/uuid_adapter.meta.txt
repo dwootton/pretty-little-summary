@@ -1,2 +1,3 @@
 Title: UUID
 Tags: stdlib, uuid
+Requires: 

@@ -18,6 +18,7 @@ from evals.cases import CaseCtx, case
 @case(
     "synth/empty_csv",
     tags=("sniffer", "csv", "edge"),
+    describe_kwargs={"shallow": True},
     display_input="0-byte file named data.csv",
     notes="Should say the file is empty; must not crash or invent columns.",
 )
@@ -30,6 +31,7 @@ def empty_csv(ctx: CaseCtx):
 @case(
     "synth/header_only_csv",
     tags=("sniffer", "csv", "edge"),
+    describe_kwargs={"shallow": True},
     display_input="CSV with a header row and zero data rows",
     notes="Should report columns but 0 data rows.",
 )
@@ -42,6 +44,7 @@ def header_only_csv(ctx: CaseCtx):
 @case(
     "synth/binary_as_txt",
     tags=("sniffer", "edge", "misnamed"),
+    describe_kwargs={"shallow": True},
     display_input="PNG image bytes saved with a .txt extension",
     notes="Should notice the content is binary/PNG, not trust the extension.",
 )
@@ -56,6 +59,7 @@ def binary_as_txt(ctx: CaseCtx):
 @case(
     "synth/truncated_json",
     tags=("sniffer", "json", "edge"),
+    describe_kwargs={"shallow": True},
     display_input='file.json containing \'{"a": [1, 2\' (truncated mid-array)',
     notes="Should flag invalid/truncated JSON rather than error or misreport.",
 )
@@ -72,6 +76,7 @@ def truncated_json(ctx: CaseCtx):
 @case(
     "synth/csv_utf16_bom",
     tags=("sniffer", "csv", "encoding"),
+    describe_kwargs={"shallow": True},
     display_input="UTF-16LE CSV with BOM, 3 cols x 100 rows",
     notes="Should detect the encoding (not describe as binary) and see the table.",
 )
@@ -85,6 +90,7 @@ def csv_utf16(ctx: CaseCtx):
 @case(
     "synth/csv_utf16be_bom",
     tags=("sniffer", "csv", "encoding"),
+    describe_kwargs={"shallow": True},
     display_input="UTF-16BE CSV with BOM, 3 cols x 100 rows",
     notes="Same as the LE case but big-endian; should also decode as CSV, not binary.",
 )
@@ -98,6 +104,7 @@ def csv_utf16be(ctx: CaseCtx):
 @case(
     "synth/csv_utf8_bom",
     tags=("sniffer", "csv", "encoding"),
+    describe_kwargs={"shallow": True},
     display_input="UTF-8 CSV with a BOM (utf-8-sig), 3 cols x 100 rows",
     notes="A common Excel-exported CSV; the BOM must not leak into the first column name.",
 )
@@ -111,6 +118,7 @@ def csv_utf8_bom(ctx: CaseCtx):
 @case(
     "synth/csv_latin1",
     tags=("sniffer", "csv", "encoding"),
+    describe_kwargs={"shallow": True},
     display_input="latin-1 CSV with accented city names (non-UTF8 bytes)",
     notes="Should not crash on non-UTF8 bytes; ideally still sees CSV structure.",
 )
@@ -124,6 +132,7 @@ def csv_latin1(ctx: CaseCtx):
 @case(
     "synth/csv_semicolon",
     tags=("sniffer", "csv", "dialect"),
+    describe_kwargs={"shallow": True},
     display_input="semicolon-delimited CSV (European style), 4 cols x 50 rows",
     notes="Should detect the ; delimiter, not treat each line as one column.",
 )
@@ -143,6 +152,7 @@ def csv_semicolon(ctx: CaseCtx):
     "synth/stata_dta_v118",
     tags=("sniffer", "stata", "binary"),
     requires=("pandas",),
+    describe_kwargs={"shallow": True},
     display_input="Stata .dta file (format 118), 3 rows x 3 columns",
     notes="Magic bytes are an XML-ish '<stata_dta>' header, not a common signature; "
     "must not be reported as unknown binary. Should surface observation/variable "
@@ -164,6 +174,7 @@ def stata_dta_v118(ctx: CaseCtx):
 @case(
     "synth/wide_csv_500_cols",
     tags=("sniffer", "csv", "scale"),
+    describe_kwargs={"shallow": True},
     display_input="CSV with 500 columns and 10 rows",
     notes="Should report the column count without dumping all 500 names.",
 )
@@ -178,6 +189,7 @@ def wide_csv(ctx: CaseCtx):
 @case(
     "synth/long_csv_200k_rows",
     tags=("sniffer", "csv", "scale"),
+    describe_kwargs={"shallow": True},
     display_input="CSV with 200,000 rows and 3 columns (~3 MB)",
     notes="Shallow sniff should be fast and estimate the row count.",
 )
@@ -194,8 +206,7 @@ def long_csv(ctx: CaseCtx):
     "synth/long_csv_200k_rows_deep",
     tags=("sniffer", "csv", "scale", "deep"),
     requires=("pandas",),
-    describe_kwargs={"deep": True},
-    display_input="Same 200,000-row CSV with deep=True (100K sample cap applies)",
+    display_input="Same 200,000-row CSV, deep profile (100K sample cap applies)",
     notes="Should profile from a sample and clearly disclose the sampling.",
 )
 def long_csv_deep(ctx: CaseCtx):
@@ -209,6 +220,7 @@ def long_csv_deep(ctx: CaseCtx):
 @case(
     "synth/json_nan_inf",
     tags=("sniffer", "json", "edge"),
+    describe_kwargs={"shallow": True},
     display_input="JSON file containing NaN and Infinity literals (non-standard)",
     notes="Python json accepts these; summary should not crash and should describe the structure.",
 )
@@ -221,6 +233,7 @@ def json_nan_inf(ctx: CaseCtx):
 @case(
     "synth/jsonl_mixed_schemas",
     tags=("sniffer", "jsonl", "edge"),
+    describe_kwargs={"shallow": True},
     display_input="JSONL where each line has different keys",
     notes="Should describe it as JSONL and ideally note schema inconsistency.",
 )
@@ -238,6 +251,7 @@ def jsonl_mixed(ctx: CaseCtx):
 @case(
     "synth/json_deep_nesting",
     tags=("sniffer", "json", "edge"),
+    describe_kwargs={"shallow": True},
     display_input="JSON nested 40 levels deep",
     notes="Should not recurse into an unreadable dump; depth is the story.",
 )
@@ -422,7 +436,6 @@ def np_nan_inf(ctx: CaseCtx):
 @case(
     "synth/dir_filename_family",
     tags=("pathlib", "directory", "edge"),
-    describe_kwargs={"deep": True},
     display_input="directory with 30 numbered files forming one family, plus 2 unrelated siblings",
     notes=(
         "The 30 numbered files should collapse into a single "
@@ -443,7 +456,6 @@ def dir_filename_family(ctx: CaseCtx):
 @case(
     "synth/dir_filename_family_with_gap",
     tags=("pathlib", "directory", "edge"),
-    describe_kwargs={"deep": True},
     display_input="directory with a numbered file family missing one item from the middle of its range",
     notes=(
         "The family is missing year 1892 from an otherwise-consecutive "
@@ -465,7 +477,6 @@ def dir_filename_family_with_gap(ctx: CaseCtx):
 @case(
     "synth/dir_two_distinct_families",
     tags=("pathlib", "directory", "edge"),
-    describe_kwargs={"deep": True},
     display_input="directory with two unrelated numbered-file families (photos and reports)",
     notes=(
         "Two non-interleaving filename shapes should each collapse into "
@@ -486,7 +497,6 @@ def dir_two_distinct_families(ctx: CaseCtx):
 @case(
     "synth/dir_interleaved_shapes_do_not_collapse",
     tags=("pathlib", "directory", "edge"),
-    describe_kwargs={"deep": True},
     display_input="directory with two filename shapes that alphabetically interleave (m_000_alpha, m_000_beta, m_001_alpha, ...)",
     notes=(
         "Because grouping only merges immediately-adjacent same-shape "
@@ -507,7 +517,6 @@ def dir_interleaved_shapes_do_not_collapse(ctx: CaseCtx):
 @case(
     "synth/dir_many_subfolders",
     tags=("pathlib", "directory", "edge", "scale"),
-    describe_kwargs={"deep": True},
     display_input="directory with 150 subfolders (one per station), each holding one small CSV, plus a top-level sibling file",
     notes=(
         "Subdirectories are capped per folder (DEFAULT_MAX_DIRS_PER_FOLDER) "

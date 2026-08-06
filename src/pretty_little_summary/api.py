@@ -30,7 +30,7 @@ def describe(
     obj: Any,
     name: str | None = None,
     *,
-    deep: bool = False,
+    shallow: bool = False,
     full: bool = False,
 ) -> Description:
     """
@@ -43,20 +43,23 @@ def describe(
 
     Filesystem paths are first-class. Pass a ``pathlib.Path`` (or a plain string
     that names an existing file/directory — it is promoted to ``Path``
-    automatically) to describe what is on disk. By default a path is described
-    from a cheap head sample; pass ``deep=True`` to load the file into a rich
-    object (e.g. a DataFrame) and return a full profile — row counts, nulls, and
-    per-column stats — and to deep-profile every dataset in a directory.
+    automatically) to describe what is on disk. By default a path is loaded
+    into a rich object (e.g. a DataFrame) and given a full profile — row
+    counts, nulls, and per-column stats — with every dataset in a directory
+    deep-profiled too. Pass ``shallow=True`` to skip loading and describe only
+    from a cheap head sample (zero dependencies, never executes or fully loads
+    file content).
 
     Args:
         obj: Any Python object to analyze. A string naming an existing path is
             promoted to ``pathlib.Path``.
         name: Optional variable name for history filtering.
               If None, attempts to auto-detect from calling context.
-        deep: For paths, load and fully profile the file(s) instead of only
-            head-sniffing. No effect on non-path objects.
+        shallow: For paths, describe only from a head sample instead of
+            loading and fully profiling the file(s). No effect on non-path
+            objects.
         full: For a deep row-oriented file load, read every row instead of a
-            bounded sample. No effect unless ``deep`` is set.
+            bounded sample. No effect when ``shallow`` is set.
 
     Returns:
         Description object with content, meta, and history attributes
@@ -71,9 +74,9 @@ def describe(
         >>> print(result.meta)
         {'object_type': 'pandas.DataFrame', 'shape': (1000, 5), ...}
 
-        >>> # Describe a file straight from disk, then load and profile it:
-        >>> print(pls.describe("data.csv").content)                # head sniff + tip
-        >>> print(pls.describe("data.csv", deep=True).content)     # full profile
+        >>> # Describe a file straight from disk — full profile by default:
+        >>> print(pls.describe("data.csv").content)                  # full profile
+        >>> print(pls.describe("data.csv", shallow=True).content)    # head sniff + tip
     """
     # Promote a string that names an existing path to a Path so callers can pass
     # "data.csv" instead of Path("data.csv"). Existence-gated so ordinary
@@ -92,7 +95,7 @@ def describe(
     if is_path:
         from pretty_little_summary.sniffers._base import describe_path
 
-        metadata = describe_path(obj, deep=deep, full=full)
+        metadata = describe_path(obj, deep=not shallow, full=full)
     else:
         metadata = dispatch_adapter(obj)
 
@@ -104,10 +107,10 @@ def describe(
     # Generate deterministic summary
     content = deterministic_summary(metadata, history)
 
-    # Nudge toward the richer profile when a path was described shallowly.
-    if is_path and not deep:
+    # Nudge back toward the full profile when a path was described shallowly.
+    if is_path and shallow:
         content += (
-            "\nTip: pass deep=True to load and fully profile this "
+            "\nTip: drop shallow=True to load and fully profile this "
             f"{'directory' if obj.is_dir() else 'file'}."
         )
 

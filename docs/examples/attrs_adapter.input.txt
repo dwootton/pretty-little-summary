@@ -1,1 +1,1 @@
-Person('alice', 30)
+Employee('Priya Sharma', 'Senior Engineer', 142500.0, ...)

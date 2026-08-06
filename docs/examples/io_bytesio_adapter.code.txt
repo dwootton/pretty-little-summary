@@ -1,0 +1,7 @@
+import io
+
+obj = io.BytesIO(b"RIFF" + bytes(range(60)))
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

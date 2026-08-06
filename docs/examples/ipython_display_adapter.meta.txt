@@ -1,2 +1,3 @@
 Title: IPython display
 Tags: ipython, display
+Requires: IPython

@@ -1,0 +1,7 @@
+import re
+
+obj = re.compile(r"^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})$")
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

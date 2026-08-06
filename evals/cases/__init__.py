@@ -42,6 +42,7 @@ class Case:
     describe_kwargs: dict = field(default_factory=dict)
     display_input: str = ""  # human-readable input spec, shown to the judge
     notes: str = ""  # what a good summary should mention
+    source_url: str = ""  # public URL of the underlying data, if any
 
     def missing_requirement(self) -> str | None:
         """Return a skip reason if this case cannot run, else None."""
@@ -72,6 +73,7 @@ def case(
     describe_kwargs: dict | None = None,
     display_input: str = "",
     notes: str = "",
+    source_url: str = "",
 ) -> Callable[[Callable[[CaseCtx], Any]], Callable[[CaseCtx], Any]]:
     """Decorator registering a build function as a Case."""
 
@@ -86,6 +88,7 @@ def case(
                 describe_kwargs=describe_kwargs or {},
                 display_input=display_input,
                 notes=notes,
+                source_url=source_url,
             )
         )
         return build

@@ -12,6 +12,8 @@ def build():
 
 
 def expected(meta):
+    from pretty_little_summary.descriptor_utils import truncate_row_keys
+
     parts = [
         f"A PyArrow Table with {meta['metadata']['rows']} rows and {meta['metadata']['columns']} columns."
     ]
@@ -27,7 +29,5 @@ def expected(meta):
         parts.append(f"Memory: {memory}.")
     sample_rows = meta["metadata"].get("sample_rows")
     if sample_rows:
-        parts.append(f"Sample row: {sample_rows[0]}.")
-    elif meta["metadata"].get("sample_rows_omitted"):
-        parts.append("Sample rows omitted for size/perf.")
+        parts.append(f"Sample row: {truncate_row_keys(sample_rows[0])}.")
     return " ".join(parts)

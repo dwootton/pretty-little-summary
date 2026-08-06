@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import re
 import xml.etree.ElementTree as ET
 from typing import Any
@@ -85,7 +86,26 @@ def _detect_json(value: str) -> dict[str, Any] | None:
         meta["keys"] = list(parsed.keys())[:10]
     elif isinstance(parsed, list):
         meta["length"] = len(parsed)
+    if _has_non_finite_float(parsed):
+        meta["has_non_finite"] = True
     return meta
+
+
+def _has_non_finite_float(value: Any) -> bool:
+    """True if a NaN/Infinity/-Infinity literal appears anywhere in the tree.
+
+    Standard JSON numbers cannot produce these; Python's parser only yields
+    them from the non-standard ``NaN``/``Infinity``/``-Infinity`` literals it
+    accepts as an extension, so finding one here means the file relies on
+    that extension and would be rejected by a strict JSON parser.
+    """
+    if isinstance(value, float):
+        return math.isnan(value) or math.isinf(value)
+    if isinstance(value, dict):
+        return any(_has_non_finite_float(v) for v in value.values())
+    if isinstance(value, list):
+        return any(_has_non_finite_float(v) for v in value)
+    return False
 
 
 def _detect_yaml(value: str) -> dict[str, Any] | None:
@@ -291,9 +311,10 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
         return " ".join(parts)
     if fmt == "json":
         keys = metadata.get("keys")
+        suffix = " Contains non-standard NaN/Infinity literals." if metadata.get("has_non_finite") else ""
         if keys:
-            return f"A valid JSON string containing an object with keys: {', '.join(keys)}."
-        return "A valid JSON string."
+            return f"A valid JSON string containing an object with keys: {', '.join(keys)}.{suffix}"
+        return f"A valid JSON string.{suffix}"
     if fmt == "yaml":
         keys = metadata.get("keys")
         if keys:

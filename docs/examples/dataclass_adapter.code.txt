@@ -1,0 +1,15 @@
+from dataclasses import dataclass
+
+@dataclass
+class Employee:
+    name: str
+    role: str
+    salary: float
+    years: int
+    remote: bool
+
+obj = Employee("Priya Sharma", "Senior Engineer", 142500.0, 6, True)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

@@ -1,1 +1,1 @@
-A Pydantic model pydantic.User.
+A Pydantic model pydantic.Employee with fields: name='Priya Sharma', role='Senior Engineer', salary=142500.0, years=6, skills=['python', 'rust'].

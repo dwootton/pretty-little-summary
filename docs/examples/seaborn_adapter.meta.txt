@@ -1,2 +1,3 @@
 Title: Seaborn grid
 Tags: seaborn, chart
+Requires: seaborn, pandas

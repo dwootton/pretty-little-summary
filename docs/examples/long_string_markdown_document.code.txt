@@ -1,0 +1,17 @@
+text = (
+    "# Release Notes\n\n"
+    "## v2.3.0\n\n"
+    "- Added streaming support for large uploads\n"
+    "- Fixed a race condition in the connection pool\n"
+    "- Deprecated the legacy `auth_token` parameter\n\n"
+    "```python\n"
+    'client = Client(api_key="sk-...")\n'
+    "response = client.upload(path, stream=True)\n"
+    "```\n\n"
+    "See the [migration guide](https://example.com/migrate) for details.\n"
+)
+obj = text * 6
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

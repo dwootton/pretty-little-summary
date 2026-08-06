@@ -63,4 +63,8 @@ if LIBRARY_AVAILABLE:
 def _build_nl_summary(metadata: dict[str, Any]) -> str:
     class_name = metadata.get("class_name")
     fields = metadata.get("fields") or []
-    return f"An attrs class {class_name} with {len(fields)} attributes."
+    values = metadata.get("values") or {}
+    shown = fields[:8]
+    pairs = ", ".join(f"{name}={values.get(name)}" for name in shown)
+    suffix = f", ... ({len(fields)} attributes total)" if len(fields) > 8 else ""
+    return f"An attrs class {class_name} with attributes: {pairs}{suffix}."

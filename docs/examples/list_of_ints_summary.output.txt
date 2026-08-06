@@ -1,1 +1,1 @@
-A list of 5 integers.
+A list of 29 integers. Stats: range 2 to 58, mean 30, std 17.

@@ -36,7 +36,7 @@ class TensorflowAdapter:
         metadata: dict[str, Any] = {
             "type": "tf_tensor",
             "shape": tuple(obj.shape),
-            "dtype": str(obj.dtype),
+            "dtype": getattr(obj.dtype, "name", str(obj.dtype)),
             "device": getattr(obj, "device", None),
         }
         try:
@@ -46,7 +46,12 @@ class TensorflowAdapter:
             pass
 
         meta["metadata"] = metadata
-        meta["nl_summary"] = f"A TensorFlow tensor with shape {metadata.get('shape')}."
+        sample_values = metadata.get("sample_values")
+        sample_str = f" Values: {sample_values}." if sample_values else ""
+        meta["nl_summary"] = (
+            f"A TensorFlow tensor with shape {metadata.get('shape')} and dtype "
+            f"{metadata.get('dtype')}.{sample_str}"
+        )
         return meta
 
 

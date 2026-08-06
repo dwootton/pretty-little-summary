@@ -15,7 +15,7 @@ def test_scipy_sparse_csr() -> None:
     meta = dispatch_adapter(build_input(example))
     assert meta["adapter_used"] == "ScipySparseAdapter"
     assert meta["metadata"]["type"] == "sparse_matrix"
-    assert meta["metadata"]["nnz"] == 2
+    assert meta["metadata"]["nnz"] == 6
     summary = deterministic_summary(meta)
     print("scipy_sparse:", summary)
     assert summary == expected_output(example, meta)

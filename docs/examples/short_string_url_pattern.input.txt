@@ -1,1 +1,1 @@
-https://example.com/foo
+https://api.github.com/repos/anthropics/claude-code/issues?state=open&page=2

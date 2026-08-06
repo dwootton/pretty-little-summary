@@ -1,2 +1,3 @@
 Title: Sklearn pipeline
 Tags: sklearn, pipeline
+Requires: sklearn

@@ -1,1 +1,1 @@
-pd.Index([1, 2, 3], name='ids')
+pd.Index([f'user_{i:03d}' for i in range(15)], name='user_id')

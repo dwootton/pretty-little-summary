@@ -1,2 +1,3 @@
 Title: Attrs class
 Tags: attrs, dataclass
+Requires: attr

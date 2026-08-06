@@ -1,0 +1,11 @@
+obj = (
+    '<?xml version="1.0"?>\n'
+    "<catalog>\n"
+    '  <book id="1"><title>Dune</title><author>Herbert</author></book>\n'
+    '  <book id="2"><title>Foundation</title><author>Asimov</author></book>\n'
+    "</catalog>"
+)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

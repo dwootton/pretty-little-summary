@@ -1,1 +1,1 @@
-A float 0.5, likely representing a probability.
+A floating-point number with value 0.9973, recognized as a probability.

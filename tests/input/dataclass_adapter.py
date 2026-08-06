@@ -1,16 +1,22 @@
 ID = "dataclass_adapter"
 TITLE = "Dataclass"
 TAGS = ["stdlib", "dataclass"]
-DISPLAY_INPUT = "Point(x=1, y=2)"
-EXPECTED = "A dataclass Point with fields: x=1, y=2."
+DISPLAY_INPUT = "Employee(name='Priya Sharma', role='Senior Engineer', ...)"
+EXPECTED = (
+    "A dataclass Employee with fields: name='Priya Sharma', "
+    "role='Senior Engineer', salary=142500.0, years=6, remote=True."
+)
 
 
 def build():
     from dataclasses import dataclass
 
     @dataclass
-    class Point:
-        x: int
-        y: int
+    class Employee:
+        name: str
+        role: str
+        salary: float
+        years: int
+        remote: bool
 
-    return Point(1, 2)
+    return Employee("Priya Sharma", "Senior Engineer", 142500.0, 6, True)

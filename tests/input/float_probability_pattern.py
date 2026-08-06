@@ -1,9 +1,9 @@
 ID = "float_probability_pattern"
 TITLE = "Probability float"
 TAGS = ["primitives", "float"]
-DISPLAY_INPUT = "0.5"
-EXPECTED = "A float 0.5, likely representing a probability."
+DISPLAY_INPUT = "0.9973  # model confidence"
+EXPECTED = "A floating-point number with value 0.9973, recognized as a probability."
 
 
 def build():
-    return 0.5
+    return 0.9973

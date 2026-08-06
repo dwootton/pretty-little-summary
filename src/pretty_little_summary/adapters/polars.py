@@ -11,7 +11,7 @@ except ImportError:
 from pretty_little_summary.adapters._base import AdapterRegistry
 from pretty_little_summary.core import MetaDescription
 from pretty_little_summary.descriptor_registry import DescribeConfigRegistry
-from pretty_little_summary.descriptor_utils import safe_repr
+from pretty_little_summary.descriptor_utils import safe_repr, truncate_row_keys
 
 
 class PolarsAdapter:
@@ -61,17 +61,12 @@ class PolarsAdapter:
                     meta.setdefault("warnings", []).append(f"Could not get shape: {e}")
 
                 try:
-                    rows, cols = obj.shape
-                    if rows * cols <= config.max_sample_cells and rows <= config.max_sample_rows:
-                        sample = obj.head(config.sample_size).to_dicts()
-                        meta["metadata"] = meta.get("metadata", {})
-                        meta["metadata"]["sample_rows"] = [
-                            {str(k): safe_repr(v, config.max_sample_repr) for k, v in row.items()}
-                            for row in sample
-                        ]
-                    else:
-                        meta["metadata"] = meta.get("metadata", {})
-                        meta["metadata"]["sample_rows_omitted"] = True
+                    sample = obj.head(config.sample_size).to_dicts()
+                    meta["metadata"] = meta.get("metadata", {})
+                    meta["metadata"]["sample_rows"] = [
+                        {str(k): safe_repr(v, config.max_sample_repr) for k, v in row.items()}
+                        for row in sample
+                    ]
                 except Exception:
                     pass
 
@@ -110,7 +105,5 @@ def _build_nl_summary(meta: MetaDescription) -> str:
     parts = [f"A Polars DataFrame with shape {shape}.{schema_str}"]
     sample_rows = meta.get("metadata", {}).get("sample_rows")
     if sample_rows:
-        parts.append(f"Sample row: {sample_rows[0]}.")
-    elif meta.get("metadata", {}).get("sample_rows_omitted"):
-        parts.append("Sample rows omitted for size/perf.")
+        parts.append(f"Sample row: {truncate_row_keys(sample_rows[0])}.")
     return " ".join(parts)

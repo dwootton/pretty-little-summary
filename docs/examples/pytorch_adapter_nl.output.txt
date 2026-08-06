@@ -1,1 +1,1 @@
-A PyTorch tensor with shape (2,).
+A PyTorch tensor with shape (3, 4) and dtype torch.float32 on cpu.

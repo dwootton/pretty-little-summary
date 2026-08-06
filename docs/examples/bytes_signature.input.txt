@@ -1,1 +1,1 @@
-b'\x89PNG\r\n\x1a\n' + b'\x00' * 20
+PNG signature + IHDR chunk for a 1920x1080 image

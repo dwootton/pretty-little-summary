@@ -74,7 +74,10 @@ if LIBRARY_AVAILABLE:
 
 
 def _build_nl_summary(metadata: dict[str, Any]) -> str:
+    density = metadata.get("density")
+    density_str = f"{density:.1%}" if density is not None else "unknown"
     return (
         f"A {metadata.get('format')} sparse matrix with shape "
-        f"({metadata.get('rows')}, {metadata.get('cols')})."
+        f"({metadata.get('rows')}, {metadata.get('cols')}), {metadata.get('nnz')} "
+        f"non-zero values ({density_str} density)."
     )

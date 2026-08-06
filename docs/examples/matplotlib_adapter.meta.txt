@@ -1,2 +1,3 @@
 Title: Matplotlib figure
 Tags: matplotlib, chart
+Requires: matplotlib

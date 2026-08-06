@@ -114,4 +114,11 @@ AdapterRegistry.register(CallableAdapter)
 
 
 def _build_nl_summary(metadata: dict[str, Any]) -> str:
-    return f"A callable {metadata.get('type')} named {metadata.get('name')}."
+    kind = metadata.get("type")
+    if kind in ("function", "method"):
+        label = "function" if kind == "function" else "method"
+        signature = metadata.get("signature", "")
+        doc = metadata.get("doc")
+        doc_str = f" Docstring: {doc!r}." if doc else ""
+        return f"A callable {label} {metadata.get('name')}{signature}.{doc_str}"
+    return f"A callable {kind} named {metadata.get('name')}."

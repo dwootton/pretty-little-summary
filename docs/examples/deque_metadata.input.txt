@@ -1,1 +1,1 @@
-deque([1, 2, 3, 4])
+deque(range(1, 30, 2))  # sliding window of odd numbers

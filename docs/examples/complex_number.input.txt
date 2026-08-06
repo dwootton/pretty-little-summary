@@ -1,1 +1,1 @@
-3 + 4j
+50 + 75j  # impedance in ohms

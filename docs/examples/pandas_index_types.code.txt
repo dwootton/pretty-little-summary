@@ -1,0 +1,7 @@
+import pandas as pd
+
+obj = pd.Index([f"user_{i:03d}" for i in range(15)], name="user_id")
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

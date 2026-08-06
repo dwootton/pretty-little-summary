@@ -1,6 +1,6 @@
 [project]
 name = "pretty-little-summary"
-version = "0.2.0"
+version = "0.3.0"
 description = "Automatic structured summaries of Python objects - DataFrames, arrays, models, and more"
 readme = "README.md"
 authors = [
@@ -96,6 +96,25 @@ science = [
     "networkx>=3.0.0",
     "scipy>=1.10.0",
     "h5py>=3.9.0",
+]
+
+# Trimmed adapter set for CI eval-report generation (excludes the slowest/
+# flakiest installs: torch, tensorflow, jax, h5py, bokeh, plotly, altair,
+# seaborn, requests, ipython). Cases requiring an excluded lib report skip.
+evals-ci = [
+    "pandas>=2.0.0",
+    "polars>=0.20.0",
+    "numpy>=1.24.0",
+    "pyarrow>=12.0.0",
+    "matplotlib>=3.8.0",
+    "pillow>=10.0.0",
+    "scikit-learn>=1.4.0",
+    "scipy>=1.10.0",
+    "statsmodels>=0.14.0",
+    "xarray>=2024.0.0",
+    "networkx>=3.0.0",
+    "pydantic>=2.0.0",
+    "attrs>=23.0.0",
 ]
 
 # All adapters (for testing)

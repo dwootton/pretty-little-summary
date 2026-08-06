@@ -1,0 +1,1 @@
+A Pydantic model pydantic.User with fields: name='Ada', age=36, address={'city': 'London', 'zip_code': 'EC1'}, tags=['math', 'computing'].

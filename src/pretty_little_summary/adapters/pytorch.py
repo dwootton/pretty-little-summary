@@ -43,7 +43,11 @@ class PytorchAdapter:
                     "requires_grad": obj.requires_grad,
                 }
                 meta["metadata"] = metadata
-                meta["nl_summary"] = f"A PyTorch tensor with shape {metadata.get('shape')}."
+                grad_str = " (requires_grad)" if metadata.get("requires_grad") else ""
+                meta["nl_summary"] = (
+                    f"A PyTorch tensor with shape {metadata.get('shape')} and dtype "
+                    f"{metadata.get('dtype')} on {metadata.get('device')}{grad_str}."
+                )
                 return meta
 
             meta: MetaDescription = {

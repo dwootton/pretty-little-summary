@@ -1,0 +1,7 @@
+from datetime import date
+
+obj = date(2024, 1, 1)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

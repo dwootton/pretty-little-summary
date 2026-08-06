@@ -1,0 +1,10 @@
+import h5py
+
+file = h5py.File("in_memory.h5", "w", driver="core", backing_store=False)
+dset = file.create_dataset("data", data=[1, 2, 3])
+obj, _cleanup = dset, file
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)
+_cleanup.close()

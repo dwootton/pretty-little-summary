@@ -1,0 +1,10 @@
+from PIL import Image
+
+obj = [
+    Image.new("RGB", (32 + i * 8, 32 + i * 8), color=(i * 40 % 256, i * 60 % 256, i * 80 % 256))
+    for i in range(5)
+]
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

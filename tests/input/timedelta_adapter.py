@@ -1,11 +1,11 @@
 ID = "timedelta_adapter"
 TITLE = "Timedelta"
 TAGS = ["stdlib", "timedelta"]
-DISPLAY_INPUT = "timedelta(days=2, hours=3)"
-EXPECTED = "A duration of 2 days (183600 seconds)."
+DISPLAY_INPUT = "timedelta(weeks=2, days=3, hours=5, minutes=30)"
+EXPECTED = "A duration of 17 days, 5 hours, 30 minutes (1488600 seconds)."
 
 
 def build():
     from datetime import timedelta
 
-    return timedelta(days=2, hours=3)
+    return timedelta(weeks=2, days=3, hours=5, minutes=30)

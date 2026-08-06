@@ -13,7 +13,7 @@ except ImportError:
 from pretty_little_summary.adapters._base import AdapterRegistry
 from pretty_little_summary.core import MetaDescription
 from pretty_little_summary.descriptor_registry import DescribeConfigRegistry
-from pretty_little_summary.descriptor_utils import format_bytes, safe_repr
+from pretty_little_summary.descriptor_utils import format_bytes, safe_repr, truncate_row_keys
 
 
 class PyArrowAdapter:
@@ -41,15 +41,11 @@ class PyArrowAdapter:
             meta["shape"] = (obj.num_rows, obj.num_columns)
             try:
                 rows = obj.num_rows
-                cols = obj.num_columns
-                if rows * cols <= config.max_sample_cells and rows <= config.max_sample_rows:
-                    sample = obj.slice(0, min(config.sample_size, rows)).to_pylist()
-                    metadata["sample_rows"] = [
-                        {str(k): safe_repr(v, config.max_sample_repr) for k, v in row.items()}
-                        for row in sample
-                    ]
-                else:
-                    metadata["sample_rows_omitted"] = True
+                sample = obj.slice(0, min(config.sample_size, rows)).to_pylist()
+                metadata["sample_rows"] = [
+                    {str(k): safe_repr(v, config.max_sample_repr) for k, v in row.items()}
+                    for row in sample
+                ]
             except Exception:
                 pass
         except Exception as e:
@@ -94,7 +90,5 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
         parts.append(f"Memory: {memory}.")
     sample_rows = metadata.get("sample_rows")
     if sample_rows:
-        parts.append(f"Sample row: {sample_rows[0]}.")
-    elif metadata.get("sample_rows_omitted"):
-        parts.append("Sample rows omitted for size/perf.")
+        parts.append(f"Sample row: {truncate_row_keys(sample_rows[0])}.")
     return " ".join(parts)

@@ -1,2 +1,3 @@
 Title: NumPy 1D array
 Tags: numpy, array
+Requires: numpy

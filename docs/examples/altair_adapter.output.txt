@@ -1,1 +1,1 @@
-An Altair chart with mark '{'type': 'line'}'.
+An Altair chart with mark 'line'.

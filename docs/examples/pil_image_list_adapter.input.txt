@@ -1,1 +1,1 @@
-[Image.new('RGB', (32, 32)) for _ in range(3)]
+[Image.new('RGB', (32 + i*8, 32 + i*8), color=(...)) for i in range(5)]

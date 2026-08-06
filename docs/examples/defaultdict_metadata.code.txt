@@ -1,0 +1,16 @@
+from collections import defaultdict
+
+obj = defaultdict(list)
+for category, item in [
+    ("fruit", "apple"),
+    ("fruit", "pear"),
+    ("veg", "carrot"),
+    ("veg", "pea"),
+    ("grain", "rice"),
+]:
+    obj[category].append(item)
+obj = obj
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

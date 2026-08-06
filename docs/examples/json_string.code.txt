@@ -1,0 +1,12 @@
+import json
+
+payload = {
+    "user": {"name": "alice", "age": 30, "roles": ["admin", "editor"]},
+    "active": True,
+    "last_login": "2026-07-30T12:00:00Z",
+}
+obj = json.dumps(payload)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

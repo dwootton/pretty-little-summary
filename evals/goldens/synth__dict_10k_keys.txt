@@ -1,1 +1,1 @@
-A dict with 10000 keys.
+A dict with 10000 keys (str -> int). Stats: range 0 to 3e+04, mean 1.5e+04, std 8.7e+03.

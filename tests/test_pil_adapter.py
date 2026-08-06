@@ -25,7 +25,7 @@ def test_pil_image_list_adapter() -> None:
     example = load_example("pil_image_list_adapter")
     meta = dispatch_adapter(build_input(example))
     assert meta["metadata"]["type"] == "pil_image_list"
-    assert meta["metadata"]["count"] == 3
+    assert meta["metadata"]["count"] == 5
     summary = deterministic_summary(meta)
     print("pil_list:", summary)
     assert summary == expected_output(example, meta)

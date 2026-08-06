@@ -1,0 +1,15 @@
+import attr
+
+@attr.define
+class Employee:
+    name: str
+    role: str
+    salary: float
+    department: str
+    years: int
+
+obj = Employee("Priya Sharma", "Senior Engineer", 142500.0, "Platform", 6)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

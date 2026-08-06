@@ -1,0 +1,1 @@
+A callable function haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float. Docstring: 'Great-circle distance between two lat/lon points, in kilometers.'.

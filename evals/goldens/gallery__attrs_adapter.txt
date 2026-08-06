@@ -1,1 +1,1 @@
-An attrs class Person with 2 attributes.
+An attrs class Employee with attributes: name='Priya Sharma', role='Senior Engineer', salary=142500.0, department='Platform', years=6.

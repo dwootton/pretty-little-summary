@@ -1,1 +1,1 @@
-A compiled regex pattern /\\w+/.
+A compiled regex pattern /^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})$/. 3 capturing groups.

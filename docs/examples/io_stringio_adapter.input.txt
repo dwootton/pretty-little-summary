@@ -1,1 +1,1 @@
-io.StringIO('hello')
+io.StringIO('INFO startup complete\nWARN cache miss...')

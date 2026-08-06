@@ -1,1 +1,1 @@
-A CSV string with 3 rows and 3 columns (,-delimited). Header: 'a', 'b', 'c'. Sample: ["'1'", "'2'", "'3'"]. Column types: int, int, int. Best displayed as sortable table.
+A CSV string with 7 rows and 4 columns (,-delimited). Header: 'city', 'population', 'state', 'founded'. Sample: ["'Austin'", "'964254'", "'TX'", "'1839'"]. Column types: str, int, str, int. Best displayed as sortable table.

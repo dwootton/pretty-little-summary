@@ -180,13 +180,30 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
         value = metadata.get("value")
         special = metadata.get("special_form")
         if special:
-            return f"The integer {value}, likely a {special.get('type')}."
+            special_type = special.get("type")
+            if special_type == "year":
+                return f"An integer with value {value}, recognized as a year."
+            if special_type == "bit_flag":
+                return (
+                    f"An integer with value {value} ({metadata.get('hex')}), "
+                    f"recognized as a bit flag (bit {special.get('bit')})."
+                )
+            if special_type == "http_status":
+                return f"An integer with value {value}, recognized as an HTTP status code."
+            if special_type == "port_number":
+                return f"An integer with value {value}, recognized as a port number."
+            if special_type == "exit_code":
+                return f"An integer with value {value}, recognized as an exit code."
+            if special_type == "timestamp_unix":
+                utc = special.get("utc")
+                utc_str = f" ({utc})" if utc else ""
+                return f"An integer with value {value}, recognized as a Unix timestamp{utc_str}."
         return f"An integer with value {value}."
     if ptype == "float":
         value = metadata.get("value")
         pattern = metadata.get("pattern")
         if pattern:
-            return f"A float {value}, likely representing a {pattern}."
+            return f"A floating-point number with value {value}, recognized as a {pattern.replace('_', ' ')}."
         return f"A floating-point number with value {value}."
     if ptype == "bool":
         return f"A boolean value: {metadata.get('value')}."
@@ -194,7 +211,11 @@ def _build_nl_summary(metadata: dict[str, Any]) -> str:
         return "A None value (null or missing)."
     if ptype == "string":
         if metadata.get("document_type"):
-            return f"A {metadata.get('document_type')} document string ({metadata.get('length')} chars)."
+            doc_type = metadata.get("document_type").replace("_", " ")
+            return (
+                f"A {doc_type} document string ({metadata.get('length')} chars, "
+                f"{metadata.get('line_count')} lines, {metadata.get('word_count')} words)."
+            )
         pattern = metadata.get("pattern")
         if pattern:
             return f"A string containing a {pattern}: '{metadata.get('value')}'."

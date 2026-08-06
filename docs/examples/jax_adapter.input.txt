@@ -1,1 +1,1 @@
-jnp.array([1, 2, 3])
+jnp.array(np.round(np.linspace(0, 1, 12), 3))

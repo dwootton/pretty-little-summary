@@ -1,2 +1,2 @@
 A CSV file with 15 columns (55.7 KB). Header: 'survived', 'pclass', 'sex', 'age', 'sibsp', 'parch', 'fare', 'embarked', 'class', 'who', 'adult_male', 'deck', 'embark_town', 'alive', 'alone'.
-Tip: pass deep=True to load and fully profile this file.
+Tip: drop shallow=True to load and fully profile this file.

@@ -1,1 +1,1 @@
-A structured object of type enum.
+An enum Status: ACTIVE (one of 4 members: PENDING, ACTIVE, SUSPENDED, CLOSED).

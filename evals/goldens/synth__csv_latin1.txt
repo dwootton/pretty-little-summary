@@ -1,2 +1,2 @@
 A CSV file with 2 columns (55.0 B). Header: 'city', 'pop'.
-Tip: pass deep=True to load and fully profile this file.
+Tip: drop shallow=True to load and fully profile this file.

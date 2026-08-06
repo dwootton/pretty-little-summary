@@ -1,1 +1,1 @@
-np.arange(10, dtype=np.int64)
+np.round(np.linspace(60, 95, 24), 1)  # test scores

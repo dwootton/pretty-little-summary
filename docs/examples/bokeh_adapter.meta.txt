@@ -1,2 +1,3 @@
 Title: Bokeh figure
 Tags: bokeh, chart
+Requires: bokeh

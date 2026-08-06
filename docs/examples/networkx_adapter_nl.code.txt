@@ -1,0 +1,9 @@
+import networkx as nx
+
+g = nx.Graph()
+g.add_edge("a", "b")
+obj = g
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

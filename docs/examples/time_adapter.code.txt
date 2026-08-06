@@ -1,0 +1,7 @@
+from datetime import time
+
+obj = time(14, 30, 0)
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

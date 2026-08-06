@@ -1,0 +1,7 @@
+import xarray as xr
+
+obj = xr.DataArray([[1, 2], [3, 4]], dims=["x", "y"])
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

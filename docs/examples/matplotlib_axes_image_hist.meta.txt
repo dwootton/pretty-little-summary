@@ -1,2 +1,3 @@
 Title: Matplotlib axes (image + hist)
 Tags: matplotlib, chart
+Requires: matplotlib

@@ -57,3 +57,7 @@ planning/
 # Eval harness artifacts (committed: goldens/, scores.json, manifest.json)
 evals/out/
 evals/cache/
+
+# Generated in CI on every docs deploy, never committed
+docs/eval-report.html
+docs/dist/

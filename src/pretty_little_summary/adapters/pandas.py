@@ -16,6 +16,7 @@ from pretty_little_summary.descriptor_utils import (
     compute_numeric_stats,
     format_bytes,
     safe_repr,
+    truncate_row_keys,
 )
 
 
@@ -200,13 +201,8 @@ def _describe_dataframe(df: "pd.DataFrame", config) -> dict[str, Any]:
         pass
 
     try:
-        rows = int(df.shape[0])
-        cols = int(df.shape[1])
-        if rows * cols <= config.max_sample_cells and rows <= config.max_sample_rows:
-            sample = df.head(config.sample_size).to_dict(orient="records")
-            metadata["sample_rows"] = _format_sample_rows(sample, config)
-        else:
-            metadata["sample_rows_omitted"] = True
+        sample = df.head(config.sample_size).to_dict(orient="records")
+        metadata["sample_rows"] = _format_sample_rows(sample, config)
     except Exception:
         pass
 
@@ -241,6 +237,11 @@ def _analyze_columns(df: "pd.DataFrame", config) -> list[dict[str, Any]]:
         except Exception:
             pass
 
+        if series.dtype == object:
+            mixed_types = _mixed_value_types(series)
+            if mixed_types:
+                col_meta["mixed_types"] = mixed_types
+
         if _is_numeric(series):
             try:
                 samples = _sample_series_values(series, 10000)
@@ -261,6 +262,41 @@ def _analyze_columns(df: "pd.DataFrame", config) -> list[dict[str, Any]]:
 
         analysis.append(col_meta)
     return analysis
+
+
+def _mixed_value_types(series: "pd.Series") -> list[str]:
+    """Distinct Python type names among a column's non-null values.
+
+    An ``object`` dtype column can silently mix ints, strs, floats, etc. —
+    pandas reports it as just "object", hiding the heterogeneity. Returns an
+    empty list when the column holds a single type (the common, unremarkable
+    case), so callers can treat "truthy" as "worth flagging".
+    """
+    try:
+        samples = _sample_series_values(series, 10000)
+    except Exception:
+        return []
+    types = sorted({type(v).__name__ for v in samples})
+    return types if len(types) > 1 else []
+
+
+def _select_featured_columns(col_analysis: list[dict[str, Any]], limit: int = 3) -> list[dict[str, Any]]:
+    """Pick columns for the one-line prose summary, favoring ones with nulls.
+
+    A plain first-N slice can hide the exact column a "has NA values" note
+    is about (e.g. a null-heavy column past position N). Null-carrying
+    columns are surfaced first, ranked by null count so the biggest NA
+    source always makes the cut; remaining slots fill from original order
+    so a clean table still gets a stable "first N" summary.
+    """
+    with_nulls = sorted(
+        (c for c in col_analysis if c.get("null_count")),
+        key=lambda c: c["null_count"],
+        reverse=True,
+    )
+    without_nulls = [c for c in col_analysis if not c.get("null_count")]
+    ordered = with_nulls + without_nulls
+    return ordered[:limit]
 
 
 def _is_numeric(series: "pd.Series") -> bool:
@@ -352,15 +388,18 @@ def _build_nl_summary(meta: MetaDescription, metadata: dict[str, Any]) -> str:
         col_analysis = metadata.get("column_analysis") or []
         if col_analysis:
             cols = []
-            for col in col_analysis[:3]:
+            for col in _select_featured_columns(col_analysis):
                 name = col.get("name")
                 dtype = col.get("dtype")
                 col_nulls = col.get("null_count")
                 stats = col.get("stats")
                 cardinality = col.get("cardinality")
+                mixed_types = col.get("mixed_types")
                 details = []
                 if dtype:
                     details.append(dtype)
+                if mixed_types:
+                    details.append(f"mixed types: {', '.join(mixed_types)}")
                 if col_nulls:
                     details.append(f"{col_nulls} nulls")
                 if stats:
@@ -372,9 +411,7 @@ def _build_nl_summary(meta: MetaDescription, metadata: dict[str, Any]) -> str:
                 parts.append(f"Columns: {', '.join(cols)}.")
         sample_rows = metadata.get("sample_rows")
         if sample_rows:
-            parts.append(f"Sample row: {sample_rows[0]}.")
-        elif metadata.get("sample_rows_omitted"):
-            parts.append("Sample rows omitted for size/perf.")
+            parts.append(f"Sample row: {truncate_row_keys(sample_rows[0])}.")
         return " ".join(parts)
     if metadata.get("type") == "series":
         name = metadata.get("name") or "unnamed"
@@ -393,11 +430,27 @@ def _build_nl_summary(meta: MetaDescription, metadata: dict[str, Any]) -> str:
             parts.append(f"Sample: [{', '.join(sample_values)}].")
         return " ".join(parts)
     if metadata.get("type") == "index":
-        return f"A pandas Index with {metadata.get('length')} entries."
+        name = metadata.get("name")
+        name_str = f" '{name}'" if name else ""
+        sample_values = metadata.get("sample_values")
+        sample_str = f" Sample: [{', '.join(sample_values)}]." if sample_values else ""
+        return (
+            f"A pandas Index{name_str} with {metadata.get('length')} entries, "
+            f"dtype {metadata.get('dtype')}.{sample_str}"
+        )
     if metadata.get("type") == "multiindex":
         return f"A pandas MultiIndex with {metadata.get('levels')} levels and {metadata.get('length')} entries."
     if metadata.get("type") == "timestamp":
         return f"A pandas Timestamp: {metadata.get('iso')}."
     if metadata.get("type") == "categorical":
-        return f"A pandas Categorical with {len(metadata.get('categories', []))} categories."
+        categories = metadata.get("categories", [])
+        ordered = "ordered" if metadata.get("ordered") else "unordered"
+        counts = metadata.get("counts")
+        counts_str = ""
+        if counts:
+            counts_str = " Counts: " + ", ".join(f"{k}: {v}" for k, v in counts.items()) + "."
+        return (
+            f"A pandas Categorical with {len(categories)} {ordered} categories "
+            f"({', '.join(categories)}) over {metadata.get('length')} values.{counts_str}"
+        )
     return f"A pandas object {obj_type}."

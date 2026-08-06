@@ -1,1 +1,1 @@
-io.BytesIO(b'hello')
+io.BytesIO(b'RIFF' + bytes(range(60)))

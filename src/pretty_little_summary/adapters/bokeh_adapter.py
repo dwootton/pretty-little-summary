@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 try:
-    from bokeh.plotting.figure import Figure
+    from bokeh.plotting import figure as Figure
     LIBRARY_AVAILABLE = True
 except ImportError:
     LIBRARY_AVAILABLE = False

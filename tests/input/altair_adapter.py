@@ -3,7 +3,7 @@ TITLE = "Altair chart"
 TAGS = ["altair", "chart"]
 REQUIRES = ['altair', 'pandas']
 DISPLAY_INPUT = "altair.Chart(df).mark_line().encode(x='x', y='y')"
-EXPECTED = "An Altair chart with mark '{'type': 'line'}'."
+EXPECTED = "An Altair chart with mark 'line'."
 
 
 def build():

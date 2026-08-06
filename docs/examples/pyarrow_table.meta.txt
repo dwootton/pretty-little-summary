@@ -1,2 +1,3 @@
 Title: PyArrow Table
 Tags: pyarrow, table
+Requires: pyarrow

@@ -1,0 +1,5 @@
+obj = "name: alice\nage: 30\nroles:\n  - admin\n  - editor\nactive: true\n"
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

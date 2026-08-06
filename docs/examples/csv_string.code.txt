@@ -1,0 +1,15 @@
+rows = [
+    ("Austin", 964254, "TX", 1839),
+    ("Denver", 715522, "CO", 1858),
+    ("Seattle", 737015, "WA", 1851),
+    ("Boston", 654776, "MA", 1630),
+    ("Miami", 442241, "FL", 1896),
+    ("Portland", 652503, "OR", 1845),
+]
+lines = ["city,population,state,founded"]
+lines.extend(",".join(str(field) for field in row) for row in rows)
+obj = "\n".join(lines) + "\n"
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

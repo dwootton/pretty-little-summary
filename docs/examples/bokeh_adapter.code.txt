@@ -1,0 +1,9 @@
+from bokeh.plotting import figure
+
+fig = figure()
+fig.line([1, 2], [3, 4])
+obj = fig
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)

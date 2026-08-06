@@ -1,2 +1,3 @@
 Title: TensorFlow tensor
 Tags: tensorflow, tensor
+Requires: tensorflow

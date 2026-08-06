@@ -1,0 +1,10 @@
+try:
+    raise ValueError("boom")
+except ValueError as exc:
+    if exc.__traceback__ is None:
+        raise ValueError("Expected traceback")
+    obj = exc.__traceback__
+
+import pretty_little_summary as pls
+result = pls.describe(obj)
+print(result.content)
