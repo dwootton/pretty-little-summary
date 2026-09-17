@@ -111,8 +111,12 @@
       border: 1px solid var(--rule);
       margin-bottom: 1rem;
     }
-    .loader-strip .tier-row { margin-bottom: 0; gap: 0.4rem; }
-    .loader-strip .tier-btn { font-size: 0.72rem; padding: 0.35rem 0.65rem; }
+    .dynamic-mode {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      white-space: nowrap;
+    }
     .loader-strip #status-line { margin-left: auto; }
 
     .secondary-controls {
@@ -147,27 +151,6 @@
       padding: 1.25rem;
       border: 1px solid var(--rule);
     }
-
-    .tier-row {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 0.75rem;
-    }
-
-    .tier-btn {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      padding: 0.5rem 1rem;
-      background: var(--card);
-      border: 1px solid var(--rule);
-      cursor: pointer;
-      color: var(--ink-soft);
-    }
-
-    .tier-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .tier-btn.active { background: var(--accent); border-color: var(--accent); color: var(--paper); }
-    .tier-btn:disabled { opacity: 0.5; cursor: default; }
 
     .example-grid {
       display: grid;
@@ -379,13 +362,8 @@
 
       <div>
         <div class="loader-strip">
-          <div class="tier-row" id="tier-row">
-            <button class="tier-btn" data-tier="core">core only</button>
-            <button class="tier-btn" data-tier="data">+ pandas / numpy</button>
-            <button class="tier-btn" data-tier="viz">+ matplotlib / pillow</button>
-            <button class="tier-btn" data-tier="full">+ scientific stack</button>
-          </div>
-          <div id="status-line">Loading the core runtime...</div>
+          <div class="dynamic-mode">dynamic imports on</div>
+          <div id="status-line">Loading the runtime...</div>
         </div>
 
         <div class="secondary-controls">
@@ -422,13 +400,7 @@
 
   <script src="https://cdn.jsdelivr.net/pyodide/v314.0.4/full/pyodide.js"></script>
   <script>
-    const TIERS = {
-      core: [],
-      data: ['pandas', 'numpy', 'pyarrow'],
-      viz: ['pandas', 'numpy', 'pyarrow', 'matplotlib', 'pillow'],
-      full: ['pandas', 'numpy', 'pyarrow', 'matplotlib', 'pillow', 'scipy',
-             'scikit-learn', 'networkx', 'pydantic', 'xarray', 'statsmodels'],
-    };
+    const DYNAMIC_IMPORTS = true;
 
     // Import name -> installable package name, for cases where they differ.
     const IMPORT_TO_PACKAGE = {
@@ -550,7 +522,6 @@ print(result.content)`,
     const outputEl = document.getElementById('output');
     const codeInput = document.getElementById('code-input');
     const fileListEl = document.getElementById('file-list');
-    const tierButtons = [...document.querySelectorAll('.tier-btn')];
     const exampleGrid = document.getElementById('example-grid');
     const galleryBrowse = document.querySelector('.gallery-browse');
     const gallerySearch = document.getElementById('gallery-search');
@@ -558,7 +529,6 @@ print(result.content)`,
 
     let pyodideReadyPromise = null;
     let pyodide = null;
-    let loadedTier = null;
     let readyPromise = null;
     // Snapshot of the run cwd's contents right after the runtime boots, so
     // refreshFileList() can show only what user code (or an upload) created,
@@ -608,7 +578,7 @@ print(result.content)`,
         btn.textContent = item.isDir ? `${item.display}/` : item.display;
         btn.addEventListener('click', () => {
           const code = `import pretty_little_summary as pls\n\n` +
-            `result = pls.describe(${JSON.stringify(item.path)})\n` +
+            `result = pls.describe(${JSON.stringify(item.path)}, dynamic_imports=True)\n` +
             `print(result.content)`;
           codeInput.value = code;
           runCode(code);
@@ -644,17 +614,11 @@ print(result.content)`,
       renderFileList(items);
     }
 
-    async function loadTier(tier) {
-      tierButtons.forEach(b => b.disabled = true);
+    async function loadRuntime() {
       setStatus(`loading pyodide runtime...`, 'busy');
       try {
         await getPyodide();
         await captureBaselineOnce();
-        const wasmPackages = TIERS[tier];
-        if (wasmPackages.length) {
-          setStatus(`loading ${wasmPackages.join(', ')}...`, 'busy');
-          await pyodide.loadPackage(wasmPackages);
-        }
         setStatus('loading micropip...', 'busy');
         await pyodide.loadPackage('micropip');
         const micropip = pyodide.pyimport('micropip');
@@ -667,28 +631,18 @@ print(result.content)`,
         } catch (e) {
           await micropip.install('pretty-little-summary'); // local dev fallback
         }
-        loadedTier = tier;
-        tierButtons.forEach(b => {
-          b.classList.toggle('active', b.dataset.tier === tier);
-          b.disabled = false;
-        });
         fileInput.disabled = false;
         runBtn.disabled = false;
-        setStatus(`ready (tier: ${tier})`, 'ready');
+        setStatus('ready (dynamic imports)', 'ready');
       } catch (err) {
-        tierButtons.forEach(b => b.disabled = false);
         setStatus(`failed to load: ${err}`, 'error');
         console.error(err);
       }
     }
 
-    tierButtons.forEach(btn => {
-      btn.addEventListener('click', () => { readyPromise = loadTier(btn.dataset.tier); });
-    });
-
-    // Load the core tier automatically so the runtime is warm by the time
-    // someone picks an example or starts typing, instead of waiting on a click.
-    readyPromise = loadTier('core');
+    // Boot only the core runtime. Optional packages are selected per run from
+    // explicit imports and the file capability registry in the Python wheel.
+    readyPromise = loadRuntime();
 
     function pypiNameFor(importName) {
       return IMPORT_TO_PACKAGE[importName] || importName;
@@ -728,13 +682,62 @@ _missing
       }
     }
 
+    // Find path-like string literals, then ask the library's general capability
+    // registry which rich-loader imports they need. Existing files use suffixes
+    // and magic bytes; paths created by the same run can still resolve by suffix.
+    async function findFileRequirements(code) {
+      if (!DYNAMIC_IMPORTS) return [];
+      pyodide.globals.set('_pls_source_code', code);
+      const probe = `
+import ast
+from pretty_little_summary.file_capabilities import requirements_for_path
+
+_pls_requirements = []
+_pls_seen_requirements = set()
+try:
+    _pls_tree = ast.parse(_pls_source_code)
+except SyntaxError:
+    _pls_tree = None
+if _pls_tree is not None:
+    for _pls_node in ast.walk(_pls_tree):
+        if not isinstance(_pls_node, ast.Constant) or not isinstance(_pls_node.value, str):
+            continue
+        for _pls_req in requirements_for_path(_pls_node.value):
+            if _pls_req.import_name in _pls_seen_requirements:
+                continue
+            _pls_requirements.append(_pls_req.import_name + "|" + _pls_req.package_name)
+            _pls_seen_requirements.add(_pls_req.import_name)
+_pls_requirements
+`;
+      try {
+        const result = await pyodide.runPythonAsync(probe);
+        const values = result && typeof result.toJs === 'function' ? result.toJs() : (result || []);
+        return Array.from(values, value => {
+          const [importName, packageName] = value.split('|');
+          return { importName, packageName };
+        });
+      } catch (e) {
+        console.warn('could not inspect file import requirements:', e);
+        return [];
+      } finally {
+        pyodide.globals.delete('_pls_source_code');
+      }
+    }
+
     // Scan code for import statements and load/install whatever isn't
     // already available yet, via pyodide's prebuilt wasm packages first,
     // falling back to micropip (PyPI) for anything not prebuilt.
     async function ensureImports(code) {
       if (readyPromise) await readyPromise;
       if (!pyodide) return;
-      const candidates = extractTopLevelImports(code);
+      const fileRequirements = await findFileRequirements(code);
+      const packagesByImport = new Map(
+        fileRequirements.map(item => [item.importName, item.packageName])
+      );
+      const candidates = [...new Set([
+        ...extractTopLevelImports(code),
+        ...fileRequirements.map(item => item.importName),
+      ])];
       let missing = await findMissingImports(candidates);
       // Pyodide's pyarrow wasm build mis-registers pandas' arrow extension
       // type if pandas gets imported/used before pyarrow is ever loaded, so
@@ -746,8 +749,9 @@ _missing
       }
       if (!missing.length) return;
       setStatus(`loading ${missing.join(', ')}...`, 'busy');
+      const failed = [];
       for (const name of missing) {
-        const pkg = pypiNameFor(name);
+        const pkg = packagesByImport.get(name) || pypiNameFor(name);
         try {
           await pyodide.loadPackage(pkg);
         } catch (e) {
@@ -756,10 +760,16 @@ _missing
             await micropip.install(pkg);
           } catch (e2) {
             console.warn(`could not auto-load "${name}":`, e2);
+            failed.push(name);
           }
         }
       }
-      setStatus(`ready (tier: ${loadedTier})`, 'ready');
+      if (failed.length) {
+        const message = `could not load required imports: ${failed.join(', ')}`;
+        setStatus(message, 'error');
+        throw new Error(message);
+      }
+      setStatus('ready (dynamic imports)', 'ready');
     }
 
     // Runs the code currently in the editor, mirroring the Run button's own
@@ -769,7 +779,15 @@ _missing
       if (!pyodide) return;
       runBtn.disabled = true;
       runStatusEl.textContent = 'checking imports...';
-      await ensureImports(code);
+      try {
+        await ensureImports(code);
+      } catch (err) {
+        outputEl.classList.add('error');
+        outputEl.textContent = String(err);
+        runBtn.disabled = false;
+        runStatusEl.textContent = '';
+        return;
+      }
       // pretty_little_summary's optional adapters (matplotlib, PIL, sklearn,
       // etc.) check "is this library importable" once, at import time, and
       // only register themselves then. Since pyodide keeps one interpreter
@@ -954,7 +972,7 @@ for _mod in [m for m in sys.modules if m == "pretty_little_summary" or m.startsw
       await refreshFileList();
       const code =
         `import pretty_little_summary as pls\n\n` +
-        `result = pls.describe("${path}")\n` +
+        `result = pls.describe("${path}", dynamic_imports=True)\n` +
         `print(result.content)`;
       await loadAndRun(code, null);
     });

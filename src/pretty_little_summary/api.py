@@ -32,6 +32,7 @@ def describe(
     *,
     shallow: bool = False,
     full: bool = False,
+    dynamic_imports: bool = False,
 ) -> Description:
     """
     Generate a structured summary of any Python object.
@@ -60,6 +61,10 @@ def describe(
             objects.
         full: For a deep row-oriented file load, read every row instead of a
             bounded sample. No effect when ``shallow`` is set.
+        dynamic_imports: Import optional libraries already installed for a
+            detected file format before loading it. This never installs
+            packages; async hosts such as Pyodide can use
+            ``requirements_for_path`` to install missing packages first.
 
     Returns:
         Description object with content, meta, and history attributes
@@ -95,7 +100,12 @@ def describe(
     if is_path:
         from pretty_little_summary.sniffers._base import describe_path
 
-        metadata = describe_path(obj, deep=not shallow, full=full)
+        metadata = describe_path(
+            obj,
+            deep=not shallow,
+            full=full,
+            dynamic_imports=dynamic_imports,
+        )
     else:
         metadata = dispatch_adapter(obj)
 

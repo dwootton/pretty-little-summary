@@ -99,7 +99,12 @@ def sniff_path(path: Path) -> MetaDescription | None:
     return None
 
 
-def describe_path(path: Path, deep: bool = True, full: bool = False) -> MetaDescription:
+def describe_path(
+    path: Path,
+    deep: bool = True,
+    full: bool = False,
+    dynamic_imports: bool = False,
+) -> MetaDescription:
     """Describe a filesystem path.
 
     By default (``deep=True``) a *file* is loaded into a rich object (e.g. a
@@ -114,7 +119,14 @@ def describe_path(path: Path, deep: bool = True, full: bool = False) -> MetaDesc
         deep: Load files into rich objects / deep-profile directory contents.
         full: When deep-loading a row-oriented file, read every row instead of
             a bounded sample.
+        dynamic_imports: Import optional libraries already installed for the
+            detected file format. This never installs packages.
     """
+    if dynamic_imports and deep:
+        from pretty_little_summary.file_capabilities import import_available_requirements
+
+        import_available_requirements(path)
+
     # Directories: hand off to the directory walker regardless of deep, which
     # sniffs each file (shallow) or deep-profiles each dataset (deep).
     if path.is_dir():

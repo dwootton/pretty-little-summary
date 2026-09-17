@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from pretty_little_summary.file_capabilities import detect_file_capability
+
 # Default cap on rows read from row-oriented files (CSV/JSONL/Stata) in deep
 # mode. Keeps profiling of huge datasets fast and memory-bounded; pass
 # ``sample_rows=None`` (or ``full=True`` at the API layer) to read everything.
@@ -42,46 +44,51 @@ def load_file(
     Raises:
         Exception: If file cannot be read
     """
-    suffix = file_path.suffix.lower()
+    capability = detect_file_capability(file_path)
+    capability_name = capability.name if capability else None
 
     # CSV files -> pandas DataFrame
-    if suffix == '.csv':
+    if capability_name == 'csv':
         return _load_csv(file_path, sample_rows)
 
     # JSON Lines / newline-delimited JSON -> pandas DataFrame
-    if suffix in {'.jsonl', '.ndjson'}:
+    if capability_name == 'jsonl':
         return _load_jsonl(file_path, sample_rows)
 
     # JSON files -> dict/list
-    if suffix == '.json':
+    if capability_name == 'json':
         return _load_json(file_path)
 
     # Stata files -> pandas DataFrame
-    if suffix == '.dta':
+    if capability_name == 'stata':
         return _load_stata(file_path, sample_rows)
 
     # Parquet files -> pandas DataFrame
-    if suffix in {'.parquet', '.pq'}:
+    if capability_name == 'parquet':
         return _load_parquet(file_path)
 
+    # Classic NetCDF files -> xarray Dataset via scipy
+    if capability_name == 'netcdf':
+        return _load_netcdf(file_path)
+
     # Pickle files -> any Python object (guarded: unpickling executes code)
-    if suffix in {'.pkl', '.pickle'}:
+    if capability_name == 'pickle':
         return _load_pickle(file_path, allow_unpickle)
 
     # Image files -> PIL Image
-    if suffix in {'.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.webp'}:
+    if capability_name == 'image':
         return _load_image(file_path)
 
     # Text files -> str
-    if suffix in {'.txt', '.md', '.rst', '.log', '.py', '.js', '.html', '.css', '.yaml', '.yml', '.toml', '.ini', '.cfg'}:
+    if capability_name == 'text':
         return _load_text(file_path)
 
     # HDF5 files -> h5py File
-    if suffix in {'.h5', '.hdf5'}:
+    if capability_name == 'hdf5':
         return _load_hdf5(file_path)
 
     # NumPy files -> ndarray
-    if suffix in {'.npy', '.npz'}:
+    if capability_name == 'numpy':
         return _load_numpy(file_path)
 
     # Default: try to read as text
@@ -187,6 +194,16 @@ def _load_parquet(file_path: Path) -> Any:
         raise ImportError("pandas with pyarrow/fastparquet required to load Parquet files")
 
 
+def _load_netcdf(file_path: Path) -> Any:
+    """Load classic NetCDF as an xarray Dataset using scipy's backend."""
+    try:
+        import xarray as xr
+
+        return xr.open_dataset(file_path, engine="scipy")
+    except ImportError:
+        raise ImportError("xarray and scipy required to load classic NetCDF files") from None
+
+
 def _load_pickle(file_path: Path, allow_unpickle: bool = False) -> Any:
     """Load a pickle file as a Python object.
 
@@ -254,7 +271,7 @@ def _load_numpy(file_path: Path) -> Any:
     """Load NumPy array file."""
     try:
         import numpy as np
-        if file_path.suffix == '.npy':
+        if file_path.suffix.lower() == '.npy':
             return np.load(file_path)
         else:  # .npz
             return np.load(file_path)

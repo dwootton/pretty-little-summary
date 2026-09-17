@@ -68,10 +68,15 @@ class PathlibAdapter:
                         size = obj.stat().st_size
                         metadata["size_bytes"] = size
                         metadata["size"] = format_bytes(size)
-                        # Describe the file's *content* with the zero-dependency
-                        # sniffer tier (reads only the head; never executes or
-                        # fully loads the file).
+                        # Describe the file's *content*, the same way the
+                        # directory walk describes each entry it finds: the
+                        # zero-dependency sniffer tier always (head bytes only),
+                        # plus a loaded-and-dispatched profile when the file is
+                        # within the size gate and a loader exists for it.
                         content = _sniff_file(obj)
+                        loaded = _describe_file_contents(obj)
+                        if loaded:
+                            content = {**(content or {}), **loaded}
                         if content:
                             metadata["content"] = content
                     elif obj.is_dir():
@@ -286,6 +291,41 @@ def _sniff_file(file_path: Path) -> dict[str, Any] | None:
     result: dict[str, Any] = {"summary": meta.get("nl_summary", "")}
     if meta.get("metadata"):
         result["details"] = meta["metadata"]
+    return result
+
+
+def _describe_file_contents(file_path: Path) -> dict[str, Any] | None:
+    """Load a file and describe the object it holds, or None if that's not possible.
+
+    Mirrors what the directory walk already does for each entry it finds, so a
+    lone file isn't described more poorly than the same file inside a folder.
+    Gated on ``should_describe_file`` (size) and wrapped in the same
+    best-effort exception handling: any failure leaves the sniffed result.
+    """
+    from pretty_little_summary.adapters import dispatch_adapter
+    from pretty_little_summary.file_loader import load_file_sampled, should_describe_file
+
+    try:
+        if not should_describe_file(file_path):
+            return None
+        # Sampled load: row-oriented formats are capped, so a huge CSV costs a
+        # bounded read rather than a full one.
+        obj, was_sampled, sampled_rows = load_file_sampled(file_path)
+        if obj is None or isinstance(obj, (str, bytes)):
+            # No loader claimed it, or it came back as raw text: the sniffer
+            # already does better than a description of a blob.
+            return None
+        meta = dispatch_adapter(obj)
+    except Exception:
+        return None
+    summary = meta.get("nl_summary")
+    if not summary:
+        return None
+    result: dict[str, Any] = {"summary": summary, "adapter": meta.get("adapter_used")}
+    if meta.get("metadata"):
+        result["content_details"] = meta["metadata"]
+    if was_sampled:
+        result["sampled_rows"] = sampled_rows
     return result
 
 

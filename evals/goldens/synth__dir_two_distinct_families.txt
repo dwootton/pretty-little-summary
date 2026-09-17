@@ -1,0 +1,3 @@
+<eval-tmp>/dir_two_distinct_families/ (40 files, 0 subdirectories)
+├── photo_{000..019}.jpg (20 files) - A text file with 1 line.
+└── report_{000..019}.csv (20 files) - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.

@@ -1,0 +1,1 @@
+A dict with 1 key (str -> dict), nested 60 levels deep. Keys: 'child'.

@@ -14,6 +14,15 @@ Usage:
 
 from pretty_little_summary.adapters._base import list_available_adapters
 from pretty_little_summary.api import Description, describe
+from pretty_little_summary.file_capabilities import requirements_for_path
+from pretty_little_summary.relevance import FocusedProfile, focus_profile
 
-__version__ = "0.1.2"
-__all__ = ["Description", "describe", "list_available_adapters"]
+__version__ = "0.3.1"
+__all__ = [
+    "Description",
+    "FocusedProfile",
+    "describe",
+    "focus_profile",
+    "list_available_adapters",
+    "requirements_for_path",
+]

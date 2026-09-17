@@ -1070,16 +1070,16 @@
    "judged_at": "2026-08-05T21:41:23+00:00"
   },
   "synth/deep_nested_dict": {
-   "output_hash": "5a8409c372e3b462",
+   "output_hash": "bbeb2bc2376a74f2",
    "scores": {
-    "accuracy": 4,
-    "informativeness": 1,
+    "accuracy": 5,
+    "informativeness": 5,
     "conciseness": 5,
     "hallucination_free": 5
    },
-   "overall": 3.75,
-   "critique": "'A dict with 1 keys' survives the 60-level nesting but conveys nothing about it; meta even reports depth: 3, so depth measurement is capped/wrong. Should say 'deeply nested dict (60+ levels)' \u2014 depth IS the story here. Also fix '1 keys' pluralization.",
-   "judged_at": "2026-08-05T17:47:55+00:00"
+   "overall": 5.0,
+   "critique": "Accurately surfaces the defining 60-level nesting depth, key/value types, and outer key in one concise sentence; singular-key grammar is correct.",
+   "judged_at": "2026-08-06T18:33:39+00:00"
   },
   "synth/df_500_columns": {
    "output_hash": "696ea138fdbbb86c",
@@ -1142,7 +1142,7 @@
    "judged_at": "2026-08-06T04:38:12+00:00"
   },
   "synth/dir_filename_family": {
-   "output_hash": "1ab973d09f2246c0",
+   "output_hash": "4be0b5f883338192",
    "scores": {
     "accuracy": 5,
     "informativeness": 4,
@@ -1150,11 +1150,11 @@
     "hallucination_free": 5
    },
    "overall": 4.75,
-   "critique": "The 30 numbered reading_{000..029}.txt files correctly collapse into a single family line while both unrelated siblings (README.txt, manifest.json) stay individually visible, exactly matching the collapsing + sibling-preservation behavior the NOTES require; the collapsed family's description is a bit generic ('text file, 1 line') but that's accurate for the fixture.",
-   "judged_at": "2026-08-05T21:41:54+00:00"
+   "critique": "The 30 numbered files collapse into one range while both unrelated siblings remain visible; the normalized eval path is stable and the family description is accurate but generic.",
+   "judged_at": "2026-08-06T18:36:39+00:00"
   },
   "synth/dir_filename_family_with_gap": {
-   "output_hash": "c5f8c4b12fe6924b",
+   "output_hash": "c017cfacda07c79a",
    "scores": {
     "accuracy": 4,
     "informativeness": 4,
@@ -1162,11 +1162,11 @@
     "hallucination_free": 5
    },
    "overall": 4.5,
-   "critique": "File count and family collapsing are correct and concise, but the {1850..1899} range implies full year coverage when 1892 is actually missing, silently absorbing a gap a user would assume is continuous.",
-   "judged_at": "2026-08-05T21:41:40+00:00"
+   "critique": "File count and collapsing are concise, but the displayed range still implies continuous coverage despite the missing 1892 member.",
+   "judged_at": "2026-08-06T18:36:39+00:00"
   },
   "synth/dir_interleaved_shapes_do_not_collapse": {
-   "output_hash": "9bcfb398e97ff97b",
+   "output_hash": "053f8058d3e88057",
    "scores": {
     "accuracy": 5,
     "informativeness": 3,
@@ -1174,11 +1174,11 @@
     "hallucination_free": 5
    },
    "overall": 4.0,
-   "critique": "Correct and doesn't crash or wrongly merge the two shapes, but lists every one of the 20 files individually with zero collapsing, exactly the noisy-listing problem the grouping feature exists to prevent (known limitation: only merges immediately-adjacent identical shapes).",
-   "judged_at": "2026-08-05T21:41:43+00:00"
+   "critique": "Accurate and deterministic, but listing all 20 interleaved files remains noisy because equivalent shapes are not grouped across adjacent entries.",
+   "judged_at": "2026-08-06T18:36:39+00:00"
   },
   "synth/dir_many_subfolders": {
-   "output_hash": "906194a0380cf0a3",
+   "output_hash": "38494e584cbdd161",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -1186,11 +1186,11 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Correctly caps subdirectory display at 20 stations, each recursed into and described; emits an accurate '... (130 more folders in this folder)' truncation line; and the top-level manifest.json sibling is not starved despite the 150 subfolders.",
-   "judged_at": "2026-08-05T21:41:45+00:00"
+   "critique": "Correctly caps display at 20 subfolders, reports the 130 omitted folders, recurses into shown datasets, and preserves the top-level sibling.",
+   "judged_at": "2026-08-06T18:36:39+00:00"
   },
   "synth/dir_two_distinct_families": {
-   "output_hash": "4a7291060f4db65a",
+   "output_hash": "4037ea9427b94ce6",
    "scores": {
     "accuracy": 5,
     "informativeness": 5,
@@ -1198,8 +1198,8 @@
     "hallucination_free": 5
    },
    "overall": 5.0,
-   "critique": "Both unrelated numbered families (photo_*.jpg, report_*.csv) collapse independently into their own {000..019} lines without interfering with each other, exactly as intended for non-interleaving shapes.",
-   "judged_at": "2026-08-05T21:41:41+00:00"
+   "critique": "Both unrelated numbered families collapse independently into accurate, concise range lines.",
+   "judged_at": "2026-08-06T18:36:39+00:00"
   },
   "synth/empty_containers": {
    "output_hash": "b6a4f8a05c5b9e9a",

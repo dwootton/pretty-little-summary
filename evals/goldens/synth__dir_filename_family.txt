@@ -1,0 +1,4 @@
+<eval-tmp>/dir_filename_family/ (32 files, 0 subdirectories)
+├── README.txt - A text file with 1 line (18.0 B).
+├── manifest.json - A dict with 1 key (str -> int). Keys: 'version'. Stats: range 1 to 1, mean 1.
+└── reading_{000..029}.txt (30 files) - A text file with 1 line.

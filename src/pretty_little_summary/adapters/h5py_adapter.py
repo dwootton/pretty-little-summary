@@ -16,14 +16,14 @@ from pretty_little_summary.descriptor_utils import safe_repr
 
 
 class H5pyAdapter:
-    """Adapter for h5py.Dataset."""
+    """Adapter for HDF5 datasets, files, and groups."""
 
     @staticmethod
     def can_handle(obj: Any) -> bool:
         if not LIBRARY_AVAILABLE:
             return False
         try:
-            return isinstance(obj, h5py.Dataset)
+            return isinstance(obj, (h5py.Dataset, h5py.File, h5py.Group))
         except Exception:
             return False
 
@@ -35,8 +35,11 @@ class H5pyAdapter:
         }
         metadata: dict[str, Any] = {}
         try:
-            metadata.update(_describe_dataset(obj))
-            meta["shape"] = obj.shape
+            if isinstance(obj, h5py.Dataset):
+                metadata.update(_describe_dataset(obj))
+                meta["shape"] = obj.shape
+            else:
+                metadata.update(_describe_group(obj))
         except Exception as e:
             meta["warnings"] = [f"H5pyAdapter failed: {e}"]
 
@@ -67,11 +70,61 @@ def _describe_dataset(dataset: h5py.Dataset) -> dict[str, Any]:
     }
 
 
+def _describe_group(group: h5py.Group) -> dict[str, Any]:
+    """Describe dataset structure without reading dataset payloads."""
+    datasets: list[dict[str, Any]] = []
+    total_datasets = 0
+    max_datasets = 100
+
+    def collect(_name: str, item: Any) -> None:
+        nonlocal total_datasets
+        if not isinstance(item, h5py.Dataset):
+            return
+        total_datasets += 1
+        if len(datasets) >= max_datasets:
+            return
+        datasets.append(
+            {
+                "name": item.name,
+                "shape": item.shape,
+                "dtype": str(item.dtype),
+                "chunks": item.chunks,
+                "compression": item.compression,
+            }
+        )
+
+    group.visititems(collect)
+    attrs = {key: safe_repr(value, 100) for key, value in group.attrs.items()}
+    return {
+        "type": "h5py_file" if isinstance(group, h5py.File) else "h5py_group",
+        "name": group.name,
+        "dataset_count": total_datasets,
+        "datasets": datasets,
+        "datasets_truncated": total_datasets > max_datasets,
+        "attrs": attrs,
+    }
+
+
 if LIBRARY_AVAILABLE:
     AdapterRegistry.register(H5pyAdapter)
 
 
 def _build_nl_summary(meta: MetaDescription, metadata: dict[str, Any]) -> str:
+    if metadata.get("type") in {"h5py_file", "h5py_group"}:
+        kind = "file" if metadata["type"] == "h5py_file" else "group"
+        datasets = metadata.get("datasets", [])
+        count = metadata.get("dataset_count", len(datasets))
+        previews = [
+            f"{item['name']} (shape {item['shape']}, dtype {item['dtype']})"
+            for item in datasets[:8]
+        ]
+        summary = f"An HDF5 {kind} with {count} dataset{'s' if count != 1 else ''}."
+        if previews:
+            summary += f" Datasets: {', '.join(previews)}."
+        if metadata.get("datasets_truncated"):
+            summary += " Dataset listing truncated."
+        return summary
+
     shape = meta.get("shape")
     dtype = metadata.get("dtype")
     name = metadata.get("name")

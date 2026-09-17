@@ -135,3 +135,43 @@ def test_shallow_directory_appends_directory_hint(tmp_path: Path) -> None:
     (tmp_path / "a.csv").write_text("x,y\n1,2\n")
     content = pls.describe(tmp_path, shallow=True).content
     assert "profile this directory" in content
+
+
+# --- a lone file gets the same content treatment as a file inside a directory --
+
+
+def test_pathlib_adapter_describes_a_json_file_contents(tmp_path: Path) -> None:
+    import json
+
+    from pretty_little_summary.adapters.pathlib_adapter import PathlibAdapter
+
+    doc = {
+        "dataset": "gpu-cloud-price-index-history",
+        "daily": [
+            {"date": "2026-05-11", "price_hourly_usd": {"min": 0.059, "median": 2.765}},
+            {"date": "2026-05-12", "price_hourly_usd": {"min": 0.059, "median": 2.730}},
+        ],
+    }
+    p = tmp_path / "data.json"
+    p.write_text(json.dumps(doc))
+
+    meta = PathlibAdapter.extract_metadata(p)
+    content = meta["metadata"]["content"]
+
+    assert content["adapter"] == "CollectionsAdapter"
+    assert "record table" in content["summary"]
+    # The size gate's own facts survive alongside the content description.
+    assert meta["metadata"]["size_bytes"] > 0
+    assert "daily (2 records, 3 fields)" in meta["nl_summary"]
+
+
+def test_pathlib_adapter_falls_back_when_contents_cannot_be_loaded(tmp_path: Path) -> None:
+    from pretty_little_summary.adapters.pathlib_adapter import PathlibAdapter
+
+    p = tmp_path / "notes.txt"
+    p.write_text("just some prose, nothing to load into an object\n")
+
+    meta = PathlibAdapter.extract_metadata(p)
+    # No exception, and the sniffed description still stands.
+    assert meta["metadata"]["exists"] is True
+    assert str(p) in meta["nl_summary"]

@@ -18,6 +18,7 @@ No install? Try it in the browser: **[live playground](https://dwootton.github.i
 - 40+ adapters across data, viz, and ML libraries
 - Works with built-ins out of the box (no required deps)
 - Jupyter/IPython history capture for better context
+- Deterministic, bounded question-focused tabular views with pluggable relevance scorers
 
 ## Quick Start
 
@@ -34,6 +35,15 @@ df = pd.DataFrame({
 result = pls.describe(df)
 print(result.content)
 print(result.meta)
+
+# Rank all columns for a question without changing the full profile.
+focused = pls.focus_profile(
+    result,
+    "How does price relate to quantity?",
+    max_columns=8,
+    max_chars=4000,
+)
+print(focused.content)
 ```
 
 ## Built-in Types
@@ -66,6 +76,26 @@ df = pd.read_csv("data.csv")
 result = pls.describe(df)
 print(result.content)
 ```
+
+## Files and dynamic imports
+
+File paths are detected through a shared capability registry using extensions
+and, where available, magic bytes. In native Python, `dynamic_imports=True`
+imports matching optional libraries that are already installed; it never runs a
+package manager or accesses the network:
+
+```python
+import pretty_little_summary as pls
+
+result = pls.describe("measurements.h5", dynamic_imports=True)
+print(result.content)
+
+# Hosts that manage packages themselves can inspect the same requirements:
+print(pls.requirements_for_path("measurements.h5"))
+```
+
+The browser playground uses these requirements to install missing Pyodide or
+micropip packages automatically, so there is no package-tier selector.
 
 ## Matplotlib Figures
 

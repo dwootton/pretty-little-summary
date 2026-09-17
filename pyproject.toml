@@ -1,6 +1,6 @@
 [project]
 name = "pretty-little-summary"
-version = "0.3.0"
+version = "0.3.1"
 description = "Automatic structured summaries of Python objects - DataFrames, arrays, models, and more"
 readme = "README.md"
 authors = [

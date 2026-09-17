@@ -56,6 +56,14 @@ def output_hash(content: str) -> str:
     return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
 
 
+def normalize_generated_paths(text: str, temp_root: Path) -> str:
+    """Replace the per-run temp root while preserving useful relative paths."""
+    roots = {str(temp_root), str(temp_root.resolve())}
+    for root in sorted(roots, key=len, reverse=True):
+        text = text.replace(root, "<eval-tmp>")
+    return text
+
+
 def load_scores() -> dict[str, Any]:
     if SCORES_PATH.exists():
         return json.loads(SCORES_PATH.read_text())
@@ -206,11 +214,13 @@ def run_case(case_obj: Case, ctx: CaseCtx) -> dict[str, Any]:
         except Exception:
             pass
 
+    content = normalize_generated_paths(result.content, ctx.tmp)
+    excerpt = normalize_generated_paths(meta_excerpt(result.meta), ctx.tmp)
     record.update(
         status="ok",
-        content=result.content,
-        output_hash=output_hash(result.content),
-        meta_excerpt=meta_excerpt(result.meta),
+        content=content,
+        output_hash=output_hash(content),
+        meta_excerpt=excerpt,
         duration_ms=round((time.perf_counter() - start) * 1000, 2),
         thumbnail=thumbnail,
     )

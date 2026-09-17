@@ -1,0 +1,43 @@
+<eval-tmp>/dir_many_subfolders/ (21 files, 150 subdirectories)
+├── station_0000/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0001/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0002/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0003/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0004/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0005/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0006/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0007/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0008/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0009/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0010/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0011/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0012/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0013/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0014/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0015/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0016/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0017/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0018/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+├── station_0019/
+│   └── readings.csv - A pandas DataFrame with 1 rows and 2 columns. Nulls: 0. Memory: 148.0 B. Columns: id (int64, stats: range 1 to 1, mean 1), val (int64, stats: range 2 to 2, mean 2). Sample row: {'id': '1', 'val': '2'}.
+... (130 more folders in this folder)
+└── manifest.json - A dict with 1 key (str -> int). Keys: 'version'. Stats: range 1 to 1, mean 1.
